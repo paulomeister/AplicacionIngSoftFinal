@@ -6,8 +6,6 @@ import com.dirac.aplicacioningsoftfinal.Repository.IDocumentoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
 @Service
 public class DocumentoService implements IDocumentoService {
 
@@ -20,10 +18,8 @@ public class DocumentoService implements IDocumentoService {
 
     public DocumentoModel getDocument(String id) {
 
-        DocumentoModel document = documentoRepository.findDocumentByCustomTitle(id)
+        return documentoRepository.findDocumentByCustomTitle(id)
                 .orElseThrow(() -> new NoSuchDocumentFoundException(String.format("El documento con título \" %s \" no se encuentra en la base de datos", id)));
-
-        return document;
 
     }
 
