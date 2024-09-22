@@ -18,8 +18,7 @@ public class DocumentoService implements IDocumentoService {
 
     public DocumentoModel getDocument(String id) {
 
-        return documentoRepository.findDocumentByCustomTitle(id)
-                .orElseThrow(() -> new NoSuchDocumentFoundException(String.format("El documento con título \" %s \" no se encuentra en la base de datos", id)));
+        return documentoRepository.findDocumentByCustomTitle(id).orElseThrow(() -> new NoSuchDocumentFoundException(String.format("El documento con título \" %s \" no se encuentra en la base de datos", id)));
 
     }
 
