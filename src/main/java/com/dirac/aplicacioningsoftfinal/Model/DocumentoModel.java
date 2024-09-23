@@ -24,7 +24,7 @@ public class DocumentoModel {
     private String visibilidad;
     private String urlArchivo;
     private List<String> keywords;
-    //private List<CategoriaModel> categoria;
+    private List<CategoriaModel> categoria;
     //private List <AutorModel> autores;
     private List <Valoracion> valoraciones;
     private Date fechaSubida;
