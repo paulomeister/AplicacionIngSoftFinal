@@ -35,11 +35,14 @@ public class DocumentoService implements IDocumentoService {
     public List<DocumentoModel> getDocumentsByKeyword(List<String> keywords) {
         List<DocumentoModel> documents = documentoRepository.findDocumentsByKeyword(keywords);
 
+
         if (documents.isEmpty()) {
             throw new NoSuchDocumentFoundException(String.format("No se encontraron documentos con las palabras clave \"%s\"", keywords));
         }
         return documents;
     }
+
+        
 
     public List<DocumentoModel> getDocumentsByFechaSubida(Date fechaSubida) {
         List<DocumentoModel> documents = documentoRepository.findDocumentsByFechaSubida(fechaSubida);
