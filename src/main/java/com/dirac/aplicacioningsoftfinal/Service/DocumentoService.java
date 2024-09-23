@@ -7,6 +7,7 @@ import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -36,6 +37,14 @@ public class DocumentoService implements IDocumentoService {
 
         if (documents.isEmpty()) {
             throw new NoSuchDocumentFoundException(String.format("No se encontraron documentos con las palabras clave \"%s\"", keywords));
+        }
+        return documents;
+    }
+
+    public List<DocumentoModel> getDocumentsByFechaSubida(Date fechaSubida) {
+        List<DocumentoModel> documents = documentoRepository.findDocumentsByFechaSubida(fechaSubida);
+        if (documents.isEmpty()) {
+            throw new NoSuchDocumentFoundException(String.format("No se encontraron documentos con la fecha \"%s\"", fechaSubida));
         }
         return documents;
     }

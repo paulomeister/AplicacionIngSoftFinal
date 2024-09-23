@@ -5,11 +5,13 @@ import com.dirac.aplicacioningsoftfinal.Model.DocumentoModel;
 import com.dirac.aplicacioningsoftfinal.Service.IDocumentoService;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 
@@ -70,6 +72,16 @@ public class DocumentoController {
 
             return new ResponseEntity<>(documents, HttpStatus.OK);
 
+        } catch (NoSuchDocumentFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/fecha/{fechaSubida}")
+    public ResponseEntity<?> findDocumentsByFechaSubida(@PathVariable("fechaSubida") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date fechaSubida) {
+        try {
+            List<DocumentoModel> documents = documentoService.getDocumentsByFechaSubida(fechaSubida);
+            return new ResponseEntity<>(documents, HttpStatus.OK);
         } catch (NoSuchDocumentFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }

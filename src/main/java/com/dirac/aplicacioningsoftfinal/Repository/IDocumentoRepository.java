@@ -6,6 +6,7 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,5 +22,9 @@ public interface IDocumentoRepository extends MongoRepository<DocumentoModel, Ob
 
     @Query("{ 'keywords': { $in: ?0 } }")
     List<DocumentoModel> findDocumentsByKeyword(List<String> keywords);
+
+    @Query("{ 'fechaSubida': ?0 }")
+    List<DocumentoModel> findDocumentsByFechaSubida(Date fechaSubida);
+
 
 }
