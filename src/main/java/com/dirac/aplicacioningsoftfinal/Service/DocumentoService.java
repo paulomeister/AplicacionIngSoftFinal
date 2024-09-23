@@ -24,4 +24,9 @@ public class DocumentoService implements IDocumentoService {
 
     }
 
+    public DocumentoModel getDocumentByTitle(String titulo) {
+        return documentoRepository.findDocumentByCustomTitle(titulo)
+                .orElseThrow(() -> new NoSuchDocumentFoundException(String.format("El documento con título \"%s\" no se encuentra en la base de datos", titulo)));
+    }
+
 }

@@ -15,4 +15,7 @@ public interface IDocumentoRepository extends MongoRepository<DocumentoModel, Ob
     @Query("{_id : '?0'}")
     Optional<DocumentoModel> findDocumentByID(ObjectId _id);
 
+    @Query("{titulo : ?0}")
+    Optional<DocumentoModel> findDocumentByCustomTitle(String titulo);
+
 }

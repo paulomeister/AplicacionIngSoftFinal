@@ -6,5 +6,6 @@ import org.bson.types.ObjectId;
 public interface IDocumentoService {
 
     DocumentoModel getDocument(ObjectId _id);
+    DocumentoModel getDocumentByTitle(String titulo);
 
 }

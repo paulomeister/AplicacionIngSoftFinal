@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class DatosComputados {
-    private int descargasTotales;
+    private long descargasTotales;
     private double valoracionPromedio;
-    private int comentariosTotales;
+    private long comentariosTotales;
 }

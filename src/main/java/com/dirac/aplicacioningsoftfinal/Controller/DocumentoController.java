@@ -20,7 +20,7 @@ public class DocumentoController {
         this.documentoService = documentoService;
     }
 
-    @GetMapping("/{_id}")
+    @GetMapping("id/{_id}")
     public ResponseEntity<?> finDocumentByID(@PathVariable("_id") ObjectId _id) {
 
         try {
@@ -38,5 +38,23 @@ public class DocumentoController {
 
 
     }
+
+    @GetMapping("titulo/{titulo}")
+    public ResponseEntity<?> finDocumentByCustomTitle(@PathVariable("titulo") String titulo) {
+
+        try {
+
+            DocumentoModel document = documentoService.getDocumentByTitle(titulo);
+
+            return new ResponseEntity<DocumentoModel>(document, HttpStatus.OK);
+
+        }
+        catch (NoSuchDocumentFoundException e) {
+
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+
+        }
+    }
+
 
 }
