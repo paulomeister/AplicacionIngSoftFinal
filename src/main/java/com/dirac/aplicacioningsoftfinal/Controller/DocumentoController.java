@@ -9,6 +9,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
+import java.util.List;
+
+
 @RestController
 @RequestMapping("/api/Documentos")
 public class DocumentoController {
@@ -55,6 +59,22 @@ public class DocumentoController {
 
         }
     }
+
+    @GetMapping("/keywords/{keywords}")
+    public ResponseEntity<?> findDocumentByKeyword(@PathVariable("keywords") String keywords) {
+
+        try {
+            List<String> keywordList = Arrays.asList(keywords.split(","));
+
+            List<DocumentoModel> documents = documentoService.getDocumentsByKeyword(keywordList);
+
+            return new ResponseEntity<>(documents, HttpStatus.OK);
+
+        } catch (NoSuchDocumentFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
+
 
 
 }
