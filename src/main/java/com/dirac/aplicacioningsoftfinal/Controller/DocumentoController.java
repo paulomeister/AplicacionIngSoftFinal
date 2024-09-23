@@ -3,13 +3,14 @@ package com.dirac.aplicacioningsoftfinal.Controller;
 import com.dirac.aplicacioningsoftfinal.Exception.NoSuchDocumentFoundException;
 import com.dirac.aplicacioningsoftfinal.Model.DocumentoModel;
 import com.dirac.aplicacioningsoftfinal.Service.IDocumentoService;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/documentos")
+@RequestMapping("/api/Documentos")
 public class DocumentoController {
 
     private final IDocumentoService documentoService;
@@ -19,12 +20,12 @@ public class DocumentoController {
         this.documentoService = documentoService;
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<?> finDocumentByTitle(@PathVariable("id") String id) {
+    @GetMapping("/{_id}")
+    public ResponseEntity<?> finDocumentByID(@PathVariable("_id") ObjectId _id) {
 
         try {
 
-            DocumentoModel document = documentoService.getDocument(id);
+            DocumentoModel document = documentoService.getDocument(_id);
 
             return new ResponseEntity<DocumentoModel>(document, HttpStatus.OK);
 

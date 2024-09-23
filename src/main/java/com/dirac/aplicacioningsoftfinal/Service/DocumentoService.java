@@ -3,6 +3,7 @@ package com.dirac.aplicacioningsoftfinal.Service;
 import com.dirac.aplicacioningsoftfinal.Exception.NoSuchDocumentFoundException;
 import com.dirac.aplicacioningsoftfinal.Model.DocumentoModel;
 import com.dirac.aplicacioningsoftfinal.Repository.IDocumentoRepository;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,10 +17,10 @@ public class DocumentoService implements IDocumentoService {
         this.documentoRepository = documentoRepository;
     }
 
-    public DocumentoModel getDocument(String id) {
+    public DocumentoModel getDocument(ObjectId _id) {
 
-        return documentoRepository.findDocumentByCustomTitle(id)
-                .orElseThrow(() -> new NoSuchDocumentFoundException(String.format("El documento con título \" %s \" no se encuentra en la base de datos", id)));
+        return documentoRepository.findDocumentByID(_id)
+                .orElseThrow(() -> new NoSuchDocumentFoundException(String.format("El documento con ID \" %s \" no se encuentra en la base de datos", _id)));
 
     }
 
