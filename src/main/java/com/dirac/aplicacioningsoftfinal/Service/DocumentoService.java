@@ -3,8 +3,12 @@ package com.dirac.aplicacioningsoftfinal.Service;
 import com.dirac.aplicacioningsoftfinal.Exception.NoSuchDocumentFoundException;
 import com.dirac.aplicacioningsoftfinal.Model.DocumentoModel;
 import com.dirac.aplicacioningsoftfinal.Repository.IDocumentoRepository;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Date;
+import java.util.List;
 
 @Service
 public class DocumentoService implements IDocumentoService {
@@ -16,10 +20,36 @@ public class DocumentoService implements IDocumentoService {
         this.documentoRepository = documentoRepository;
     }
 
-    public DocumentoModel getDocument(String id) {
+    public DocumentoModel getDocument(ObjectId _id) {
 
-        return documentoRepository.findDocumentByCustomTitle(id).orElseThrow(() -> new NoSuchDocumentFoundException(String.format("El documento con título \" %s \" no se encuentra en la base de datos", id)));
+        return documentoRepository.findDocumentByID(_id)
+                .orElseThrow(() -> new NoSuchDocumentFoundException(String.format("El documento con ID \" %s \" no se encuentra en la base de datos", _id)));
 
+    }
+
+    public DocumentoModel getDocumentByTitle(String titulo) {
+        return documentoRepository.findDocumentByCustomTitle(titulo)
+                .orElseThrow(() -> new NoSuchDocumentFoundException(String.format("El documento con título \"%s\" no se encuentra en la base de datos", titulo)));
+    }
+
+    public List<DocumentoModel> getDocumentsByKeyword(List<String> keywords) {
+        List<DocumentoModel> documents = documentoRepository.findDocumentsByKeyword(keywords);
+
+
+        if (documents.isEmpty()) {
+            throw new NoSuchDocumentFoundException(String.format("No se encontraron documentos con las palabras clave \"%s\"", keywords));
+        }
+        return documents;
+    }
+
+        
+
+    public List<DocumentoModel> getDocumentsByFechaSubida(Date fechaSubida) {
+        List<DocumentoModel> documents = documentoRepository.findDocumentsByFechaSubida(fechaSubida);
+        if (documents.isEmpty()) {
+            throw new NoSuchDocumentFoundException(String.format("No se encontraron documentos con la fecha \"%s\"", fechaSubida));
+        }
+        return documents;
     }
 
 }
