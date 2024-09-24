@@ -9,6 +9,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.view.RedirectView;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -17,6 +18,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/Documentos")
+@CrossOrigin("*")
 public class DocumentoController {
 
     private final IDocumentoService documentoService;
@@ -44,6 +46,28 @@ public class DocumentoController {
 
 
     }
+
+    // TODO: edit full searching algorithm in order to make downloads modular and reusable.
+    @GetMapping("titulo/{titulo}/download")
+    public RedirectView downloadDocumentByTitle(@PathVariable("titulo") String titulo) throws Exception {
+
+        try {
+
+            DocumentoModel document = documentoService.getDocumentByTitle(titulo);
+            String url = document.getUrlArchivo();
+
+            return new RedirectView(url);
+
+        }
+        catch (NoSuchDocumentFoundException e) {
+
+            throw new Exception(e);
+
+        }
+
+
+    }
+
 
     @GetMapping("titulo/{titulo}")
     public ResponseEntity<?> finDocumentByCustomTitle(@PathVariable("titulo") String titulo) {
