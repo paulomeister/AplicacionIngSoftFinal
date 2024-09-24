@@ -17,7 +17,6 @@ import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.stereotype.Service;
 
-
 @Service
 public class CategoriaService implements ICategoriaService {
 
@@ -59,6 +58,7 @@ public class CategoriaService implements ICategoriaService {
         return res;
 
     }
+
     @Autowired
     private MongoTemplate mongoTemplate;
 
@@ -69,23 +69,26 @@ public class CategoriaService implements ICategoriaService {
                 Aggregation.unwind("categoria"),
                 Aggregation.lookup("Categorias", "categoria.categoriaId", "_id", "categoriaDetalles"),
                 Aggregation.unwind("categoriaDetalles"),
-                Aggregation.lookup("Documentos", "categoriaDetalles._id", "categoria.categoriaId", "documentosDetalles"),
+                Aggregation.lookup("Documentos", "categoriaDetalles._id", "categoria.categoriaId",
+                        "documentosDetalles"),
                 Aggregation.unwind("documentosDetalles"),
                 Aggregation.unwind("documentosDetalles.valoracionPromedio", true),
                 Aggregation.group("categoriaDetalles._id")
                         .first("categoriaDetalles.nombre").as("nombre")
-                        .first("categoriaDetalles.descripcion").as("descripcion")
+                        .first("categoriaDetalles.imagen").as("imagen")
                         .count().as("totalDocumentos")
                         .push(new BasicDBObject("_id", "$documentosDetalles._id")
                                 .append("titulo", "$documentosDetalles.titulo")
-                                .append("descripcion", "$documentosDetalles.descripcion")).as("documentos"),
-                Aggregation.sort(Sort.Direction.DESC, "totalDocumentos")
-        );
+                                .append("descripcion", "$documentosDetalles.descripcion")
+                                .append("valoracionPromedio", "$documentosDetalles.datosComputados.valoracionPromedio")
+                                .append("fechaSubida", "$documentosDetalles.fechaSubida"))
+                        .as("documentos"),
+                Aggregation.sort(Sort.Direction.DESC, "totalDocumentos"));
 
-        AggregationResults<CategoriaDTO> result = mongoTemplate.aggregate(aggregation, "Documentos", CategoriaDTO.class);
+        AggregationResults<CategoriaDTO> result = mongoTemplate.aggregate(aggregation, "Documentos",
+                CategoriaDTO.class);
         return result.getMappedResults();
 
     }
-
 
 }
