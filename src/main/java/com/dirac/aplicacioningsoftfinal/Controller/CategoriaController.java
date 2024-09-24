@@ -36,4 +36,9 @@ public class CategoriaController {
         return ResponseEntity.ok(categoriaService.getSubcategories(id));
     }
 
+    @GetMapping("/getCatalog")
+    public ResponseEntity<?> getCategoriesCatalog(){
+        return ResponseEntity.ok(categoriaService.getCatalog());
+    }
+
 }
