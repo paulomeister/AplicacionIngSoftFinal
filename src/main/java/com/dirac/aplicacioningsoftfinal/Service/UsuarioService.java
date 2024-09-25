@@ -1,6 +1,6 @@
 package com.dirac.aplicacioningsoftfinal.Service;
 
-import com.dirac.aplicacioningsoftfinal.DTO.UsuarioDTO;
+import com.dirac.aplicacioningsoftfinal.DTO.User.UsuarioDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,8 +21,9 @@ public class UsuarioService implements IUsuarioService {
     }
 
     @Override
-    public Optional<UsuarioDTO> getUserByName(String name) {
-        Optional<UsuarioModel> usuarioModelOptional = usuarioRepository.findUserByName(name);
+    public Optional<UsuarioDTO> getUserByUserName(String name) {
+        Optional<UsuarioModel> usuarioModelOptional = usuarioRepository.findUserByUserName(name);
         return usuarioModelOptional.map(UsuarioDTO::fromUsuarioModel);
     }
 }
+

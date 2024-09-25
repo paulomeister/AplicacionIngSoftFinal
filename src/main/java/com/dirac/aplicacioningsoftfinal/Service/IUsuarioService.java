@@ -2,12 +2,11 @@ package com.dirac.aplicacioningsoftfinal.Service;
 
 import java.util.Optional;
 
-import com.dirac.aplicacioningsoftfinal.DTO.UsuarioDTO;
+import com.dirac.aplicacioningsoftfinal.DTO.User.UsuarioDTO;
 
 public interface IUsuarioService {
 
     Optional<UsuarioDTO> getUserById(String id);
 
-    Optional<UsuarioDTO> getUserByName(String name);
+    Optional<UsuarioDTO> getUserByUserName(String name);
 }
-

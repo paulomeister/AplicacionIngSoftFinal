@@ -10,5 +10,5 @@ import java.util.Optional;
 @Repository
 public interface IUsuarioRepository extends MongoRepository<UsuarioModel, String> {
     @Query("{'username':  '?0'}")
-    Optional<UsuarioModel> findUserByName(String name);
+    Optional<UsuarioModel> findUserByUserName(String userName);
 }

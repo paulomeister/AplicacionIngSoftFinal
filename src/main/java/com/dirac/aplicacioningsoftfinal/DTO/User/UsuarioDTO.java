@@ -1,6 +1,7 @@
-package com.dirac.aplicacioningsoftfinal.DTO;
+package com.dirac.aplicacioningsoftfinal.DTO.User;
 
 import com.dirac.aplicacioningsoftfinal.Model.UsuarioModel;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,12 +16,12 @@ import java.util.stream.Collectors;
 public class UsuarioDTO {
     private String userName;
     private String email;
-    private Map<String, String> perfil;
+    private PerfilDTO perfil;
     private List<Map<String, String>> docSubidos;
 
     public static UsuarioDTO fromUsuarioModel(UsuarioModel usuario) {
-        Map<String, String> perfilExtraido = extraerPerfil(usuario.getPerfil());
 
+        PerfilDTO perfilExtraido = extraerPerfil(usuario.getPerfil());
         List<Map<String, String>> docSubidosExtraidos = extraerDocumentosSubidos(usuario.getDocSubidos());
 
         return new UsuarioDTO(
@@ -31,8 +32,12 @@ public class UsuarioDTO {
         );
     }
 
-    private static Map<String, String> extraerPerfil(Map<String, String> perfil) {
-        return perfil;
+    private static PerfilDTO extraerPerfil(Map<String, String> perfil) {
+        return new PerfilDTO(
+                perfil.get("nombre"),
+                perfil.get("apellido"),
+                perfil.get("fotoPerfil")
+        );
     }
 
     private static List<Map<String, String>> extraerDocumentosSubidos(List<Map<String, String>> docSubidos) {
