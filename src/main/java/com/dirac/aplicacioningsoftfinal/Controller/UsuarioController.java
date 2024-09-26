@@ -12,13 +12,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/usuarios")
+@RequestMapping("/api/Usuarios")
 public class UsuarioController {
 
     @Autowired
     private IUsuarioService usuarioService;
 
-    @GetMapping("/{id}")
+    @GetMapping("/id/{id}")
     public ResponseEntity<?> getUserById(@PathVariable("id") String id) {
         UsuarioDTO usuarioDTO = usuarioService.getUserById(id)
                 .orElseThrow(() -> new UsuarioNotFoundException("Este ID de Usuario no existe"));

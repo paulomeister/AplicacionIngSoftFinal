@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 @Data
 public class UsuarioDTO {
-    private String userName;
+    private String username;
     private String email;
     private PerfilDTO perfil;
     private List<Map<String, String>> docSubidos;
@@ -25,25 +25,23 @@ public class UsuarioDTO {
         List<Map<String, String>> docSubidosExtraidos = extraerDocumentosSubidos(usuario.getDocSubidos());
 
         return new UsuarioDTO(
-                usuario.getUserName(),
+                usuario.getUsername(),
                 usuario.getEmail(),
                 perfilExtraido,
-                docSubidosExtraidos
-        );
+                docSubidosExtraidos);
     }
 
     private static PerfilDTO extraerPerfil(Map<String, String> perfil) {
         return new PerfilDTO(
                 perfil.get("nombre"),
                 perfil.get("apellido"),
-                perfil.get("fotoPerfil")
-        );
+                perfil.get("fotoPerfil"));
     }
 
     private static List<Map<String, String>> extraerDocumentosSubidos(List<Map<String, String>> docSubidos) {
         return docSubidos.stream()
                 .map(doc -> doc.entrySet().stream()
-                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))
-                ).collect(Collectors.toList());
+                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)))
+                .collect(Collectors.toList());
     }
 }

@@ -26,8 +26,8 @@ public class DocumentoController {
         this.documentoService = documentoService;
     }
 
-    @GetMapping("id/{_id}")
-    public ResponseEntity<?> finDocumentByID(@PathVariable("_id") ObjectId _id) {
+    @GetMapping("/id/{_id}")
+    public ResponseEntity<?> findDocumentByID(@PathVariable("_id") ObjectId _id) {
 
         try {
 
@@ -45,8 +45,8 @@ public class DocumentoController {
 
     }
 
-    @GetMapping("titulo/{titulo}")
-    public ResponseEntity<?> finDocumentByCustomTitle(@PathVariable("titulo") String titulo) {
+    @GetMapping("/titulo/{titulo}")
+    public ResponseEntity<?> findDocumentByCustomTitle(@PathVariable("titulo") String titulo) {
 
         try {
 
