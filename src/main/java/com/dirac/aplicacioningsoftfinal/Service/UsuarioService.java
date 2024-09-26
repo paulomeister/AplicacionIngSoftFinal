@@ -21,8 +21,9 @@ public class UsuarioService implements IUsuarioService {
     }
 
     @Override
-    public Optional<UsuarioDTO> getUserByUserName(String name) {
-        Optional<UsuarioModel> usuarioModelOptional = usuarioRepository.findUserByUserName(name);
+    public Optional<UsuarioDTO> getUserByUserName(String username) {
+
+        Optional<UsuarioModel> usuarioModelOptional = usuarioRepository.findUserByUserName(username);
         return usuarioModelOptional.map(UsuarioDTO::fromUsuarioModel);
     }
 }

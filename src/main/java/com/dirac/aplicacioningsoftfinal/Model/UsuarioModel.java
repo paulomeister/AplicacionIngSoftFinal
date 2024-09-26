@@ -19,7 +19,7 @@ import java.util.Map;
 public class UsuarioModel {
     @Id
     private String _id;
-    private String userName;
+    private String username;
     private String email;
     private List<Map<String, String>> credenciales;
     private Map<String, String> perfil;

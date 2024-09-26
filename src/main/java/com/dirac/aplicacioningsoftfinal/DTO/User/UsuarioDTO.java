@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 @Data
 public class UsuarioDTO {
-    private String userName;
+    private String username;
     private String email;
     private PerfilDTO perfil;
     private List<Map<String, String>> docSubidos;
@@ -25,7 +25,7 @@ public class UsuarioDTO {
         List<Map<String, String>> docSubidosExtraidos = extraerDocumentosSubidos(usuario.getDocSubidos());
 
         return new UsuarioDTO(
-                usuario.getUserName(),
+                usuario.getUsername(),
                 usuario.getEmail(),
                 perfilExtraido,
                 docSubidosExtraidos
