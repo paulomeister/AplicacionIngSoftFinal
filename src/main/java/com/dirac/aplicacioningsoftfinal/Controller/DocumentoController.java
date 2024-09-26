@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -87,6 +88,19 @@ public class DocumentoController {
         }
     }
 
-
-
+    @GetMapping("/view/{_id}")
+    public ResponseEntity<?> viewDocument(@PathVariable ObjectId _id) {
+        try {
+            DocumentoModel document = documentoService.getDocument(_id);
+            if (document.getUrlArchivo() != null) {
+                URI location = URI.create(document.getUrlArchivo());
+                return ResponseEntity.status(HttpStatus.FOUND)
+                        .location(location).build();
+            } else {
+                return ResponseEntity.badRequest().build();
+            }
+        } catch (NoSuchDocumentFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
 }

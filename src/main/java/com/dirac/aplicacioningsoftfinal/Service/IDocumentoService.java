@@ -12,5 +12,4 @@ public interface IDocumentoService {
     DocumentoModel getDocumentByTitle(String titulo);
     List<DocumentoModel> getDocumentsByKeyword(List<String> keywords);
     List<DocumentoModel> getDocumentsByFechaSubida (Date fechaSubida);
-
 }
