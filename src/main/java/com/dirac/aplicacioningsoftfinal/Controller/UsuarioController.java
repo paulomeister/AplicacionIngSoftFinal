@@ -1,6 +1,6 @@
 package com.dirac.aplicacioningsoftfinal.Controller;
 
-import com.dirac.aplicacioningsoftfinal.DTO.User.UsuarioDTO;
+import com.dirac.aplicacioningsoftfinal.DTO.UsuarioDTO;
 import com.dirac.aplicacioningsoftfinal.Exception.UsuarioNotFoundException;
 import com.dirac.aplicacioningsoftfinal.Service.IUsuarioService;
 

@@ -1,9 +1,9 @@
 package com.dirac.aplicacioningsoftfinal.Service;
 
-import com.dirac.aplicacioningsoftfinal.DTO.User.UsuarioDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.dirac.aplicacioningsoftfinal.DTO.UsuarioDTO;
 import com.dirac.aplicacioningsoftfinal.Model.UsuarioModel;
 import com.dirac.aplicacioningsoftfinal.Repository.IUsuarioRepository;
 

@@ -1,4 +1,4 @@
-package com.dirac.aplicacioningsoftfinal.DTO.User;
+package com.dirac.aplicacioningsoftfinal.DTO;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -1,4 +1,4 @@
-package com.dirac.aplicacioningsoftfinal.DTO.User;
+package com.dirac.aplicacioningsoftfinal.DTO;
 
 import com.dirac.aplicacioningsoftfinal.Model.UsuarioModel;
 

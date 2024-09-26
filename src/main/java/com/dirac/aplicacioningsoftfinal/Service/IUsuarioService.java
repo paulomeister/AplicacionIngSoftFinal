@@ -2,7 +2,7 @@ package com.dirac.aplicacioningsoftfinal.Service;
 
 import java.util.Optional;
 
-import com.dirac.aplicacioningsoftfinal.DTO.User.UsuarioDTO;
+import com.dirac.aplicacioningsoftfinal.DTO.UsuarioDTO;
 
 public interface IUsuarioService {
 
