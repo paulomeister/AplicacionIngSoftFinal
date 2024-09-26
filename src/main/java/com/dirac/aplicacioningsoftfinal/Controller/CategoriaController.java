@@ -12,13 +12,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/categorias")
+@RequestMapping("/api/Categorias")
 public class CategoriaController {
 
     @Autowired
     private ICategoriaService categoriaService;
 
-    @GetMapping("/{id}")
+    @GetMapping("/id/{id}")
     public ResponseEntity<?> getById(@PathVariable("id") String id) {
 
         return ResponseEntity.status(HttpStatus.OK)
@@ -34,6 +34,11 @@ public class CategoriaController {
     @GetMapping("/getSubcategories/{id}")
     public ResponseEntity<?> getSubcategories(@PathVariable("id") String id) {
         return ResponseEntity.ok(categoriaService.getSubcategories(id));
+    }
+
+    @GetMapping("/getCatalog")
+    public ResponseEntity<?> getCategoriesCatalog() {
+        return ResponseEntity.ok(categoriaService.getCatalog());
     }
 
 }
