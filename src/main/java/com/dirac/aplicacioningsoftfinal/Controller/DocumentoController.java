@@ -45,7 +45,7 @@ public class DocumentoController {
 
     }
 
-    @GetMapping("/titulo/{titulo}")
+    @GetMapping("/getByTitle/{titulo}")
     public ResponseEntity<?> findDocumentByCustomTitle(@PathVariable("titulo") String titulo) {
 
         try {
@@ -62,7 +62,7 @@ public class DocumentoController {
         }
     }
 
-    @GetMapping("/keywords/{keywords}")
+    @GetMapping("/getByKeywords/{keywords}")
     public ResponseEntity<?> findDocumentByKeyword(@PathVariable("keywords") String keywords) {
 
         try {
@@ -77,7 +77,7 @@ public class DocumentoController {
         }
     }
 
-    @GetMapping("/fecha/{fechaSubida}")
+    @GetMapping("/getByDate/{fechaSubida}")
     public ResponseEntity<?> findDocumentsByFechaSubida(@PathVariable("fechaSubida") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date fechaSubida) {
         try {
             List<DocumentoModel> documents = documentoService.getDocumentsByFechaSubida(fechaSubida);

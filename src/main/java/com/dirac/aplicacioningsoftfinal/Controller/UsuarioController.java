@@ -23,21 +23,13 @@ public class UsuarioController {
         UsuarioDTO usuarioDTO = usuarioService.getUserById(id)
                 .orElseThrow(() -> new UsuarioNotFoundException("Este ID de Usuario no existe"));
 
-        String nombre = usuarioDTO.getPerfil().getNombre();
-        String apellido = usuarioDTO.getPerfil().getApellido();
-        String fotoPerfil = usuarioDTO.getPerfil().getFotoPerfil();
-
         return ResponseEntity.ok(usuarioDTO);
     }
 
-    @GetMapping("/getUserByUserName/{username}")
-    public ResponseEntity<?> getUserByUserName(@PathVariable ("username") String userName) {
+    @GetMapping("/getByUsername/{username}")
+    public ResponseEntity<?> getUserByUserName(@PathVariable("username") String userName) {
         UsuarioDTO usuarioDTO = usuarioService.getUserByUserName(userName)
                 .orElseThrow(() -> new UsuarioNotFoundException("Este Usuario no existe"));
-
-        String nombre = usuarioDTO.getPerfil().getNombre();
-        String apellido = usuarioDTO.getPerfil().getApellido();
-        String fotoPerfil = usuarioDTO.getPerfil().getFotoPerfil();
 
         return ResponseEntity.ok(usuarioDTO);
     }
