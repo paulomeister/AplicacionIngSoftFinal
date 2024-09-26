@@ -1,10 +1,11 @@
 package com.dirac.aplicacioningsoftfinal.Model;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.Data;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -17,8 +18,8 @@ import java.util.Map;
 
 public class UsuarioModel {
     @Id
-    private String id;
-    private String userName;
+    private String _id;
+    private String username;
     private String email;
     private List<Map<String, String>> credenciales;
     private Map<String, String> perfil;
