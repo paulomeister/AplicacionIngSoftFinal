@@ -87,6 +87,40 @@ public class DocumentoController {
         }
     }
 
+    @GetMapping("/getByCategory/{nombreCategoria}")
+    public ResponseEntity<?> findDocumentsByCategoriaNombre(@PathVariable("nombreCategoria") String nombreCategoria) {
+
+        try{
+            List<DocumentoModel> documents = documentoService.getDocumentsByCategoriaNombre(nombreCategoria);
+            return new ResponseEntity<>(documents, HttpStatus.OK);
+        }catch (NoSuchDocumentFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+
+    }
+    @GetMapping("/getByAuthor/{nombreAutor}")
+    public ResponseEntity<?> findDocumentsByAutorUsuarioname(@PathVariable("nombreAutor") String nombreAutor) {
+        try {
+            List<DocumentoModel> documents = documentoService.getDocumentsByAutorUsuarioname(nombreAutor);
+            return new ResponseEntity<>(documents, HttpStatus.OK);
+        } catch (NoSuchDocumentFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/getByLenguage/{idioma}")
+    public ResponseEntity<?> findDocumentsByLenguage(@PathVariable("idioma") String idioma) {
+        try {
+            List<DocumentoModel> documents = documentoService.getDocumentsByLenguage(idioma);
+            return new ResponseEntity<>(documents, HttpStatus.OK);
+        } catch (NoSuchDocumentFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
+
+
+
+
 
 
 }

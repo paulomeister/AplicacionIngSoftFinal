@@ -16,4 +16,6 @@ public interface ICategoriaService {
 
     List<CategoriaDTO> getCatalog();
 
+
+
 }
