@@ -27,6 +27,7 @@ public class DocumentoModel {
     private List<Valoracion> valoraciones;
     private Date fechaSubida;
     private DatosComputados datosComputados;
+    private String idioma;
 
     @Data
     public static class CategoriasEmbebidas {
@@ -39,6 +40,8 @@ public class DocumentoModel {
         private String usuarioId;
         private Boolean estaRegistrado;
         private String rol;
+        private String username;
+        private String nombre;
     }
 
     @Data

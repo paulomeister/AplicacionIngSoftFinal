@@ -15,6 +15,7 @@ public class DocumentoService implements IDocumentoService {
 
     private final IDocumentoRepository documentoRepository;
 
+
     @Autowired
     public DocumentoService(IDocumentoRepository documentoRepository) {
         this.documentoRepository = documentoRepository;
@@ -51,5 +52,48 @@ public class DocumentoService implements IDocumentoService {
         }
         return documents;
     }
+
+    public List<DocumentoModel> getDocumentsByCategoriaNombre(String nombreCategoria) {
+
+        List<DocumentoModel> documents = documentoRepository.findDocumentsByCategoriaNombre(nombreCategoria);
+
+        if (documents.isEmpty()) {
+            throw new NoSuchDocumentFoundException(
+                    String.format("No se encontraron documentos con la categoría \"%s\"", nombreCategoria));
+        }
+
+        return documents;
+    }
+
+    public List<DocumentoModel> getDocumentsByAutorUsuarioname(String nombreAutor) {
+
+        List<DocumentoModel> documents = documentoRepository.findDocumentsByAutorUsuarioname(nombreAutor);
+
+        if (documents.isEmpty()) {
+            throw new NoSuchDocumentFoundException(
+                    String.format("No se encontraron documentos del autor \"%s\"", nombreAutor));
+        }
+
+        return documents;
+    }
+
+    public List<DocumentoModel> getDocumentsByLenguage(String idioma) {
+
+        List<DocumentoModel> documents = documentoRepository.findDocumentsByLenguage(idioma);
+
+        if (documents.isEmpty()) {
+            throw new NoSuchDocumentFoundException(
+                    String.format("No se encontraron documentos del idioma \"%s\"", idioma));
+        }
+
+        return documents;
+    }
+
+
+
+
+
+
+
 
 }
