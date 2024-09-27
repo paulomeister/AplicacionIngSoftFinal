@@ -26,5 +26,16 @@ public interface IDocumentoRepository extends MongoRepository<DocumentoModel, Ob
     @Query("{ 'fechaSubida': ?0 }")
     List<DocumentoModel> findDocumentsByFechaSubida(Date fechaSubida);
 
+    @Query("{ 'categoria.nombre': ?0 }")
+    List<DocumentoModel> findDocumentsByCategoriaNombre(String nombreCategoria);
+
+    @Query("{ 'autores.nombre': ?0 }")
+    List<DocumentoModel> findDocumentsByAutorUsuarioname(String nombreAutor);
+
+    @Query("{ 'idioma': ?0 }")
+    List<DocumentoModel> findDocumentsByLenguage(String idioma);
+
+
+
 
 }

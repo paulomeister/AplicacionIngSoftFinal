@@ -28,8 +28,8 @@ public class DocumentoController {
         this.documentoService = documentoService;
     }
 
-    @GetMapping("id/{_id}")
-    public ResponseEntity<?> finDocumentByID(@PathVariable("_id") ObjectId _id) {
+    @GetMapping("/id/{_id}")
+    public ResponseEntity<?> findDocumentByID(@PathVariable("_id") ObjectId _id) {
 
         try {
 
@@ -69,8 +69,9 @@ public class DocumentoController {
     }
 
 
-    @GetMapping("titulo/{titulo}")
-    public ResponseEntity<?> finDocumentByCustomTitle(@PathVariable("titulo") String titulo) {
+    @GetMapping("/getByTitle/{titulo}")
+    public ResponseEntity<?> findDocumentByCustomTitle(@PathVariable("titulo") String titulo) {
+
 
         try {
 
@@ -86,7 +87,7 @@ public class DocumentoController {
         }
     }
 
-    @GetMapping("/keywords/{keywords}")
+    @GetMapping("/getByKeywords/{keywords}")
     public ResponseEntity<?> findDocumentByKeyword(@PathVariable("keywords") String keywords) {
 
         try {
@@ -101,7 +102,7 @@ public class DocumentoController {
         }
     }
 
-    @GetMapping("/fecha/{fechaSubida}")
+    @GetMapping("/getByDate/{fechaSubida}")
     public ResponseEntity<?> findDocumentsByFechaSubida(@PathVariable("fechaSubida") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date fechaSubida) {
         try {
             List<DocumentoModel> documents = documentoService.getDocumentsByFechaSubida(fechaSubida);
@@ -110,6 +111,40 @@ public class DocumentoController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
+
+    @GetMapping("/getByCategory/{nombreCategoria}")
+    public ResponseEntity<?> findDocumentsByCategoriaNombre(@PathVariable("nombreCategoria") String nombreCategoria) {
+
+        try{
+            List<DocumentoModel> documents = documentoService.getDocumentsByCategoriaNombre(nombreCategoria);
+            return new ResponseEntity<>(documents, HttpStatus.OK);
+        }catch (NoSuchDocumentFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+
+    }
+    @GetMapping("/getByAuthor/{nombreAutor}")
+    public ResponseEntity<?> findDocumentsByAutorUsuarioname(@PathVariable("nombreAutor") String nombreAutor) {
+        try {
+            List<DocumentoModel> documents = documentoService.getDocumentsByAutorUsuarioname(nombreAutor);
+            return new ResponseEntity<>(documents, HttpStatus.OK);
+        } catch (NoSuchDocumentFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/getByLenguage/{idioma}")
+    public ResponseEntity<?> findDocumentsByLenguage(@PathVariable("idioma") String idioma) {
+        try {
+            List<DocumentoModel> documents = documentoService.getDocumentsByLenguage(idioma);
+            return new ResponseEntity<>(documents, HttpStatus.OK);
+        } catch (NoSuchDocumentFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
+
+
+
 
 
 

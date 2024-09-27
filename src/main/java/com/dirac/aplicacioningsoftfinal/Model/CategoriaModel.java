@@ -21,5 +21,5 @@ public class CategoriaModel {
     private String nombre;
     private String descripcion;
     private List<Map<String, String>> subcategorias;
-
+    private String imagen;
 }
