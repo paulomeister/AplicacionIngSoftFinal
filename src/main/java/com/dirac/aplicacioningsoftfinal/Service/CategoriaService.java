@@ -23,6 +23,10 @@ public class CategoriaService implements ICategoriaService {
     @Autowired
     private ICategoriaRepository categoriaRepository;
 
+    @Autowired
+    private MongoTemplate mongoTemplate;
+
+
     @Override
     public Optional<CategoriaModel> getById(String id) {
 
@@ -58,9 +62,6 @@ public class CategoriaService implements ICategoriaService {
         return res;
 
     }
-
-    @Autowired
-    private MongoTemplate mongoTemplate;
 
     @Override
     public List<CategoriaDTO> getCatalog() {
