@@ -33,12 +33,12 @@ public class CategoriaController {
 
     @GetMapping("/getSubcategories/{id}")
     public ResponseEntity<?> getSubcategories(@PathVariable("id") String id) {
-        return ResponseEntity.ok(categoriaService.getSubcategories(id));
+        return ResponseEntity.status(HttpStatus.OK).body(categoriaService.getSubcategories(id));
     }
 
     @GetMapping("/getCatalog")
     public ResponseEntity<?> getCategoriesCatalog() {
-        return ResponseEntity.ok(categoriaService.getCatalog());
+        return ResponseEntity.status(HttpStatus.CREATED).body(categoriaService.getCatalog());
     }
 
 }
