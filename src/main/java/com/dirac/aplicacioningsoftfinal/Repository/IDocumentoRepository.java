@@ -1,5 +1,6 @@
 package com.dirac.aplicacioningsoftfinal.Repository;
 
+import com.dirac.aplicacioningsoftfinal.DTO.UrlDTO;
 import com.dirac.aplicacioningsoftfinal.Model.DocumentoModel;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -13,6 +14,9 @@ import java.util.Optional;
 
 @Repository
 public interface IDocumentoRepository extends MongoRepository<DocumentoModel, ObjectId> {
+
+    @Query(value = "{ '_id': ?0 }", fields = "{'_id': 0, 'urlArchivo': 1, 'visibilidad': 1}")
+    Optional<UrlDTO> findUrlArchivoById(String id);
 
     @Query("{_id : '?0'}")
     Optional<DocumentoModel> findDocumentByID(ObjectId _id);

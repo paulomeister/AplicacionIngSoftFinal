@@ -1,5 +1,7 @@
 package com.dirac.aplicacioningsoftfinal.Service;
 
+import com.dirac.aplicacioningsoftfinal.DTO.BusquedaFiltroDTO;
+import com.dirac.aplicacioningsoftfinal.DTO.UrlDTO;
 import com.dirac.aplicacioningsoftfinal.Model.DocumentoModel;
 import org.bson.types.ObjectId;
 
@@ -15,7 +17,8 @@ public interface IDocumentoService {
     List <DocumentoModel> getDocumentsByCategoriaNombre(String nombreCategoria);
     List <DocumentoModel> getDocumentsByAutorUsuarioname(String nombreAutor);
     List <DocumentoModel> getDocumentsByLenguage(String idioma);
-
+    List<DocumentoModel> busquedaFiltroDocumentos(BusquedaFiltroDTO entrada);
+    UrlDTO recuperarUrlById(String id);
 
 
 }
