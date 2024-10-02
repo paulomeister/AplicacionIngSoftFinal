@@ -37,7 +37,7 @@ public class SecurityConfiguration {
                 .csrf((csrf) -> csrf.disable())
                 .authorizeHttpRequests((auth) -> auth
 
-                        .requestMatchers("/api/Documentos/*/*/download")
+                        .requestMatchers("/api/Documentos/*/download")
                         .hasAnyRole(ADMIN.name(), GENUSER.name())
                         .anyRequest()
                         .permitAll()
