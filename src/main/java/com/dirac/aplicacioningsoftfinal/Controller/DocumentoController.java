@@ -2,25 +2,24 @@ package com.dirac.aplicacioningsoftfinal.Controller;
 
 import com.dirac.aplicacioningsoftfinal.DTO.BusquedaFiltroDTO;
 import com.dirac.aplicacioningsoftfinal.DTO.BusquedaOrdenarFiltrarDTO;
-import com.dirac.aplicacioningsoftfinal.DTO.UrlDTO;
+import com.dirac.aplicacioningsoftfinal.Exception.CreationException;
+import com.dirac.aplicacioningsoftfinal.Exception.DeleteException;
+import com.dirac.aplicacioningsoftfinal.Exception.InvalidVisibilityException;
 import com.dirac.aplicacioningsoftfinal.Exception.NoSuchDocumentFoundException;
+import com.dirac.aplicacioningsoftfinal.Exception.UpdateException;
 import com.dirac.aplicacioningsoftfinal.Model.DocumentoModel;
+import com.dirac.aplicacioningsoftfinal.Repository.IDocumentoRepository;
 import com.dirac.aplicacioningsoftfinal.Service.IDocumentoService;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.InputStreamResource;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.view.RedirectView;
 
 import java.net.URI;
-import java.io.InputStream;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -38,49 +37,39 @@ public class DocumentoController {
         this.documentoService = documentoService;
     }
 
-    @GetMapping("/{id}/download")
-    public ResponseEntity<?> downloadDocumentById(@PathVariable("id") String id) throws Exception {
+    @Autowired
+    IDocumentoRepository documentoRepository;
 
+    @GetMapping("id/{id}/download")
+    public ResponseEntity<?> downloadDocumentById(@PathVariable("id") ObjectId id) {
         try {
-
-            UrlDTO resultado = documentoService.recuperarUrlById(id);
-
-            String visibilidad = resultado.getVisibilidad();
-
-            if(visibilidad.equals("publico")) {
-
-                String url = resultado.getUrlArchivo();
-                URL castedUrl = new URL(url);
-
-                URLConnection connection = castedUrl.openConnection();
-                InputStream inputStream = connection.getInputStream();
-
-                String nombreArchivo = url.substring(url.lastIndexOf("/") + 1);
-
-                HttpHeaders headers = new HttpHeaders();
-                headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; nombre=" + nombreArchivo);
-
-                return ResponseEntity.ok()
-                        .headers(headers)
-                        .contentType(MediaType.APPLICATION_PDF)
-                        .body(new InputStreamResource(inputStream));
-
-            }
-
+            return documentoService.downloadDocumentById(id);
+        } catch (NoSuchDocumentFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(String.format("El documento con id \"%s\" no se encuentra disponible", id));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Ha ocurrido un error durante la descarga del documento.");
         }
-        catch (NoSuchDocumentFoundException e) {
-
-            throw new Exception(e);
-
-        }
-
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(String.format("El documento con id \"%s\" no se encuentra disponible para descargar", id));
-
     }
 
+    @GetMapping("titulo/{titulo}/download")
+    public RedirectView downloadDocumentByTitle(@PathVariable("titulo") String titulo) {
+        try {
+            return documentoService.downloadDocumentByTitle(titulo);
+        } catch (NoSuchDocumentFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                    String.format("El documento con título \"%s\" no se encuentra disponible", titulo));
+        } catch (InvalidVisibilityException e) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "El documento no es visible para descarga.");
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Ha ocurrido un error durante la descarga del documento.");
+        }
+    }
 
     @PostMapping("/onSearch/filter/")
-    public ResponseEntity<List<DocumentoModel>> findAndFilterDocuments(@RequestBody BusquedaFiltroDTO queryParams){
+    public ResponseEntity<List<DocumentoModel>> findAndFilterDocuments(@RequestBody BusquedaFiltroDTO queryParams) {
 
         List<DocumentoModel> documentos = documentoService.busquedaFiltroDocumentos(queryParams);
 
@@ -93,9 +82,8 @@ public class DocumentoController {
 
     }
 
-    
     @PostMapping("/onSearch/filter/orderBy")
-    public ResponseEntity<List<DocumentoModel>> findFilterAndOrder(@RequestBody BusquedaOrdenarFiltrarDTO queryParams){
+    public ResponseEntity<List<DocumentoModel>> findFilterAndOrder(@RequestBody BusquedaOrdenarFiltrarDTO queryParams) {
 
         List<DocumentoModel> documentos = documentoService.busquedaOrdenada(queryParams);
 
@@ -122,26 +110,6 @@ public class DocumentoController {
         } catch (NoSuchDocumentFoundException e) {
 
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-
-        }
-
-    }
-
-    // TODO: edit full searching algorithm in order to make downloads modular and
-    // reusable.
-    @GetMapping("titulo/{titulo}/download")
-    public RedirectView downloadDocumentByTitle(@PathVariable("titulo") String titulo) throws Exception {
-
-        try {
-
-            DocumentoModel document = documentoService.getDocumentByTitle(titulo);
-            String url = document.getUrlArchivo();
-
-            return new RedirectView(url);
-
-        } catch (NoSuchDocumentFoundException e) {
-
-            throw new Exception(e);
 
         }
 
@@ -215,8 +183,10 @@ public class DocumentoController {
     public ResponseEntity<?> viewDocument(@PathVariable ObjectId _id) {
         try {
             DocumentoModel document = documentoService.getDocument(_id);
+
             if (document.getUrlArchivo() != null) {
                 URI location = URI.create(document.getUrlArchivo());
+
                 return ResponseEntity.status(HttpStatus.FOUND)
                         .location(location).build();
             } else {
@@ -237,4 +207,53 @@ public class DocumentoController {
         }
     }
 
+    // CREATE
+
+    @PostMapping("/insert")
+    public ResponseEntity<?> insertDocuments(@RequestBody DocumentoModel documento) {
+        try {
+
+            String message = documentoService.createDocument(documento);
+            return new ResponseEntity<String>(message, HttpStatus.CREATED);
+
+        } catch (CreationException err) {
+
+            return ResponseEntity.status(500).body(err.getMessage());
+
+        }
+    }
+
+    // UPDATE
+
+    @PutMapping("/update/{_id}")
+    public ResponseEntity<?> updateDocuments(@PathVariable("_id") ObjectId _id, @RequestBody DocumentoModel documento) {
+        try {
+
+            String message = documentoService.updateDocument(_id, documento);
+
+            return new ResponseEntity<String>(message, HttpStatus.OK);
+
+        } catch (UpdateException err) {
+
+            return ResponseEntity.status(500).body(err.getMessage());
+
+        }
+    }
+
+    // DELETE
+
+    @DeleteMapping("/delete/{_id}")
+    public ResponseEntity<?> updateDocuments(@PathVariable("_id") ObjectId _id) {
+        try {
+
+            String message = documentoService.deleteDocument(_id);
+
+            return new ResponseEntity<String>(message, HttpStatus.OK);
+
+        } catch (DeleteException err) {
+
+            return ResponseEntity.status(500).body(err.getMessage());
+
+        }
+    }
 }

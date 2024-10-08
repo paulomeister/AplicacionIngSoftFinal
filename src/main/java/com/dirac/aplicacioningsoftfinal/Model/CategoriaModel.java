@@ -1,7 +1,10 @@
 package com.dirac.aplicacioningsoftfinal.Model;
 
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -17,7 +20,13 @@ import java.util.Map;
 
 public class CategoriaModel {
     @Id
-    private String _id;
+    private ObjectId _id;
+
+    @JsonProperty("_id")
+    public String get_idAString() {
+        return _id != null ? _id.toHexString() : null;
+    }
+
     private String nombre;
     private String descripcion;
     private List<Map<String, String>> subcategorias;
