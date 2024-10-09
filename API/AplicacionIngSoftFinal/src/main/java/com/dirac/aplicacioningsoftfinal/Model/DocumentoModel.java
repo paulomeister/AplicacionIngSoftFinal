@@ -56,6 +56,7 @@ public class DocumentoModel {
     @Data
     public static class Autores {
         private ObjectId usuarioId; 
+        private Boolean estaRegistrado;
 
         @JsonProperty("usuarioId")
         public String getUsuarioIdAsString() {
