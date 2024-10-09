@@ -16,7 +16,7 @@ import java.util.Optional;
 public interface IDocumentoRepository extends MongoRepository<DocumentoModel, ObjectId> {
 
     @Query(value = "{ '_id': ?0 }", fields = "{'_id': 0, 'urlArchivo': 1, 'visibilidad': 1}")
-    Optional<UrlDTO> findUrlArchivoById(String id);
+    Optional<UrlDTO> findUrlArchivoById(ObjectId id);
 
     @Query("{_id : '?0'}")
     Optional<DocumentoModel> findDocumentByID(ObjectId _id);

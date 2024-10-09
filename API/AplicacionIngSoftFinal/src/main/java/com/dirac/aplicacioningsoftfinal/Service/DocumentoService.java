@@ -4,17 +4,32 @@ import com.dirac.aplicacioningsoftfinal.DTO.BusquedaFiltroDTO;
 import com.dirac.aplicacioningsoftfinal.DTO.OrdenDTO;
 import com.dirac.aplicacioningsoftfinal.DTO.BusquedaOrdenarFiltrarDTO;
 import com.dirac.aplicacioningsoftfinal.DTO.UrlDTO;
+import com.dirac.aplicacioningsoftfinal.Exception.CreationException;
+import com.dirac.aplicacioningsoftfinal.Exception.DeleteException;
+import com.dirac.aplicacioningsoftfinal.Exception.IdNotFoundException;
+import com.dirac.aplicacioningsoftfinal.Exception.InvalidVisibilityException;
 import com.dirac.aplicacioningsoftfinal.Exception.NoSuchDocumentFoundException;
+import com.dirac.aplicacioningsoftfinal.Exception.UpdateException;
 import com.dirac.aplicacioningsoftfinal.Model.DocumentoModel;
+import com.dirac.aplicacioningsoftfinal.Model.DocumentoModel.DatosComputados;
 import com.dirac.aplicacioningsoftfinal.Repository.IDocumentoRepository;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.view.RedirectView;
 
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -31,7 +46,7 @@ public class DocumentoService implements IDocumentoService {
         this.mongoTemplate = mongoTemplate;
     }
 
-    public UrlDTO recuperarUrlById(String id) {
+    public UrlDTO recuperarUrlById(ObjectId id) {
 
         UrlDTO url = documentoRepository.findUrlArchivoById(id)
                 .orElseThrow(() -> new NoSuchDocumentFoundException(
@@ -176,8 +191,8 @@ public class DocumentoService implements IDocumentoService {
         if (tieneOrden && orden != null && !orden.isEmpty()) {
             List<Sort.Order> orders = new ArrayList<>();
             for (OrdenDTO ordenDTO : orden) {
-                String campo = ordenDTO.getCampo(); 
-                String direccion = ordenDTO.getDireccion(); 
+                String campo = ordenDTO.getCampo();
+                String direccion = ordenDTO.getDireccion();
                 if (campo != null && !campo.isEmpty()
                         && (direccion.equalsIgnoreCase("asc") || direccion.equalsIgnoreCase("desc"))) {
                     Sort.Direction sortDirection = direccion.equalsIgnoreCase("asc") ? Sort.Direction.ASC
@@ -264,6 +279,126 @@ public class DocumentoService implements IDocumentoService {
         }
 
         return documents;
+    }
+
+    public ResponseEntity<?> downloadDocumentById(ObjectId id) throws Exception {
+        UrlDTO resultado = recuperarUrlById(id);
+        String visibilidad = resultado.getVisibilidad();
+
+        if (visibilidad.equals("publico")) {
+            DocumentoModel document = getDocument(id);
+            updateDownloadStats(document);
+
+            String url = resultado.getUrlArchivo();
+            URL castedUrl = new URL(url);
+            URLConnection connection = castedUrl.openConnection();
+            InputStream inputStream = connection.getInputStream();
+
+            String nombreArchivo = url.substring(url.lastIndexOf("/") + 1);
+            HttpHeaders headers = new HttpHeaders();
+            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; nombre=" + nombreArchivo);
+
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .contentType(MediaType.APPLICATION_PDF)
+                    .body(new InputStreamResource(inputStream));
+        }
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(String.format("El documento con id \"%s\" no se encuentra disponible para descargar", id));
+    }
+
+    public RedirectView downloadDocumentByTitle(String titulo) throws Exception {
+        DocumentoModel document = getDocumentByTitle(titulo);
+        if (!document.getVisibilidad().equals("publico")) {
+            throw new InvalidVisibilityException();
+        }
+
+        updateDownloadStats(document);
+        return new RedirectView(document.getUrlArchivo());
+    }
+
+    public void updateDownloadStats(DocumentoModel document) {
+        DatosComputados datosComputados = document.getDatosComputados();
+        long descargasTotales = datosComputados.getDescargasTotales() + 1;
+        double valoracionPromedio = datosComputados.getValoracionPromedio();
+        long comentariosTotales = datosComputados.getComentariosTotales();
+
+        document.setDatosComputados(new DatosComputados(descargasTotales, valoracionPromedio, comentariosTotales));
+        documentoRepository.save(document);
+    }
+
+    @Override
+    public String createDocument(DocumentoModel documento) {
+        try {
+            documentoRepository.save(documento);
+            return "El documento con _id: " + documento.get_id() + " fue guardado con éxito";
+        } catch (Error e) {
+            throw new CreationException("documento");
+        }
+    }
+
+    @Override
+    public String updateDocument(ObjectId idDocumentoAntiguo, DocumentoModel documentoNuevo) {
+
+        try {
+
+            DocumentoModel documentoAntiguo = documentoRepository.findById(idDocumentoAntiguo)
+                    .orElseThrow(() -> new IdNotFoundException("No se pudo hallar un documento con ese id"));
+
+            // Each attribute is kept on
+            if (documentoNuevo.getAutores() != null)
+                documentoAntiguo.setAutores(documentoNuevo.getAutores());
+
+            if (documentoNuevo.getDatosComputados() != null)
+                documentoAntiguo.setDatosComputados(documentoNuevo.getDatosComputados());
+
+            if (documentoNuevo.getDescripcion() != null)
+                documentoAntiguo.setDescripcion(documentoNuevo.getDescripcion());
+
+            if (documentoNuevo.getFechaSubida() != null)
+                documentoAntiguo.setFechaSubida(documentoNuevo.getFechaSubida());
+
+            if (documentoNuevo.getIdioma() != null)
+                documentoAntiguo.setIdioma(documentoNuevo.getIdioma());
+
+            if (documentoNuevo.getKeywords() != null)
+                documentoAntiguo.setKeywords(documentoNuevo.getKeywords());
+
+            if (documentoNuevo.getTitulo() != null)
+                documentoAntiguo.setTitulo(documentoNuevo.getTitulo());
+
+            if (documentoNuevo.getUrlArchivo() != null)
+                documentoAntiguo.setUrlArchivo(documentoNuevo.getUrlArchivo());
+
+            if (documentoNuevo.getValoraciones() != null)
+                documentoAntiguo.setValoraciones(documentoNuevo.getValoraciones());
+
+            if (documentoNuevo.getVisibilidad() != null)
+                documentoAntiguo.setVisibilidad(documentoNuevo.getVisibilidad());
+
+            // Document is saved
+            documentoRepository.save(documentoAntiguo);
+
+            return "El documento con _id " + documentoAntiguo.get_id() + " fue actualizado con éxito";
+
+        } catch (Error e) {
+            throw new UpdateException("documento\n" + e.getMessage());
+        }
+
+    }
+
+    @Override
+    public String deleteDocument(ObjectId _id) {
+        try {
+            documentoRepository.deleteById(_id);
+
+            return "El documento con _id " + _id + "fue eliminado con éxito.";
+
+        } catch (Exception e) {
+            throw new DeleteException("documento\n" + e.getMessage());
+
+        }
     }
 
 }
