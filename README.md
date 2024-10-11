@@ -3,6 +3,21 @@
 i- Use la rama master para clonar el repositorio y realizar commits o pull requests. <br/>
 ii- Edite la connection string en application.properties para conectar con su propia instancia local de MongoDB o, en su defecto, conectarlo directamente al cluster de Mongo Atlas.
 
+## Correr el cliente
+1- Cambiar a la carpeta:
+```
+cd ./Client/doctic
+```
+
+1- Ejecutar #npm install:
+```
+npm install
+```
+
+2- Posterior a eso, hacer:
+```
+npm run dev
+```
 
 ## Configuración del proyecto
 
