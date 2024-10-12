@@ -2,8 +2,8 @@
 // TODO: Reduce workload of the component
 
 import { useEffect, useState } from 'react';
-import { DocBasicInfo } from 'app/app/components/DocBasicInfo';
-import { PdfViewer } from 'app/app/components/PdfViewer';
+import { DocBasicInfo } from './components/DocBasicInfo';
+import { PdfViewer } from './components/PdfViewer';
 
 export default function Page({params}) {
   const id = params.id;
@@ -39,6 +39,7 @@ export default function Page({params}) {
       visibility={data.visibilidad}
       category={data.categoria}
       authors={data.autores}
+      date={data.fechaSubida}
     />
     <PdfViewer url={data.urlArchivo}/>
     </>

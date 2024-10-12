@@ -1,0 +1,81 @@
+.basicInfo {
+  padding: 6px;
+  min-width: 100%;
+}
+
+
+.title {
+  font-size: 1.75rem;
+  font-weight: bold;
+  margin-bottom: 2px;
+}
+
+.authorText {
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.authorTextReg {
+  color: #1a73e8;
+  text-decoration: underline;
+}
+
+.authorTextUnReg {
+  color: gray;
+  cursor: default;
+}
+
+.dateInfo {
+  font-size: 1rem;
+  margin-bottom: 0.2rem;
+}
+
+.dateInfo::first-letter {
+  text-transform: capitalize;
+}
+
+.descriptionTitle {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.descriptionText {
+  font-size: 0.875rem;
+  color: #4a4a4a;
+}
+
+.visibilityContainer {
+  margin-top: 1rem;
+}
+
+.visibility {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+}
+
+.public {
+  background-color: #22c55e;
+  color: white;
+}
+
+.private {
+  background-color: #f87171;
+  color: white;
+}
+
+.categoriesContainer {
+  margin-top: 0.5rem;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.categoryBadge {
+  background-color: #e5e7eb;
+  color: black;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+}
