@@ -308,7 +308,7 @@ public class DocumentoService implements IDocumentoService {
                 .body(String.format("El documento con id \"%s\" no se encuentra disponible para descargar", id));
     }
 
-    public RedirectView downloadDocumentByTitle(String titulo) throws Exception {
+    public RedirectView downloadDocumentByTitle(String titulo) {
         DocumentoModel document = getDocumentByTitle(titulo);
         if (!document.getVisibilidad().equals("publico")) {
             throw new InvalidVisibilityException();
