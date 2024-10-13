@@ -1,6 +1,4 @@
 import React from 'react';
-import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
-import Tooltip from 'react-bootstrap/Tooltip';
 import styles from '../document.module.css';
 import { formatDate } from '../../../utils/dateUtils';
 
@@ -12,6 +10,7 @@ export const DocBasicInfo = ({ title, description, visibility, category, authors
       <h1 className={styles.title}>{title}</h1>
 
       {/* Authors */}
+      {/* TODO: quit the commas if there's nothing in the name and also, the last comma */}
       <a href='#' className={styles.authorText}>
         {authors.map((aut, index) => (
           <span id={index} key={index} className={aut.estaRegistrado ? styles.authorTextReg : styles.authorTextUnReg}>

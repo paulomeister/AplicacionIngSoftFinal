@@ -1,4 +1,4 @@
-import { SpecialZoomLevel, Viewer, Worker } from '@react-pdf-viewer/core';
+import { Viewer, Worker } from '@react-pdf-viewer/core';
 import { defaultLayoutPlugin } from '@react-pdf-viewer/default-layout';
 
 // Import styles
@@ -28,19 +28,19 @@ export const PdfViewer = ({ url }) => {
     const defaultLayoutPluginInstance = defaultLayoutPlugin({
         renderToolbar,
         sidebarTabs: (defaultTabs) => [
-            // Remove the attachments tab and Bookmarks tab (\`defaultTabs[2]\ defaultTabs[1] \`)
+            // Remove the attachments tab (\`defaultTabs[2]\`)
             defaultTabs[0], // Thumbnails tab
-            defaultTabs[1] 
+            defaultTabs[1] // Bookmarks tab
         ],
     });
 
-    const { renderDefaultToolbar, Toolbar } = defaultLayoutPluginInstance.toolbarPluginInstance;
+    const { renderDefaultToolbar } = defaultLayoutPluginInstance.toolbarPluginInstance;
 
     return (
         <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.js">
             <div style={{ height: '750px' }}>
                 <Viewer
-                    fileUrl={`/api/proxy?urlArchivo=${encodeURIComponent(url)}`} // Sin comillas y URL codificada
+                    fileUrl={`/api/proxy?urlArchivo=${encodeURIComponent(url)}`}
                     plugins={[ defaultLayoutPluginInstance ]}
                 />
             </div>

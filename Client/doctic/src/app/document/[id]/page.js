@@ -32,7 +32,6 @@ export default function Page({params}) {
 
   return (
     <>
-    {/* TODO: Implement the a correct layout for this view*/}
     <DocBasicInfo
       title={data.titulo}
       description={data.descripcion}
