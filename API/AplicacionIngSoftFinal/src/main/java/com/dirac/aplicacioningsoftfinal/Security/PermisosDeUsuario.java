@@ -1,12 +1,11 @@
 package com.dirac.aplicacioningsoftfinal.Security;
 
+import lombok.Getter;
+
+@Getter
 public enum PermisosDeUsuario {
 
-
-    USUARIO_CREA("usuario:crea"),
-    USUARIO_ELIMINA("usuario:elimina"),
-    USUARIO_ACTUALIZA("usuario:actualiza"),
-    USUARIO_BORRA("usuario:borra"),
+    USUARIO_GENERAL("usuario:general"),
     ADMIN_GESTIONA("admin:gestiona");
 
 
