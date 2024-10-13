@@ -198,9 +198,9 @@ public class DocumentoController {
     }
 
     @GetMapping("/getByLenguage/{idioma}")
-    public ResponseEntity<?> findDocumentsByLenguage(@PathVariable("idioma") String idioma) {
+    public ResponseEntity<?> findDocumentsByLanguage(@PathVariable("idioma") String idioma) {
         try {
-            List<DocumentoModel> documents = documentoService.getDocumentsByLenguage(idioma);
+            List<DocumentoModel> documents = documentoService.getDocumentsByLanguage(idioma);
             return new ResponseEntity<>(documents, HttpStatus.OK);
         } catch (NoSuchDocumentFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());

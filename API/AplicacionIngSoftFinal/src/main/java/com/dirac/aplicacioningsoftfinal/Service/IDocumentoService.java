@@ -25,7 +25,7 @@ public interface IDocumentoService {
 
     List<DocumentoModel> getDocumentsByAutorUsuarioname(String nombreAutor);
 
-    List<DocumentoModel> getDocumentsByLenguage(String idioma);
+    List<DocumentoModel> getDocumentsByLanguage(String idioma);
 
     String createDocument(DocumentoModel documento);
 

@@ -37,7 +37,7 @@ public interface IDocumentoRepository extends MongoRepository<DocumentoModel, Ob
     List<DocumentoModel> findDocumentsByAutorUsuarioname(String nombreAutor);
 
     @Query("{ 'idioma': ?0 }")
-    List<DocumentoModel> findDocumentsByLenguage(String idioma);
+    List<DocumentoModel> findDocumentsByLanguage(String idioma);
 
 
 

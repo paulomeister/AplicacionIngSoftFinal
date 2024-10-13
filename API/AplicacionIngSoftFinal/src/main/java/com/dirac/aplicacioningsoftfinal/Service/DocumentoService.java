@@ -269,9 +269,9 @@ public class DocumentoService implements IDocumentoService {
         return documents;
     }
 
-    public List<DocumentoModel> getDocumentsByLenguage(String idioma) {
+    public List<DocumentoModel> getDocumentsByLanguage(String idioma) {
 
-        List<DocumentoModel> documents = documentoRepository.findDocumentsByLenguage(idioma);
+        List<DocumentoModel> documents = documentoRepository.findDocumentsByLanguage(idioma);
 
         if (documents.isEmpty()) {
             throw new NoSuchDocumentFoundException(
