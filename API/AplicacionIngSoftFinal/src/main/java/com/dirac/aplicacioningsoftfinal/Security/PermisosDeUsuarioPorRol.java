@@ -12,7 +12,6 @@ public enum PermisosDeUsuarioPorRol {
     USUARIO,
     ADMIN;
 
-
     public Set<SimpleGrantedAuthority> getGrantedAuthorities() {
 
         Set<SimpleGrantedAuthority> simpleGrantedAuthorities = Sets.newHashSet();
