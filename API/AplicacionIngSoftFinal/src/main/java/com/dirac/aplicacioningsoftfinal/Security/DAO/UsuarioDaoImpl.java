@@ -1,7 +1,7 @@
-package com.dirac.aplicacioningsoftfinal.Service;
+package com.dirac.aplicacioningsoftfinal.Security.DAO;
 
-import com.dirac.aplicacioningsoftfinal.Security.DAO.IUsuarioDao;
 import com.dirac.aplicacioningsoftfinal.Security.UsuarioAplicacion;
+import com.dirac.aplicacioningsoftfinal.Service.ICredencialesService;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
