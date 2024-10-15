@@ -47,7 +47,7 @@ public class SecurityConfiguration {
                 .addFilterAfter(new JwtTokenVerifier(secretKey, jwtConfigurationVariables), CustomUsernameAndPasswordAuthenticationFilter.class)
                 .authorizeHttpRequests((authz) -> authz
 
-                        .requestMatchers("/","index.html", "/css/**","/js/**")
+                        .requestMatchers("/","index.html", "/css/**","/js/**", "/registrarse")
                         .permitAll()
 
                         .requestMatchers("/api/Documentos/id/*/download")
