@@ -131,6 +131,36 @@ public class DocumentoController {
         }
     }
 
+    @GetMapping("/recent")
+    public ResponseEntity<?> getRecentDocuments() {
+        try {
+            List<DocumentoModel> documents = documentoService.getRecentDocuments();
+            return new ResponseEntity<>(documents, HttpStatus.OK);
+        } catch (NoSuchDocumentFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/top-rated")
+    public ResponseEntity<?> getTopRatedDocuments() {
+        try {
+            List<DocumentoModel> documents = documentoService.getTopRatedDocuments();
+            return new ResponseEntity<>(documents, HttpStatus.OK);
+        } catch (NoSuchDocumentFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/most-downloaded")
+    public ResponseEntity<?> getMostDownloadedDocuments() {
+        try {
+            List<DocumentoModel> documents = documentoService.getMostDownloadedDocuments();
+            return new ResponseEntity<>(documents, HttpStatus.OK);
+        } catch (NoSuchDocumentFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
+
     @GetMapping("/getByKeywords/{keywords}")
     public ResponseEntity<?> findDocumentByKeyword(@PathVariable("keywords") String keywords) {
 

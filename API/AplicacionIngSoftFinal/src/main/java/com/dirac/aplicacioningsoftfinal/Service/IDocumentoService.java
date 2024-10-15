@@ -27,6 +27,12 @@ public interface IDocumentoService {
 
     List<DocumentoModel> getDocumentsByLenguage(String idioma);
 
+    List<DocumentoModel> getRecentDocuments();
+
+    List<DocumentoModel> getTopRatedDocuments();
+
+    List<DocumentoModel> getMostDownloadedDocuments();
+
     String createDocument(DocumentoModel documento);
 
     String updateDocument(ObjectId idDocumentoAntiguo, DocumentoModel documentoNuevo);
