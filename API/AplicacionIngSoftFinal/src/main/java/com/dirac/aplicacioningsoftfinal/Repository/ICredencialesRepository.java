@@ -10,7 +10,7 @@ import java.util.Optional;
 @Repository
 public interface ICredencialesRepository extends MongoRepository<CredencialesModel, String> {
 
-    @Query("{'username': '?0'}")
+    @Query("{'username': {$regex: ?0, $options:  'i'}}")
     Optional<CredencialesModel> findCredencialesByUsername(String username);
 
 }
