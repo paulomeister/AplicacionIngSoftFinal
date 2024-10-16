@@ -33,6 +33,14 @@ public interface IDocumentoService {
 
     String insertDocument(DocumentoModel documento);
 
+    List<DocumentoModel> getRecentDocuments();
+
+    List<DocumentoModel> getTopRatedDocuments();
+
+    List<DocumentoModel> getMostDownloadedDocuments();
+
+    String createDocument(DocumentoModel documento);
+
     String updateDocument(ObjectId idDocumentoAntiguo, DocumentoModel documentoNuevo);
 
     String deleteDocument(ObjectId _id);

@@ -32,6 +32,8 @@ import java.util.Collections;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -364,6 +366,40 @@ public class DocumentoService implements IDocumentoService {
 
         return documents;
     }
+    public List<DocumentoModel> getRecentDocuments() {
+        
+        Pageable pageable = PageRequest.of(0, 5);
+        List<DocumentoModel> documents = documentoRepository.findRecentDocuments(pageable);
+    
+        if (documents.isEmpty()) {
+            throw new NoSuchDocumentFoundException("No se encontraron documentos recientes.");
+        }
+    
+        return documents;
+    }
+
+    public List<DocumentoModel> getTopRatedDocuments() {
+        Pageable pageable = PageRequest.of(0, 5);  // Página 0, 5 resultados
+        List<DocumentoModel> documents = documentoRepository.findTopRatedDocuments(pageable);
+    
+        if (documents.isEmpty()) {
+            throw new NoSuchDocumentFoundException("No se encontraron documentos valorados.");
+        }
+    
+        return documents;
+    }
+
+    public List<DocumentoModel> getMostDownloadedDocuments() {
+        Pageable pageable = PageRequest.of(0, 5);  // Página 0, 5 resultados
+        List<DocumentoModel> documents = documentoRepository.findMostDownloadedDocuments(pageable);
+    
+        if (documents.isEmpty()) {
+            throw new NoSuchDocumentFoundException("No se encontraron documentos descargados.");
+        }
+    
+        return documents;
+    }
+
 
     public ResponseEntity<?> downloadDocumentById(ObjectId id) throws Exception {
         UrlDTO resultado = recuperarUrlById(id);
