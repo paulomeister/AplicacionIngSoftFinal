@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static com.dirac.aplicacioningsoftfinal.Model.UsuarioModel.*;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
@@ -17,12 +19,13 @@ public class UsuarioDTO {
     private String username;
     private String email;
     private PerfilDTO perfil;
-    private List<Map<String, String>> docSubidos;
+    private List<DocsSubidos> docSubidos;
 
     public static UsuarioDTO fromUsuarioModel(UsuarioModel usuario) {
 
-        PerfilDTO perfilExtraido = extraerPerfil(usuario.getPerfil());
-        List<Map<String, String>> docSubidosExtraidos = extraerDocumentosSubidos(usuario.getDocSubidos());
+        PerfilDTO perfilExtraido = extraerPerfil((Map<String, String>) usuario.getPerfil());
+
+        List<DocsSubidos> docSubidosExtraidos = usuario.getDocSubidos();
 
         return new UsuarioDTO(
                 usuario.getUsername(),
@@ -38,10 +41,12 @@ public class UsuarioDTO {
                 perfil.get("fotoPerfil"));
     }
 
+    // TODO: check this method
     private static List<Map<String, String>> extraerDocumentosSubidos(List<Map<String, String>> docSubidos) {
         return docSubidos.stream()
                 .map(doc -> doc.entrySet().stream()
                         .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)))
                 .collect(Collectors.toList());
     }
+
 }
