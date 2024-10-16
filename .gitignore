@@ -73,3 +73,6 @@ yarn-error.log*
 next-env.d.ts
 
 application.properties
+
+cred.json
+

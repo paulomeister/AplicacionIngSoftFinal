@@ -4,6 +4,10 @@ import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import com.dirac.aplicacioningsoftfinal.DTO.DocDescargadosDTO;
+import com.dirac.aplicacioningsoftfinal.DTO.DocSubidosDTO;
+import com.dirac.aplicacioningsoftfinal.DTO.HistorialDocumentosDTO;
+import com.dirac.aplicacioningsoftfinal.DTO.PerfilDTO;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;
@@ -30,12 +34,10 @@ public class UsuarioModel {
 
     private String username;
     private String email;
-    private List<Map<String, String>> credenciales;
-    private Map<String, String> perfil;
-    private Map<String, String> preguntaSeguridad;
+    private PerfilDTO perfil;
     private boolean esAdmin;
     private LocalDate fechaRegistro;
-    private List<Map<String, String>> docSubidos;
-    private List<Map<String, String>> historialDocumentos;
-    private List<Map<String, String>> docDescargados;
+    private List<DocSubidosDTO> docSubidos;
+    private List<HistorialDocumentosDTO> historialDocumentos;
+    private List<DocDescargadosDTO> docDescargados;
 }
