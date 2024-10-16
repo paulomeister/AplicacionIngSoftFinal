@@ -1,7 +1,6 @@
 package com.dirac.aplicacioningsoftfinal.Controller;
-
-import com.dirac.aplicacioningsoftfinal.DTO.UsuarioDTO;
 import com.dirac.aplicacioningsoftfinal.Exception.UsuarioNotFoundException;
+import com.dirac.aplicacioningsoftfinal.Model.UsuarioModel;
 import com.dirac.aplicacioningsoftfinal.Service.IUsuarioService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,17 +19,17 @@ public class UsuarioController {
 
     @GetMapping("/id/{id}")
     public ResponseEntity<?> getUserById(@PathVariable("id") String id) {
-        UsuarioDTO usuarioDTO = usuarioService.getUserById(id)
+        UsuarioModel usuario = usuarioService.getUserById(id)
                 .orElseThrow(() -> new UsuarioNotFoundException("Este ID de Usuario no existe"));
 
-        return ResponseEntity.ok(usuarioDTO);
+        return ResponseEntity.ok(usuario);
     }
 
     @GetMapping("/getByUsername/{username}")
-    public ResponseEntity<?> getUserByUserName(@PathVariable("username") String userName) {
-        UsuarioDTO usuarioDTO = usuarioService.getUserByUserName(userName)
+    public ResponseEntity<?> getUserByUserName(@PathVariable("username") String username) {
+        UsuarioModel usuario= usuarioService.getUserByUsername(username)
                 .orElseThrow(() -> new UsuarioNotFoundException("Este Usuario no existe"));
 
-        return ResponseEntity.ok(usuarioDTO);
+        return ResponseEntity.ok(usuario);
     }
 }
