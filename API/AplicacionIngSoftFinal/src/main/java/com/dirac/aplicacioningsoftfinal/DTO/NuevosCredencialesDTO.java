@@ -13,7 +13,21 @@ import static com.dirac.aplicacioningsoftfinal.Model.CredencialesModel.*;
 public class NuevosCredencialesDTO {
 
     private String username;
+    private String email;
+    private Perfil perfil;
     private String password;
     private PreguntaSeguridad preguntaSeguridad;
+
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Data
+    public static class Perfil {
+
+        private String nombre;
+        private String apellido;
+        private String fotoPerfil;
+
+
+    }
 
 }
