@@ -7,5 +7,6 @@ public interface ICredencialesService {
 
     UsuarioAplicacion mapCredentialsFromDatabase(String username);
     void crearNuevasCredenciales(NuevosCredencialesDTO usuarioEntrante);
+    void crearNuevoUsuario(NuevosCredencialesDTO usuarioEntrante);
 
 }
