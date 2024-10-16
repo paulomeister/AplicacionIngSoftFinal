@@ -47,6 +47,7 @@ public class SecurityConfiguration {
                 .addFilterAfter(new JwtTokenVerifier(secretKey, jwtConfigurationVariables), CustomUsernameAndPasswordAuthenticationFilter.class)
                 .authorizeHttpRequests((authz) -> authz
 
+                        // TODO: check for excluded routes included in anyRequest(). Secure specific endpoints and exclude in general
                         .requestMatchers("/","index.html", "/css/**","/js/**", "/registrarse")
                         .permitAll()
 
@@ -54,7 +55,7 @@ public class SecurityConfiguration {
                         .hasAnyRole(ADMIN.name(), USUARIO.name())
 
                         .anyRequest()
-                        .authenticated()
+                        .permitAll()
                 );
 
         return http.build();
