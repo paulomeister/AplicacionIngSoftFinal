@@ -1,11 +1,13 @@
 package com.dirac.aplicacioningsoftfinal.Controller;
 
+import com.dirac.aplicacioningsoftfinal.DTO.CambiarPasswordDTO;
 import com.dirac.aplicacioningsoftfinal.DTO.NuevosCredencialesDTO;
-import com.dirac.aplicacioningsoftfinal.Exception.UserAlreadyExistsException;
+import com.dirac.aplicacioningsoftfinal.Exception.*;
 import com.dirac.aplicacioningsoftfinal.Service.ICredencialesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import static java.lang.String.*;
@@ -39,6 +41,30 @@ public class CredencialesController {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
 
         }
+
+    }
+
+    @PostMapping("password/change")
+    @PreAuthorize("hasAnyRole('ROLE_USUARIO', 'ROL_ADMIN')")
+    public ResponseEntity<?> cambiarPassword(@RequestBody CambiarPasswordDTO cambiarPasswordDTO) {
+
+        try {
+
+            String respuesta = credencialesService.cambiarPassword(cambiarPasswordDTO);
+            return new ResponseEntity<String>(respuesta, HttpStatus.OK);
+
+        }
+        catch(InvalidPasswordSettingsException | PasswordAlreadyUsedException e) {
+
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+
+        }
+        catch(UsuarioNotFoundException | ActivePasswordNotFoundException e) {
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+
+        }
+
 
     }
 

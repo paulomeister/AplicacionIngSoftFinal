@@ -1,15 +1,18 @@
 package com.dirac.aplicacioningsoftfinal.Service;
 
+import com.dirac.aplicacioningsoftfinal.DTO.CambiarPasswordDTO;
 import com.dirac.aplicacioningsoftfinal.DTO.NuevosCredencialesDTO;
-import com.dirac.aplicacioningsoftfinal.Exception.NoRoleSpecifiedException;
-import com.dirac.aplicacioningsoftfinal.Exception.UserAlreadyExistsException;
+import com.dirac.aplicacioningsoftfinal.Exception.*;
 import com.dirac.aplicacioningsoftfinal.Model.CredencialesModel;
 import com.dirac.aplicacioningsoftfinal.Model.UsuarioModel;
 import com.dirac.aplicacioningsoftfinal.Repository.ICredencialesRepository;
 import com.dirac.aplicacioningsoftfinal.Repository.IUsuarioRepository;
 import com.dirac.aplicacioningsoftfinal.Security.UsuarioAplicacion;
+import com.google.common.base.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -171,5 +174,77 @@ public class CredencialesService implements ICredencialesService {
 
     }
 
+    @Transactional
+    public String cambiarPassword(CambiarPasswordDTO nuevosCredenciales) throws InvalidPasswordSettingsException,
+                                                                              UsuarioNotFoundException,
+                                                                              PasswordAlreadyUsedException,
+                                                                              ActivePasswordNotFoundException {
+
+        String passwordActual = nuevosCredenciales.getPasswordActual();
+        String nuevoPassword = nuevosCredenciales.getPasswordNuevo();
+
+
+        if (Strings.isNullOrEmpty(passwordActual) || Strings.isNullOrEmpty(nuevoPassword)) {
+
+            throw new InvalidPasswordSettingsException("Los campos de contraseñas no pueden estar vacíos");
+
+        }
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        String username = auth.getName();
+
+        CredencialesModel usuario = credencialesRepository.
+                findCredencialesByUsername(username).
+                orElseThrow(() -> new UsuarioNotFoundException(String.format("El usuario \"%s\" no se encuentra en la base de datos! Error fatal", username)));
+
+        String passwordAlmacenado = usuario.getPassword();
+
+        if(!passwordEncoder.matches(passwordActual, passwordAlmacenado)) {
+
+            throw new InvalidPasswordSettingsException("La contraseña actual no coincide con la contraseña registrada");
+
+        }
+
+        List<Credenciales> credenciales = usuario.getCredenciales();
+
+        for(Credenciales c : credenciales) {
+
+            boolean coincidencia = passwordEncoder.matches(nuevoPassword, c.getPassword());
+
+            if(coincidencia) {
+
+                throw new PasswordAlreadyUsedException("La contraseña nueva ingresada ya ha sido usada anteriormente");
+
+            }
+
+        }
+
+        Credenciales credencialActivo = credenciales
+                .stream()
+                .filter((credencial) -> credencial.isEstado())
+                .findFirst()
+                .orElseThrow(() -> new ActivePasswordNotFoundException(String.format("El usuario \"%s\" no tiene contraseñas activas en sus credenciales. Error fatal", username)));
+
+        credencialActivo.setEstado(false);
+
+        String newHashedPassword = passwordEncoder.encode(nuevoPassword);
+
+        usuario.setPassword(newHashedPassword);
+
+        Credenciales newCredentials = new Credenciales(
+
+                newHashedPassword,
+                true
+
+        );
+
+        credenciales.add(newCredentials);
+
+        credencialesRepository.save(usuario);
+
+        return "La contraseña fue cambiada satisfactoriamente!";
+
+    }
 
 }
