@@ -13,6 +13,8 @@ import lombok.Data;
 import java.time.LocalDate;
 import java.util.List;
 
+import static com.dirac.aplicacioningsoftfinal.DTO.NuevosCredencialesDTO.*;
+
 @Document(collection = "Usuarios")
 @AllArgsConstructor
 @NoArgsConstructor
@@ -81,18 +83,6 @@ public class UsuarioModel {
         public String returnIdAsString() {
             return documentoId != null ? documentoId.toHexString() : null;
         }
-
-    }
-
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @Data
-    public static class Perfil {
-
-        private String nombre;
-        private String apellido;
-        private String fotoPerfil;
-
 
     }
 
