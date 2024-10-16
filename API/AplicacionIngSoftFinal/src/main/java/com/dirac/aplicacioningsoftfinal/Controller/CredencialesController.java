@@ -28,6 +28,9 @@ public class CredencialesController {
         try {
 
             credencialesService.crearNuevasCredenciales(credencialesDTO);
+
+            credencialesService.crearNuevoUsuario(credencialesDTO);
+
             return ResponseEntity.ok().body(format("El usuario \"%s\" fue agregado con éxito a la base de datos", credencialesDTO.getUsername()));
 
         }
