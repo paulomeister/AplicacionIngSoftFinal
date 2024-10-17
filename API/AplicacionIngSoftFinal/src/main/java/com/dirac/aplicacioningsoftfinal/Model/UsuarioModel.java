@@ -4,10 +4,6 @@ import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import com.dirac.aplicacioningsoftfinal.DTO.DocDescargadosDTO;
-import com.dirac.aplicacioningsoftfinal.DTO.DocSubidosDTO;
-import com.dirac.aplicacioningsoftfinal.DTO.HistorialDocumentosDTO;
-import com.dirac.aplicacioningsoftfinal.DTO.PerfilDTO;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;
@@ -16,7 +12,8 @@ import lombok.Data;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
+
+import static com.dirac.aplicacioningsoftfinal.DTO.NuevosCredencialesDTO.*;
 
 @Document(collection = "Usuarios")
 @AllArgsConstructor
@@ -34,10 +31,59 @@ public class UsuarioModel {
 
     private String username;
     private String email;
-    private PerfilDTO perfil;
+    private Perfil perfil;
     private boolean esAdmin;
     private LocalDate fechaRegistro;
-    private List<DocSubidosDTO> docSubidos;
-    private List<HistorialDocumentosDTO> historialDocumentos;
-    private List<DocDescargadosDTO> docDescargados;
+    private List<DocsSubidos> docSubidos;
+    private List<Historial> historialDocumentos;
+    private List<Descargados> docDescargados;
+
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Data
+    public static class DocsSubidos {
+
+        @Id
+        private ObjectId documentoId;
+        private String titulo;
+
+        @JsonProperty("documentoId")
+        public String returnIdAsString() {
+            return documentoId != null ? documentoId.toHexString() : null;
+        }
+
+    }
+
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Data
+    public static class Historial {
+
+        @Id
+        private ObjectId documentoId;
+        private LocalDate fechaHora;
+
+        @JsonProperty("documentoId")
+        public String returnIdAsString() {
+            return documentoId != null ? documentoId.toHexString() : null;
+        }
+
+    }
+
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Data
+    public static class Descargados {
+
+        @Id
+        private ObjectId documentoId;
+        private LocalDate fechaHora;
+
+        @JsonProperty("documentoId")
+        public String returnIdAsString() {
+            return documentoId != null ? documentoId.toHexString() : null;
+        }
+
+    }
+
 }

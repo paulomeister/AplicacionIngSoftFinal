@@ -2,8 +2,6 @@ package com.dirac.aplicacioningsoftfinal.Controller;
 
 import com.dirac.aplicacioningsoftfinal.DTO.BusquedaFiltroDTO;
 import com.dirac.aplicacioningsoftfinal.DTO.BusquedaOrdenarFiltrarDTO;
-import com.dirac.aplicacioningsoftfinal.DTO.DocDescargadosDTO;
-import com.dirac.aplicacioningsoftfinal.DTO.HistorialDocumentosDTO;
 import com.dirac.aplicacioningsoftfinal.DTO.Res;
 import com.dirac.aplicacioningsoftfinal.Exception.CreationException;
 import com.dirac.aplicacioningsoftfinal.Exception.DeleteException;
@@ -13,7 +11,6 @@ import com.dirac.aplicacioningsoftfinal.Exception.UsuarioNotFoundException;
 import com.dirac.aplicacioningsoftfinal.Model.DocumentoModel;
 import com.dirac.aplicacioningsoftfinal.Model.UsuarioModel;
 import com.dirac.aplicacioningsoftfinal.Model.DocumentoModel.DatosComputados;
-import com.dirac.aplicacioningsoftfinal.Repository.IDocumentoRepository;
 import com.dirac.aplicacioningsoftfinal.Service.IDocumentoService;
 import com.dirac.aplicacioningsoftfinal.Service.IUsuarioService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -32,7 +29,10 @@ import java.security.GeneralSecurityException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
+
+import static com.dirac.aplicacioningsoftfinal.Model.UsuarioModel.*;
 
 @RestController
 @RequestMapping("/api/Documentos")
@@ -40,17 +40,15 @@ import java.util.stream.Collectors;
 public class DocumentoController {
 
     private final IDocumentoService documentoService;
+    private final IUsuarioService usuarioService;
 
     @Autowired
-    public DocumentoController(IDocumentoService documentoService) {
+    public DocumentoController(IDocumentoService documentoService, IUsuarioService usuarioService) {
         this.documentoService = documentoService;
+        this.usuarioService = usuarioService;
     }
 
-    @Autowired
-    IDocumentoRepository documentoRepository;
 
-    @Autowired 
-    IUsuarioService usuarioService;
 
     ////////////////////////////////////////// DRIVE
     ////////////////////////////////////////// //////////////////////////////////////////
@@ -72,7 +70,7 @@ public class DocumentoController {
         // Sube el Documento a Drive
         String res = documentoService.uploadImageToDrive(file);
 
-        if (res != "ERROR") {
+        if (!Objects.equals(res, "ERROR")) {
             return ResponseEntity.ok(res);
         } else {
             return ResponseEntity.status(500).body(res);
@@ -116,14 +114,14 @@ public class DocumentoController {
              UsuarioModel usuarioDownloading = usuarioService.getUserById(userId).orElseThrow(()->new UsuarioNotFoundException("el usuario con el id, no fue encontrado" + userId));
  
              // se actualizará el campo del historial de documentos 
- 
-             HistorialDocumentosDTO nuevoDoc = new HistorialDocumentosDTO();
+
+            Historial nuevoDoc = new Historial();
  
              nuevoDoc.setDocumentoId(documentoDownloading.get_id());
              nuevoDoc.setFechaHora(LocalDate.now());
  
 
-             List<HistorialDocumentosDTO> historialDocumentos = usuarioDownloading.getHistorialDocumentos();
+             List<Historial> historialDocumentos = usuarioDownloading.getHistorialDocumentos();
              historialDocumentos.add(nuevoDoc); // se añade ese nuevo documento
              usuarioDownloading.setHistorialDocumentos(historialDocumentos);   // se lo setea    
  
@@ -180,13 +178,13 @@ public class DocumentoController {
 
             // se actualizará el campo de documentos descargados
 
-            DocDescargadosDTO nuevoDoc = new DocDescargadosDTO();
+            Descargados nuevoDoc = new Descargados();
 
             nuevoDoc.setDocumentoId(documentoDownloading.get_id());
             nuevoDoc.setFechaHora(LocalDate.now());
 
 
-            List<DocDescargadosDTO> docsActualizados = usuarioDownloading.getDocDescargados();
+            List<Descargados> docsActualizados = usuarioDownloading.getDocDescargados();
             docsActualizados.add(nuevoDoc); // se añade ese nuevo documento
             usuarioDownloading.setDocDescargados(docsActualizados);   // se lo setea    
 
@@ -350,10 +348,10 @@ public class DocumentoController {
     }
 
 
-    @GetMapping("/getByLenguage/{idioma}")
-    public ResponseEntity<?> findDocumentsByLenguage(@PathVariable("idioma") String idioma) {
+    @GetMapping("/getByLanguage/{idioma}")
+    public ResponseEntity<?> findDocumentsByLanguage(@PathVariable("idioma") String idioma) {
         try {
-            List<DocumentoModel> documents = documentoService.getDocumentsByLenguage(idioma);
+            List<DocumentoModel> documents = documentoService.getDocumentsByLanguage(idioma);
             return new ResponseEntity<>(documents, HttpStatus.OK);
         } catch (NoSuchDocumentFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());

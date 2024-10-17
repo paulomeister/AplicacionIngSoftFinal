@@ -355,9 +355,9 @@ public class DocumentoService implements IDocumentoService {
         return documents;
     }
 
-    public List<DocumentoModel> getDocumentsByLenguage(String idioma) {
+    public List<DocumentoModel> getDocumentsByLanguage(String idioma) {
 
-        List<DocumentoModel> documents = documentoRepository.findDocumentsByLenguage(idioma);
+        List<DocumentoModel> documents = documentoRepository.findDocumentsByLanguage(idioma);
 
         if (documents.isEmpty()) {
             throw new NoSuchDocumentFoundException(
@@ -428,7 +428,7 @@ public class DocumentoService implements IDocumentoService {
                 .body(String.format("El documento con id \"%s\" no se encuentra disponible para descargar", id));
     }
 
-    public RedirectView downloadDocumentByTitle(String titulo) throws Exception {
+    public RedirectView downloadDocumentByTitle(String titulo) {
         DocumentoModel document = getDocumentByTitle(titulo);
         if (!document.getVisibilidad().equals("publico")) {
             throw new InvalidVisibilityException();

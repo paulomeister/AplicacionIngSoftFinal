@@ -1,4 +1,4 @@
-package com.dirac.aplicacioningsoftfinal.auth_testing;
+package com.dirac.aplicacioningsoftfinal.Security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
