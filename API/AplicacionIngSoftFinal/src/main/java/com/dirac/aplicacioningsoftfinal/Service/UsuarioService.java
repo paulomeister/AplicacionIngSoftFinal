@@ -23,5 +23,11 @@ public class UsuarioService implements IUsuarioService {
         return usuarioRepository.findUserByUserName(username);
     }
 
+    @Override
+    public String insertUser(UsuarioModel usuario) {
+        usuarioRepository.save(usuario);
+        return "El usuario con _id: " + usuario.get_idAString() + "  sido guardado con éxito";
+    }
+
 }
 

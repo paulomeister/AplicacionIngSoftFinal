@@ -11,7 +11,6 @@ import com.dirac.aplicacioningsoftfinal.Exception.UsuarioNotFoundException;
 import com.dirac.aplicacioningsoftfinal.Model.DocumentoModel;
 import com.dirac.aplicacioningsoftfinal.Model.UsuarioModel;
 import com.dirac.aplicacioningsoftfinal.Model.DocumentoModel.DatosComputados;
-import com.dirac.aplicacioningsoftfinal.Repository.IDocumentoRepository;
 import com.dirac.aplicacioningsoftfinal.Service.IDocumentoService;
 import com.dirac.aplicacioningsoftfinal.Service.IUsuarioService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -41,13 +40,11 @@ import static com.dirac.aplicacioningsoftfinal.Model.UsuarioModel.*;
 public class DocumentoController {
 
     private final IDocumentoService documentoService;
-    private final IDocumentoRepository documentoRepository;
     private final IUsuarioService usuarioService;
 
     @Autowired
-    public DocumentoController(IDocumentoService documentoService, IDocumentoRepository documentoRepository, IUsuarioService usuarioService) {
+    public DocumentoController(IDocumentoService documentoService, IUsuarioService usuarioService) {
         this.documentoService = documentoService;
-        this.documentoRepository = documentoRepository;
         this.usuarioService = usuarioService;
     }
 

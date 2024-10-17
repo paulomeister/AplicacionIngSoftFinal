@@ -9,4 +9,6 @@ public interface IUsuarioService {
 
     Optional<UsuarioModel> getUserByUsername(String username);
 
+    String insertUser(UsuarioModel usuario);
+
 }

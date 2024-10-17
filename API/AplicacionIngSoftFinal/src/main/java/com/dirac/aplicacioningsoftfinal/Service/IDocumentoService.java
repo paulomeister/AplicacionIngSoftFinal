@@ -2,7 +2,6 @@ package com.dirac.aplicacioningsoftfinal.Service;
 
 import com.dirac.aplicacioningsoftfinal.DTO.BusquedaFiltroDTO;
 import com.dirac.aplicacioningsoftfinal.DTO.BusquedaOrdenarFiltrarDTO;
-import com.dirac.aplicacioningsoftfinal.DTO.Res;
 import com.dirac.aplicacioningsoftfinal.DTO.UrlDTO;
 import com.dirac.aplicacioningsoftfinal.Model.DocumentoModel;
 import org.bson.types.ObjectId;
@@ -38,8 +37,6 @@ public interface IDocumentoService {
     List<DocumentoModel> getTopRatedDocuments();
 
     List<DocumentoModel> getMostDownloadedDocuments();
-
-    String createDocument(DocumentoModel documento);
 
     String updateDocument(ObjectId idDocumentoAntiguo, DocumentoModel documentoNuevo);
 
