@@ -18,12 +18,11 @@ import java.util.List;
 @NoArgsConstructor
 @Data
 public class DocumentoModel {
-
     @Id
     private ObjectId _id;
 
     @JsonProperty("_id")
-    public String getIdAsString(){
+    public String getIdAsString() {
         return _id != null ? _id.toHexString() : null;
     }
 
@@ -32,14 +31,10 @@ public class DocumentoModel {
     private String visibilidad;
     private String urlArchivo;
     private List<String> keywords;
-    private List<CategoriasEmbebidas> categoria;
-    private List<Autores> autores;
-    private List<Valoracion> valoraciones;
-    private Date fechaSubida;
-    private DatosComputados datosComputados;
-    private String idioma;
 
-    @AllArgsConstructor
+    //
+    private List<CategoriasEmbebidas> categoria;
+
     @Data
     public static class CategoriasEmbebidas {
         private ObjectId categoriaId;
@@ -48,27 +43,54 @@ public class DocumentoModel {
         public String getCategoriaIdAsString() {
             return categoriaId != null ? categoriaId.toHexString() : null;
         }
-    
-        public String nombre;
+
+        private String nombre;
     }
 
-    @AllArgsConstructor
+    //
+    private List<Autores> autores;
+
     @Data
     public static class Autores {
-        private ObjectId usuarioId; 
+        private ObjectId usuarioId;
         private Boolean estaRegistrado;
 
         @JsonProperty("usuarioId")
         public String getUsuarioIdAsString() {
             return usuarioId != null ? usuarioId.toHexString() : null;
         }
-    
+
         private String rol;
         private String username;
         private String nombre;
     }
 
+    //
+
+    private List<Valoracion> valoraciones;
+
+    @Data
+    public static class Valoracion {
+        private ObjectId usuarioId;
+
+        @JsonProperty("usuarioId")
+        public String getUsuarioIdAsString() {
+            return usuarioId != null ? usuarioId.toHexString() : null;
+        }
+
+        private Date fechaCreacion;
+        private double puntuacion;
+        private String comentario;
+    }
+
+    //
+    private Date fechaSubida;
+
+    //
+    private DatosComputados datosComputados;
+
     @AllArgsConstructor
+    @NoArgsConstructor
     @Data
     public static class DatosComputados {
         private long descargasTotales;
@@ -76,19 +98,6 @@ public class DocumentoModel {
         private long comentariosTotales;
     }
 
-    @AllArgsConstructor
-    @Data
-    public static class Valoracion {
-        private ObjectId usuarioId; 
-
-        @JsonProperty("usuarioId")
-        public String getUsuarioIdAsString() {
-            return usuarioId != null ? usuarioId.toHexString() : null;
-        }
-    
-        private Date fechaCreacion;
-        private double puntuacion;
-        private String comentario;
-    }
-
+    //
+    private String idioma;
 }
