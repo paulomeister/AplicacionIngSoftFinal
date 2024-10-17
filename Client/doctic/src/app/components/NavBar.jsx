@@ -9,7 +9,7 @@ const Navbar = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   return (
-    <nav style={{ backgr  oundColor: '#001E58', padding: '10px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+    <nav style={{ backgroundColor: '#001E58', padding: '10px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
    
       <div style={{ display: 'flex', alignItems: 'center' }}>
         <Image src="/logo.png" alt="Logo" width={50} height={50} />
