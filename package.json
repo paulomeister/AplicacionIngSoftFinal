@@ -1,0 +1,11 @@
+{
+  "name": "aplicacioningsoftfinal",
+  "version": "1.0.0",
+  "description": "i- Use la rama master para clonar el repositorio y realizar commits o pull requests. <br/>\r ii- Edite la connection string en application.properties para conectar con su propia instancia local de MongoDB o, en su defecto, conectarlo directamente al cluster de Mongo Atlas.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
