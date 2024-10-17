@@ -51,7 +51,7 @@ public class SecurityConfiguration {
                         .requestMatchers("/","index.html", "/css/**","/js/**", "/registrarse")
                         .permitAll()
 
-                        .requestMatchers("/api/Documentos/id/*/download")
+                        .requestMatchers("/api/Documentos/downloadFile")
                         .hasAnyRole(ADMIN.name(), USUARIO.name())
 
                         .anyRequest()
