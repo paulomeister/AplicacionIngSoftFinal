@@ -2,42 +2,42 @@
 
 import { useState } from "react";
 
-export default function Form() {
-  const [formData, setFormData] = useState({
-    title: "",
-    description: "",
-    keywords: "",
-    category: "",
-    language: "",
-    file: null,
+export default function Formulario() {
+  const [datosFormulario, setDatosFormulario] = useState({
+    titulo: "",
+    descripcion: "",
+    palabrasClaves: "",
+    categoria: "",
+    idioma: "",
+    archivo: null,
   });
 
-  const handleChange = (e) => {
+  const manejarCambio = (e) => {
     const { name, value, files } = e.target;
-    setFormData({
-      ...formData,
+    setDatosFormulario({
+      ...datosFormulario,
       [name]: files ? files[0] : value,
     });
   };
 
-  const handleSubmit = async (e) => {
+  const manejarEnvio = async (e) => {
     e.preventDefault();
-    const formDataToSend = new FormData();
-    formDataToSend.append("title", formData.title);
-    formDataToSend.append("description", formData.description);
-    formDataToSend.append("keywords", formData.keywords);
-    formDataToSend.append("category", formData.category);
-    formDataToSend.append("language", formData.language);
-    if (formData.file) {
-      formDataToSend.append("file", formData.file);
+    const datosFormularioEnviar = new FormData();
+    datosFormularioEnviar.append("titulo", datosFormulario.titulo);
+    datosFormularioEnviar.append("descripcion", datosFormulario.descripcion);
+    datosFormularioEnviar.append("palabrasClaves", datosFormulario.palabrasClaves);
+    datosFormularioEnviar.append("categoria", datosFormulario.categoria);
+    datosFormularioEnviar.append("idioma", datosFormulario.idioma);
+    if (datosFormulario.archivo) {
+      datosFormularioEnviar.append("archivo", datosFormulario.archivo);
     }
 
     try {
-      const response = await fetch("/api/upload", {
+      const respuesta = await fetch("/api/subir", {
         method: "POST",
-        body: formDataToSend,
+        body: datosFormularioEnviar,
       });
-      if (response.ok) {
+      if (respuesta.ok) {
         alert("Formulario enviado con éxito");
       } else {
         alert("Error al enviar el formulario");
@@ -50,7 +50,7 @@ export default function Form() {
 
   return (
     <form
-      onSubmit={handleSubmit}
+      onSubmit={manejarEnvio}
       className="bg-white text-black p-6 rounded-md shadow-lg w-full max-w-md mx-auto"
       encType="multipart/form-data"
     >
@@ -63,9 +63,9 @@ export default function Form() {
         <input
           className="w-full p-2 border-dashed border-2 border-gray-300 rounded-md"
           type="file"
-          id="file"
-          name="file"
-          onChange={handleChange}
+          id="archivo"
+          name="archivo"
+          onChange={manejarCambio}
           required
         />
         <p className="text-sm text-gray-500 mt-2">
@@ -73,67 +73,67 @@ export default function Form() {
         </p>
       </div>
 
-      {/* Title */}
+      {/* Título */}
       <div className="mb-4">
-        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="title">
+        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="titulo">
           Título (Requerido)
         </label>
         <input
           className="w-full p-2 border border-gray-300 rounded-md"
           type="text"
-          id="title"
-          name="title"
+          id="titulo"
+          name="titulo"
           placeholder="Ingresa el título"
-          value={formData.title}
-          onChange={handleChange}
+          value={datosFormulario.titulo}
+          onChange={manejarCambio}
           required
         />
       </div>
 
-      {/* Description */}
+      {/* Descripción */}
       <div className="mb-4">
-        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="description">
+        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="descripcion">
           Descripción (Requerido)
         </label>
         <textarea
           className="w-full p-2 border border-gray-300 rounded-md"
-          id="description"
-          name="description"
+          id="descripcion"
+          name="descripcion"
           rows="4"
           placeholder="Escribe una descripción"
-          value={formData.description}
-          onChange={handleChange}
+          value={datosFormulario.descripcion}
+          onChange={manejarCambio}
           required
         ></textarea>
       </div>
 
-      {/* Keywords */}
+      {/* Palabras Claves */}
       <div className="mb-4">
-        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="keywords">
+        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="palabrasClaves">
           Palabras Claves
         </label>
         <input
           className="w-full p-2 border border-gray-300 rounded-md"
           type="text"
-          id="keywords"
-          name="keywords"
+          id="palabrasClaves"
+          name="palabrasClaves"
           placeholder="Palabras claves"
-          value={formData.keywords}
-          onChange={handleChange}
+          value={datosFormulario.palabrasClaves}
+          onChange={manejarCambio}
         />
       </div>
 
-      {/* Category */}
+      {/* Categoría */}
       <div className="mb-4">
-        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="category">
+        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="categoria">
           Categoría (Requerido)
         </label>
         <select
           className="w-full p-2 border border-gray-300 rounded-md"
-          id="category"
-          name="category"
-          value={formData.category}
-          onChange={handleChange}
+          id="categoria"
+          name="categoria"
+          value={datosFormulario.categoria}
+          onChange={manejarCambio}
           required
         >
           <option value="">Seleccionar</option>
@@ -143,17 +143,17 @@ export default function Form() {
         </select>
       </div>
 
-      {/* Language */}
+      {/* Idioma */}
       <div className="mb-4">
-        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="language">
+        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="idioma">
           Idioma (Requerido)
         </label>
         <select
           className="w-full p-2 border border-gray-300 rounded-md"
-          id="language"
-          name="language"
-          value={formData.language}
-          onChange={handleChange}
+          id="idioma"
+          name="idioma"
+          value={datosFormulario.idioma}
+          onChange={manejarCambio}
           required
         >
           <option value="">Seleccionar</option>
@@ -163,16 +163,16 @@ export default function Form() {
         </select>
       </div>
 
-      {/* Submit */}
+      {/* Enviar */}
       <div className="flex justify-between items-center mb-4">
         <div>
           <input
             type="checkbox"
-            id="private"
-            name="private"
+            id="privado"
+            name="privado"
             className="mr-2"
           />
-          <label htmlFor="private" className="text-gray-700 text-sm">
+          <label htmlFor="privado" className="text-gray-700 text-sm">
             Publicar de manera privada
           </label>
         </div>
