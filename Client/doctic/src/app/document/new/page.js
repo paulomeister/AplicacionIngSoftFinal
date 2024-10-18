@@ -1,10 +1,11 @@
-import Form from './components/Form';
+import Form from '../../components/Form';
+
 export default function newdocument() {
     return (
-      <div>
-        <Form/>
-        <h1>This is the homepage</h1>
+      <div className="min-h-screen bg-gray-100 py-12">
+        <div className="container mx-auto">
+          <Form />
+        </div>
       </div>
     );
-  }
-  
+}
