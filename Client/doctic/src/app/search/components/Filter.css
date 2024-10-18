@@ -1,0 +1,28 @@
+.filter-input, .filter-select {
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    margin: 1%;
+    margin-right: 10px;
+    margin-bottom: 1.5%;
+    padding: 10px;
+  }
+
+.filter-input {
+  width: 20%;
+  margin-left: 2%;
+}
+
+.filter-btn{
+  background-color: #f3f0ff;  
+  color: rgb(0, 0, 0);
+  border: none;
+  cursor: pointer;
+  padding: 0.5%;
+  border-radius: 10px;
+  font-size: 85%;
+  margin-left: 0.7%;
+}
+    
+.filter-btn:hover {
+  background-color: #ffffff;
+}

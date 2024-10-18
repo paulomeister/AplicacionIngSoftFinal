@@ -1,0 +1,31 @@
+.result-item {
+    background-color: white;
+    padding: 1%;
+    margin-top: 2%;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    width: 165%;
+  }
+  
+  .result-actions button {
+    margin-right: 0.5%;
+    padding: 0.3%;
+    background-color: #0056ff;
+    color: white;
+    border: none;
+    border-radius: 7px;
+    cursor: pointer;
+  }
+  
+  .result-actions button:hover {
+    background-color: #003bb5;
+  }
+  
+  p{
+    font-size: 80%;
+    color: #686767;
+  }
+
+  .result-author{
+    color: #000000;
+  }
