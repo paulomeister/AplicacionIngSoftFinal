@@ -38,6 +38,9 @@ import java.util.Collections;
 
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -291,7 +294,7 @@ public class DocumentoService implements IDocumentoService {
 
     }
 
-    // --- GETTERS  --- //
+    // --- GETTERS --- //
 
     public DocumentoModel getDocumentById(ObjectId _id) {
 
@@ -362,7 +365,41 @@ public class DocumentoService implements IDocumentoService {
         return documents;
     }
 
-    //                              FILE
+    public List<DocumentoModel> getRecentDocuments() {
+
+        Pageable pageable = PageRequest.of(0, 5);
+        List<DocumentoModel> documents = documentoRepository.findRecentDocuments(pageable);
+
+        if (documents.isEmpty()) {
+            throw new NoSuchDocumentFoundException("No se encontraron documentos recientes.");
+        }
+
+        return documents;
+    }
+
+    public List<DocumentoModel> getTopRatedDocuments() {
+        Pageable pageable = PageRequest.of(0, 5); // Página 0, 5 resultados
+        List<DocumentoModel> documents = documentoRepository.findTopRatedDocuments(pageable);
+
+        if (documents.isEmpty()) {
+            throw new NoSuchDocumentFoundException("No se encontraron documentos valorados.");
+        }
+
+        return documents;
+    }
+
+    public List<DocumentoModel> getMostDownloadedDocuments() {
+        Pageable pageable = PageRequest.of(0, 5); // Página 0, 5 resultados
+        List<DocumentoModel> documents = documentoRepository.findMostDownloadedDocuments(pageable);
+
+        if (documents.isEmpty()) {
+            throw new NoSuchDocumentFoundException("No se encontraron documentos descargados.");
+        }
+
+        return documents;
+    }
+
+    // FILE
 
     @Override
     public ArchivoDTO viewTheFile(String fileId, String userId, ObjectId documentId) {
@@ -373,7 +410,7 @@ public class DocumentoService implements IDocumentoService {
             // REALMENTE EXISTE O NO
             DocumentoModel documentoDownloading = getDocumentById(documentId);
 
-            System.out.println(documentoDownloading+"\n\n'n");
+            System.out.println(documentoDownloading + "\n\n'n");
 
             // obtenemos el usuario que está descargando:
             UsuarioModel usuarioDownloading = usuarioService.getUserById(userId).orElseThrow(
@@ -525,8 +562,6 @@ public class DocumentoService implements IDocumentoService {
             documentoAntiguo.setVisibilidad(documentoNuevo.getVisibilidad());
     }
 
-
-
     @Override
     public String updateDocument(String documentoStringifeado) {
         try {
@@ -554,8 +589,6 @@ public class DocumentoService implements IDocumentoService {
             throw new UpdateException("documento\n" + e.getMessage());
         }
     }
-
-
 
     @Override
     public String updateDocumentFile(String documentoJson, MultipartFile file) {
@@ -609,7 +642,7 @@ public class DocumentoService implements IDocumentoService {
             deleteFileById(documentUrl);
             documentoRepository.deleteById(_id);
 
-            respuesta.setMessage("El documento con _id " + _id + " fue eliminado con éxito."); 
+            respuesta.setMessage("El documento con _id " + _id + " fue eliminado con éxito.");
             respuesta.setStatus(200);
             return respuesta;
 
@@ -636,21 +669,22 @@ public class DocumentoService implements IDocumentoService {
             result = "El archivo con ID:" + fileId + "fue eliminado con éxito.";
 
         } catch (Exception e) {
-            
+
             result = "ERROR: No se pudo eliminar ese documento del repositorio\n\n" + e.getMessage();
 
         }
         return result;
-    }  
+    }
 
     // public void updateDownloadStats(DocumentoModel document) {
-    //     DatosComputados datosComputados = document.getDatosComputados();
-    //     long descargasTotales = datosComputados.getDescargasTotales() + 1;
-    //     double valoracionPromedio = datosComputados.getValoracionPromedio();
-    //     long comentariosTotales = datosComputados.getComentariosTotales();
+    // DatosComputados datosComputados = document.getDatosComputados();
+    // long descargasTotales = datosComputados.getDescargasTotales() + 1;
+    // double valoracionPromedio = datosComputados.getValoracionPromedio();
+    // long comentariosTotales = datosComputados.getComentariosTotales();
 
-    //     document.setDatosComputados(new DatosComputados(descargasTotales, valoracionPromedio, comentariosTotales));
-    //     documentoRepository.save(document);
+    // document.setDatosComputados(new DatosComputados(descargasTotales,
+    // valoracionPromedio, comentariosTotales));
+    // documentoRepository.save(document);
     // }
-    
+
 }

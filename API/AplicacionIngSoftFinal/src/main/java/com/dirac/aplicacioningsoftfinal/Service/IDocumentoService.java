@@ -44,6 +44,13 @@ public interface IDocumentoService {
     com.google.api.services.drive.model.File getFileById(String fileId) throws GeneralSecurityException, IOException;
     
 
+
+    List<DocumentoModel> getRecentDocuments();
+
+    List<DocumentoModel> getTopRatedDocuments();
+
+    List<DocumentoModel> getMostDownloadedDocuments();
+
     List<DocumentoModel> busquedaFiltroDocumentos(BusquedaFiltroDTO entrada);
     List<DocumentoModel> busquedaOrdenada(BusquedaOrdenarFiltrarDTO entrada);      
     UrlDTO recuperarUrlById(ObjectId id);
