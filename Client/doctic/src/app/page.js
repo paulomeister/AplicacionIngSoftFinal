@@ -1,23 +1,47 @@
 "use client";
 import { useRef } from "react";
-
 export default function Home() {
+  // Referencia al input de archivo para poder acceder al archivo seleccionado
   const documentRef = useRef(null);
 
-  const fetchData = async (e) => {
-    e.preventDefault(); // Evitar que el formulario se envíe y la página se recargue
+  // Función que maneja la actualización del documento
+  const updateDocument = async (document, file) => {
+    const data = new FormData(); // Se utiliza FormData para enviar datos de forma multipart
+    data.append("document", JSON.stringify(document)); // Añadimos el documento como un string JSON
 
-    const data = new FormData();
+    // Si hay un archivo, también lo añadimos al FormData y usamos el endpoint que actualiza archivo y campos
+    if (file) {
+      data.append("file", file); // Añadimos el archivo PDF al FormData
+      return await fetch(
+        "http://localhost:8080/api/Documentos/insert", // Endpoint para actualizar archivo y campos
+        {
+          method: "POST", // Método PUT para actualizar
+          body: data, // Se envían los datos
+        }
+      );
+    } else {
+      // Si no hay archivo, se usa el endpoint que actualiza solo los campos
+      return await fetch("http://localhost:8080/api/Documentos/insert", {
+        method: "POST", // Método PUT para actualizar
+        body: data, // Se envían los datos sin archivo
+      });
+    }
+  };
+
+  // Función que se ejecuta al enviar el formulario
+  const handleSubmit = async (e) => {
+    e.preventDefault(); // Prevenimos que el formulario recargue la página
+
+    // Recuperamos el archivo seleccionado desde el input de tipo file
     const file = documentRef.current.files[0];
-    
-    // Asegúrate de que document esté disponible aquí
+
+    // Definimos el objeto documento con los datos que se van a actualizar
     const document = {
-      _id: "123412341234123212341239",
-      titulo: "Esto es una prueba",
+      titulo: "'ESTA ES OTRA PRUEBA",
       descripcion:
         "Un análisis sobre la aplicación de la inteligencia artificial en la gestión pública y sus implicaciones.",
       visibilidad: "publico",
-      urlArchivo: "", // <----
+      urlArchivo: "18sjxszpeMfF5tNd8wzfNqLD8LWQMZiCE", // URL de un archivo existente en la base de datos
       keywords: ["inteligencia artificial", "gestión pública", "IA"],
       categoria: [
         {
@@ -25,32 +49,15 @@ export default function Home() {
           nombre: "IA",
         },
       ],
-       autores: [
-         {
-           usuarioId: "66ebbc85e9670a5556f97822",
-           rol: "principal",
-           username: "yocana",
-           nombre: "Yolvi Ocaña Fernández",
-         },
-         {
-           usuarioId: "66ec6a0b33773bc9a9232552",
-           rol: "coautor",
-           username: "",
-           nombre: "",
-         },
-         {
-           usuarioId: "66ec6a1433773bc9a9232553",
-           rol: "coautor",
-           username: "",
-           nombre: "",
-         },
-         {
-           usuarioId: "66ec6a1b33773bc9a9232554",
-           rol: "coautor",
-           username: "",
-           nombre: "",
-         },
-       ],
+      autores: [
+        {
+          usuarioId: "66ebbc85e9670a5556f97822",
+          rol: "principal",
+          username: "yocana",
+          nombre: "Yolvi Ocaña Fernández",
+        },
+        // Se pueden añadir más autores aquí
+      ],
       valoraciones: [
         {
           usuarioId: "66ebbc85e9670a5556f9781d",
@@ -67,31 +74,15 @@ export default function Home() {
         comentariosTotales: 1,
       },
       idioma: "español",
-    }
+    };
 
-    console.log(document)
-
-    data.append("document", JSON.stringify(document)); // Asegúrate de que sea un JSON string
-    data.append("file", file);
-
+    // Llamada a la función que hace el fetch con la lógica adecuada para actualizar
     try {
-      
-      const response = await fetch(
-        "http://localhost:8080/api/Documentos/insert",
-        {
-          method: "POST",
-          body: data,
-        }
-      );
+      const response = await updateDocument(document, file); // Llama a la función con el documento y el archivo (si existe)
 
-      // Manejo de la respuesta
-      if (!response.ok) {
-        throw new Error("");
-      }
-
-      console.log(await response.json());
+      console.log(await response.json()); // Mostrar la respuesta en consola
     } catch (e) {
-      console.error(e.message); 
+      console.error(e.message); // Manejo de errores
     }
   };
 
@@ -99,7 +90,7 @@ export default function Home() {
     <>
       <form
         id="prueba"
-        onSubmit={fetchData} // Aquí se pasa la función correctamente
+        onSubmit={handleSubmit} // Aquí se pasa la función correctamente
         style={{
           color: "white",
           width: "100vw",
@@ -111,12 +102,22 @@ export default function Home() {
         }}
       >
         <h1>Sube tu documento a DOCTIC</h1>
+
+        <div style={{color:"white",marginBottom:"15px"}}> 
+          {/* Esta es una idea.. */}
+          <h2>Atributo 1..</h2>
+          <input></input>
+          <h2>Atributo 2..</h2>
+          <input></input>
+          <h2>Atributo N..</h2>
+          <input></input>
+        </div>
+
         <input
           type="file"
           id="inputDocument"
           accept=".pdf"
-          required
-          ref={documentRef}
+          ref={documentRef} // Referencia al archivo para poder acceder a él
         />
         <button
           style={{
