@@ -1,4 +1,3 @@
-'use client';
 import Search from "./components/Search";
 
 function searchPage() {
@@ -8,3 +7,5 @@ function searchPage() {
         </div>
       );
 }
+
+export default searchPage

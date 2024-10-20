@@ -6,12 +6,17 @@
     border-radius: 8px;
   }
   
+  div{
+    color : rgb(0, 0, 0);
+  }
+  
   .search-input {
     border: 1px solid #ccc;
+    color: rgb(0, 0, 0);
     padding: 10px;
     border-radius: 100px;
     margin: 1%;
-    width: 95%;
+    width: 96%;
   }
 
   .search-btn {
@@ -51,6 +56,7 @@
   }
   
   .divider{
+    background-color: #ffffff;
     display: flex;
     flex-direction: row;
     justify-content: space-between;

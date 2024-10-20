@@ -1,55 +1,44 @@
 'use client';
 import React, { useState } from "react";
 import "./Search.css";
-import {ResultsList} from "./ResultsList";
-import {SortMenu} from "./SortMenu";
-import {Filter} from "./Filter";
+import ResultsList from "./ResultsList";
+import SortMenu from "./SortMenu";
+import Filter from "./Filter";
 
-export const Search = () => {
-  let filtros = [];
+const Search = () => {
+  const [mostrarResultados, setMostrarResultados] = useState(false); 
+  const [mostrarFiltros, setMostrarFiltros] = useState(false); 
+
+  const [busqueda, setBusqueda] = useState({});
+
+  const [filtros, setFiltros] = useState([]);
+
+  const [titulo, setTitulo] = useState("");
   let tieneFiltros = false;
-
-  let titulo = "";
   let categorias = [];
   let autores = [];
   let idioma = "";
   let desde = "";
   let hasta = "";
 
-  const [mostrarResultados, setMostrarResultados] = useState(false); 
-  const [mostrarFiltros, setMostrarFiltros] = useState(false); 
+  const [sortCriteria, setSortCriteria] = useState("");  
 
-  const [busqueda, setBusqueda] = useState({});
-
-  //-------- Funcion para cambiar el valor de input ------------
+  //-------- Funcion para cambiar el valor de input ------------ 
   const handleInputChange = (event) => {
-    titulo = (event.target.value);
+  setTitulo(event.target.value);
   };
 
-  //-------- Funcion para mostrar los filtros ------------
+  //-------- Función para mostrar los filtros ------------ 
   const handleToggleFiltros = () => {
     setMostrarFiltros((prevState) => !prevState);
   };
 
-  //-------- Función para actualizar inputFiltros desde Filter ------------
+  //-------- Función para actualizar inputFiltros desde Filter ------------ 
   const updateFilters = (newFilters) => {
-    filtros = (newFilters);
+    setFiltros(newFilters);
   };
 
-  // --------- Función para actualizar valor de busqueda ---------------
-  const updateBusqueda = () => {
-    setBusqueda({
-      titulo: titulo,
-      tieneFiltros: tieneFiltros,
-      categorias: categorias,
-      autores: autores,
-      idioma: idioma,
-      desde: desde,
-      hasta: hasta
-    });  
-  }
-
-  //-------- Función para mapear los filtros ------------
+  //-------- Función para mapear los filtros ------------ 
   const handleMapearFiltros = () => {
     let newCategorias = [];
     let newAutores = []; 
@@ -57,22 +46,22 @@ export const Search = () => {
     let newDesde = "";
     let newHasta = "";
   
-    for (let i = 0; i < filtros.length; i++) {
-      switch (filtros[i].tipo) {
+    for (const element of filtros) {
+      switch (element.tipo) {
         case "CATEGORIA":
-          newCategorias.push(filtros[i].valor);
+          newCategorias.push(element.valor);
           break;
         case "AUTOR":
-          newAutores.push(filtros[i].valor);
+          newAutores.push(element.valor);
           break;
         case "IDIOMA":
-          newIdioma = filtros[i].valor;
+          newIdioma = element.valor;
           break;
         case "DESDE":
-          newDesde = filtros[i].valor;
+          newDesde = element.valor;
           break;
         case "HASTA":
-          newHasta = filtros[i].valor;
+          newHasta = element.valor;
           break;
         default:
           break;
@@ -84,15 +73,33 @@ export const Search = () => {
       desde = (newDesde);
       hasta = (newHasta);
     }
-  }
+  };
 
-  //-------- Funcion para mostrar los resultados y cambiar valor del titulo --------------
+  // --------- Función para actualizar valor de busqueda --------------- 
+  const updateBusqueda = () => {
+    setBusqueda({
+      titulo: titulo,
+      tieneFiltros: tieneFiltros,
+      categorias: categorias,
+      autores: autores,
+      idioma: idioma,
+      desde: desde,
+      hasta: hasta
+    });  
+  };
+
+
+  //-------- Función para mostrar los resultados y cambiar valor del titulo -------------- 
   const handleSearchClick = () => {
-    tieneFiltros = filtros.length > 0;
     handleMapearFiltros();
     updateBusqueda();
 
     setMostrarResultados(true); 
+  };
+
+  // ------------ Función para actualizar el criterio de ordenamiento -------------
+  const handleSortChange = (newSortCriteria) => {
+    setSortCriteria(newSortCriteria);
   };
 
   return (
@@ -111,9 +118,8 @@ export const Search = () => {
         </div>
         <hr />
 
-        {/* Mostrar/Ocultar sección de filtros */}
         {mostrarFiltros && (
-          <Filter onUpdateFilters={updateFilters} /> //---> Pasar la función de actualización de filtros
+          <Filter onUpdateFilters={updateFilters} filtros = {filtros} />
         )}
       </div>
 
@@ -126,10 +132,12 @@ export const Search = () => {
       {/*------ Mostrar resultados después de buscar ------*/}
       {mostrarResultados && (
         <div className="divider">
-          <ResultsList busqueda={busqueda} />
-          <SortMenu />
+          <ResultsList busqueda={busqueda} sortCriteria={sortCriteria} /> {/* Pasa el criterio de orden */}
+          <SortMenu onSortChange={handleSortChange} /> {/* Pasa la función de ordenamiento */}
         </div>
-      )}      
+      )}
     </>
   );
 };
+
+export default Search;

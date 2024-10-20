@@ -2,18 +2,23 @@
 import React from 'react';
 import './SortMenu.css';
 
-export const SortMenu = () => {
+const SortMenu = ({ onSortChange }) => {
+  const handleSort = (sortOption) => {
+    onSortChange(sortOption); 
+  };
+
   return (
     <div className="sort-menu">
       <ul className="sort-options">
-        <li>Relevancia</li>
-        <li>Fecha (ascendente)</li>
-        <li>Fecha (descendente)</li>
-        <li>Valoración (ascendente)</li>
-        <li>Valoración (descendente)</li>
-        <li>Más vistos</li>
-        <li >Menos vistos</li>
+        <li onClick={() => handleSort("alfabetico")}>Alfabetico [A - Z]</li>
+        <li onClick={() => handleSort("alfabetico-inverso")}>Alfabetico [Z - A]</li>
+        <li onClick={() => handleSort("fecha-asc")}>Fecha (ascendente)</li>
+        <li onClick={() => handleSort("fecha-desc")}>Fecha (descendente)</li>
+        <li onClick={() => handleSort("valoracion-asc")}>Valoración (ascendente)</li>
+        <li onClick={() => handleSort("valoracion-desc")}>Valoración (descendente)</li>
       </ul>
     </div>
   );
 };
+
+export default SortMenu;

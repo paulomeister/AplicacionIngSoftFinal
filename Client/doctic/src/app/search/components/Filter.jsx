@@ -2,8 +2,8 @@
 import React, { useState } from "react";
 import "./Filter.css";
 
-export const Filter = ({ onUpdateFilters }) => {
-  const [filtrosAdicionales, setFiltrosAdicionales] = useState([]); // Estado para filtros dinámicos
+const Filter = ({ onUpdateFilters, filtros }) => {
+  const [filtrosAdicionales, setFiltrosAdicionales] = useState(filtros || []); // Estado para filtros dinámicos
 
   // -------- Función para agregar un nuevo filtro ----------
   const handleAgregarFiltro = () => {
@@ -39,7 +39,8 @@ export const Filter = ({ onUpdateFilters }) => {
 
   // -------- Función para eliminar un filtro individual ----------
   const handleEliminarFiltro = (id) => {
-    const nuevosFiltros = filtrosAdicionales.filter((filtro) => filtro.id !== id); // Filtra los filtros excluyendo el que se quiere eliminar
+    const nuevosFiltros = filtrosAdicionales.filter((filtro) => filtro.id !== id); 
+
     setFiltrosAdicionales(nuevosFiltros);
     onUpdateFilters(nuevosFiltros); 
   };
@@ -71,11 +72,10 @@ export const Filter = ({ onUpdateFilters }) => {
           <input
             type="text"
             placeholder={
-              filtro.tipo === "AUTOR"
-                ? "Escriba el nombre del autor": filtro.tipo === "CATEGORIA"
-                ? "Escriba la categoría": filtro.tipo === "DESDE" || filtro.tipo === "HASTA"
-                ? "Escriba el año (ej. 2022)": filtro.tipo === "IDIOMA"
-                ? "Escriba el idioma": "Filtrar con..." 
+              filtro.tipo === "AUTOR" ? "Escriba el nombre del autor": 
+              filtro.tipo === "CATEGORIA" ? "Escriba la categoría": 
+              filtro.tipo === "DESDE" || filtro.tipo === "HASTA" ? "Escriba el año (ej. 2022)": 
+              filtro.tipo === "IDIOMA" ? "Escriba el idioma": "Filtrar con..." 
             }
             className="filter-input"
             value={filtro.valor}
@@ -104,3 +104,5 @@ export const Filter = ({ onUpdateFilters }) => {
     </>
   );
 };
+
+export default Filter;
