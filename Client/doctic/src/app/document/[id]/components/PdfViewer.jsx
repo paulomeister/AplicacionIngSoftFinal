@@ -38,8 +38,8 @@ export const PdfViewer = ({ url, userId = '', documentId= '' }) => {
 
     return (
         <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.js">
-            <div style={{ height: '750px' }}>
-                <Viewer
+            <div style={{ height: 'auto' }}>
+                <Viewer style={{ height: '750px' }}
                     // xxxxxx fileUrl={`/api/proxy?urlArchivo=${encodeURIComponent(url)}`}
                     // |||||| fileUrl={`http://localhost:8080/Documentos/viewFile?fileId=${url}&userId=${userId}&documentId=${documentId}`}
                     fileUrl={`http://localhost:8080/Documentos/viewFile?fileId=${url}&userId=${userId}&documentId=${documentId}`}

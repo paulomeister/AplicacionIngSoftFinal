@@ -1,9 +1,9 @@
-import Form from './components/Form';
+import { PublicationForm } from "./components/PublicationForm.jsx";
+
 export default function newdocument() {
     return (
       <div>
-        <Form/>
-        <h1>This is the homepage</h1>
+        <PublicationForm/>
       </div>
     );
   }

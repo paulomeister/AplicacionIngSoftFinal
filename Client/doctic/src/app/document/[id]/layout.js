@@ -1,3 +1,7 @@
-export default function DocumentLayout({ children }) {
-  return <section>{children}</section>;
+export default function layout({children}){
+  return (
+    <section className='d-flex flex-col justify-between'>
+      {children}
+    </section>
+  )
 }
