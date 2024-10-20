@@ -6,13 +6,8 @@ import com.dirac.aplicacioningsoftfinal.DTO.ArchivoDTO;
 import com.dirac.aplicacioningsoftfinal.DTO.Res;
 import com.dirac.aplicacioningsoftfinal.DTO.UrlDTO;
 import com.dirac.aplicacioningsoftfinal.Model.DocumentoModel;
-import com.google.common.base.Optional;
-
-import org.bson.Document;
 import org.bson.types.ObjectId;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.view.RedirectView;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -21,18 +16,21 @@ import java.util.List;
 
 public interface IDocumentoService {
 
-    DocumentoModel getDocumentById(ObjectId _id);    
-    DocumentoModel getDocumentByTitle(String titulo);    
+        DocumentoModel getDocumentById(ObjectId _id);    
+        DocumentoModel getDocumentByTitle(String titulo);    
     List<DocumentoModel> getDocumentsByKeyword(List<String> keywords);    
     List<DocumentoModel> getDocumentsByFechaSubida(Date fechaSubida);    
     List<DocumentoModel> getDocumentsByCategoriaNombre(String nombreCategoria);    
     List<DocumentoModel> getDocumentsByAutorUsuarioname(String nombreAutor);    
-    List<DocumentoModel> getDocumentsByLenguage(String idioma);
+    List<DocumentoModel> getDocumentsByLanguage(String idioma);
+    List<DocumentoModel> getRecentDocuments();
+    List<DocumentoModel> getTopRatedDocuments();
+    List<DocumentoModel> getMostDownloadedDocuments();
     
     Res insertDocument(MultipartFile file, String jsonFile) throws IOException, GeneralSecurityException;
     String insertDocument(DocumentoModel document);
     
-        String updateDocument(String documentoStringifeado);
+    String updateDocument(String documentoStringifeado);
     String updateDocumentFile(String documentoJson, MultipartFile newFile);
     Res deleteDocument(ObjectId _id);
     
@@ -43,13 +41,6 @@ public interface IDocumentoService {
     String uploadToDrive(MultipartFile file) throws GeneralSecurityException, IOException;
     com.google.api.services.drive.model.File getFileById(String fileId) throws GeneralSecurityException, IOException;
     
-
-
-    List<DocumentoModel> getRecentDocuments();
-
-    List<DocumentoModel> getTopRatedDocuments();
-
-    List<DocumentoModel> getMostDownloadedDocuments();
 
     List<DocumentoModel> busquedaFiltroDocumentos(BusquedaFiltroDTO entrada);
     List<DocumentoModel> busquedaOrdenada(BusquedaOrdenarFiltrarDTO entrada);      

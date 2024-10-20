@@ -80,7 +80,9 @@ public class DocumentoController {
             @RequestParam("documentId") ObjectId documentId) {
         try {
 
+            System.out.println("entra en el controller");
             ArchivoDTO dto = documentoService.viewTheFile(fileId, userId, documentId);
+            System.out.println("sale en el controller");
 
             File file = dto.getFile();
             byte[] fileBytes = dto.getFileBytes();
@@ -92,7 +94,7 @@ public class DocumentoController {
 
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("El documento no se pudo visualizar correctamente\n\n" + e.getMessage());
+                    .body("El documento no se pudo visualizar correctamente\n" + e.getMessage());
         }
     }
 
@@ -270,7 +272,7 @@ public class DocumentoController {
     @GetMapping("/getByLenguage/{idioma}")
     public ResponseEntity<?> findDocumentsByLenguage(@PathVariable("idioma") String idioma) {
         try {
-            List<DocumentoModel> documents = documentoService.getDocumentsByLenguage(idioma);
+            List<DocumentoModel> documents = documentoService.getDocumentsByLanguage(idioma);
             return new ResponseEntity<>(documents, HttpStatus.OK);
         } catch (NoSuchDocumentFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
@@ -374,5 +376,31 @@ public class DocumentoController {
 
         }
     }
+
+
+    @PostMapping("/uploadToDrive")
+    public ResponseEntity<Res> uploadToDrive(@RequestParam("file") MultipartFile file){
+        
+        System.out.println("Entró\n\n\n\n\n\n\n\n");
+
+        int status;
+        String res = "";
+
+        try{
+            
+            res = documentoService.uploadToDrive(file);
+            status = 200;
+
+        }catch(Exception e){
+            res = e.getMessage();
+            status = 500;
+        }
+
+        Res respuesta = new Res(status, res);
+
+        return ResponseEntity.status(status).body(respuesta);
+
+    }
+
 
 }

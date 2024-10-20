@@ -20,16 +20,27 @@ import com.dirac.aplicacioningsoftfinal.Model.DocumentoModel.DatosComputados;
 import com.dirac.aplicacioningsoftfinal.Model.UsuarioModel;
 import com.dirac.aplicacioningsoftfinal.Repository.IDocumentoRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.api.client.auth.oauth2.Credential;
+import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
+import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
+import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
+import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.ByteArrayContent;
+import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
+import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.drive.DriveScopes;
+import com.google.api.services.drive.model.File;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.services.drive.Drive;
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.GeneralSecurityException;
@@ -65,29 +76,59 @@ public class DocumentoService implements IDocumentoService {
         this.mongoTemplate = mongoTemplate;
     }
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
+    
+    private static final String APPLICATION_NAME = "AplicacionIngSoftFinal";
     private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
-    private static final String SERVICE_ACOUNT_KEY_PATH = getPathToGoodleCredentials();
+    private static final String TOKENS_DIRECTORY_PATH = "tokens";
+    private static final List<String> SCOPES = Collections.singletonList(DriveScopes.DRIVE_FILE);
+    private static final String CREDENTIALS_FILE_PATH = "./credentials.json";
+    private final static String folderId = "11sdYL6JJtIq1NSYEwPS1GwSxplfmXEXm";
+    
+    private Credential getDriveCredentials(NetHttpTransport HTTP_TRANSPORT) throws GeneralSecurityException, IOException {
+        
+        InputStream in = DriveService.class.getResourceAsStream(CREDENTIALS_FILE_PATH);
+        if (in == null) {
+            throw new FileNotFoundException("Resource not found: " + CREDENTIALS_FILE_PATH);
+        }
 
-    private static String getPathToGoodleCredentials() {
-        String currentDirectory = System.getProperty("user.dir");
-        Path filePath = Paths.get(currentDirectory, "cred.json");
-        return filePath.toString();
+        GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(in)); // Secrets
+        
+        GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(
+            HTTP_TRANSPORT, JSON_FACTORY, clientSecrets, SCOPES)
+                .setDataStoreFactory(new FileDataStoreFactory(new java.io.File(TOKENS_DIRECTORY_PATH)))
+                .setAccessType("offline")
+                .build();
+
+        LocalServerReceiver receiver = new LocalServerReceiver.Builder().setPort(8888).setCallbackPath("/Callback").build();
+        return new AuthorizationCodeInstalledApp(flow, receiver).authorize("user");
+
     }
+
+    public Drive createDrive() throws GeneralSecurityException, IOException{
+
+        final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport(); // TRANSPORT
+
+        Drive drive = new Drive.Builder(HTTP_TRANSPORT, JSON_FACTORY, getDriveCredentials(HTTP_TRANSPORT))
+        .setApplicationName(APPLICATION_NAME)
+        .build(); 
+
+        return drive;
+    }
+
 
     public String uploadToDrive(MultipartFile file) throws GeneralSecurityException, IOException {
 
         String res;
 
         try {
-            String folderId = "1mdVe9JNnoWZKE7eN9n-szy4Zk2u8DAuV";
-
-            Drive drive = createDriveService();
+            
+            Drive drive = createDrive(); // Crea el documento drive
 
             com.google.api.services.drive.model.File fileMetaData = new com.google.api.services.drive.model.File();
             fileMetaData.setName(file.getOriginalFilename());
             fileMetaData.setParents(Collections.singletonList(folderId));
 
+            //Contenido del header
             ByteArrayContent mediaContent = new ByteArrayContent("application/pdf", file.getBytes());
 
             // Sube el archivo a Google Drive
@@ -102,31 +143,26 @@ public class DocumentoService implements IDocumentoService {
         return res;
     }
 
-    private Drive createDriveService() throws GeneralSecurityException, IOException {
 
-        GoogleCredential credential = GoogleCredential.fromStream(new FileInputStream(SERVICE_ACOUNT_KEY_PATH))
-                .createScoped(Collections.singleton(DriveScopes.DRIVE));
-
-        return new Drive.Builder(
-                GoogleNetHttpTransport.newTrustedTransport(),
-                JSON_FACTORY,
-                credential).build();
-
-    }
-
-    public com.google.api.services.drive.model.File getFileById(String fileId)
-            throws GeneralSecurityException, IOException {
-        Drive drive = createDriveService();
+    public com.google.api.services.drive.model.File getFileById(String fileId) throws GeneralSecurityException, IOException {
+        Drive drive = createDrive(); 
         return drive.files().get(fileId).setFields("id, name, mimeType").execute();
     }
 
-    public byte[] downloadFile(String fileId) throws GeneralSecurityException, IOException {
-        Drive drive = createDriveService();
+     public byte[] downloadFile(String fileId) throws GeneralSecurityException, IOException {
+         
+        Drive drive = createDrive(); // crea el servicio de drive
+
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
         drive.files().get(fileId).executeMediaAndDownloadTo(outputStream);
         return outputStream.toByteArray(); // Devuelve el contenido del archivo como byte[]
-    }
+     }
+
+
+
+
+
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -353,9 +389,9 @@ public class DocumentoService implements IDocumentoService {
         return documents;
     }
 
-    public List<DocumentoModel> getDocumentsByLenguage(String idioma) {
+    public List<DocumentoModel> getDocumentsByLanguage(String idioma) {
 
-        List<DocumentoModel> documents = documentoRepository.findDocumentsByLenguage(idioma);
+        List<DocumentoModel> documents = documentoRepository.findDocumentsByLanguage(idioma);
 
         if (documents.isEmpty()) {
             throw new NoSuchDocumentFoundException(
@@ -395,44 +431,41 @@ public class DocumentoService implements IDocumentoService {
         if (documents.isEmpty()) {
             throw new NoSuchDocumentFoundException("No se encontraron documentos descargados.");
         }
-
+        
         return documents;
     }
-
+    
     // FILE
-
     @Override
     public ArchivoDTO viewTheFile(String fileId, String userId, ObjectId documentId) {
-
         try {
-
-            // obtenemos el documento el cuál se está descargando PARA VERIFICAR SI
-            // REALMENTE EXISTE O NO
-            DocumentoModel documentoDownloading = getDocumentById(documentId);
-
-            System.out.println(documentoDownloading + "\n\n'n");
-
-            // obtenemos el usuario que está descargando:
-            UsuarioModel usuarioDownloading = usuarioService.getUserById(userId).orElseThrow(
-                    () -> new UsuarioNotFoundException("el usuario con el id, no fue encontrado" + userId));
-
-            // se actualizará el campo del historial de documentos
-
-            HistorialDocumentosDTO nuevoDoc = new HistorialDocumentosDTO();
-
-            nuevoDoc.setDocumentoId(documentoDownloading.get_id());
-            nuevoDoc.setFechaHora(LocalDate.now());
-
-            List<HistorialDocumentosDTO> historialDocumentos = usuarioDownloading.getHistorialDocumentos();
-            historialDocumentos.add(nuevoDoc); // se añade ese nuevo documento
-            usuarioDownloading.setHistorialDocumentos(historialDocumentos); // se lo setea
-
-            // ACTUALIZAR en la base de datos
-            usuarioService.insertUser(usuarioDownloading);
 
             byte[] fileBytes = downloadFile(fileId);
             com.google.api.services.drive.model.File file = getFileById(fileId);
 
+            if(fileBytes.length != 0){ // Verifica que si se haya obtenido un archivo
+
+                // Se obtiene el documento el cuál se está descargando para verificar si existe.
+                DocumentoModel documentoDownloading = getDocumentById(documentId);
+    
+                // obtenemos el usuario que está descargando:
+                UsuarioModel usuarioDownloading = usuarioService.getUserById(userId).orElseThrow(
+                        () -> new UsuarioNotFoundException("el usuario con el id, no fue encontrado" + userId));
+    
+                // Actualizaremos el campo del "historial" en el documento
+                UsuarioModel.Historial nuevoDoc = new UsuarioModel.Historial();
+    
+                nuevoDoc.setDocumentoId(documentoDownloading.get_id());
+                nuevoDoc.setFechaHora(LocalDate.now());
+    
+                List<UsuarioModel.Historial> historialDocumentos = usuarioDownloading.getHistorialDocumentos();
+                historialDocumentos.add(nuevoDoc); // se añade ese nuevo documento
+                usuarioDownloading.setHistorialDocumentos(historialDocumentos); // se lo setea
+    
+                // ACTUALIZAR en la base de datos
+                usuarioService.insertUser(usuarioDownloading);
+            }
+                       
             return new ArchivoDTO(file, fileBytes);
 
         } catch (Exception err) {
@@ -447,42 +480,41 @@ public class DocumentoService implements IDocumentoService {
 
             byte[] fileBytes = downloadFile(fileId);
             com.google.api.services.drive.model.File file = getFileById(fileId);
-
+            
             // obtenemos el documento el cuál se está descargando
             DocumentoModel documentoDownloading = getDocumentById(documentId);
-
-            DatosComputados nuevosDatos = new DatosComputados(); // se crea un nuevo DTO de DatosComputados
-
-            long descargasTotales = documentoDownloading.getDatosComputados().getDescargasTotales() + 1; // se le añade
-                                                                                                         // uno a la
-                                                                                                         // descarga
+            // se crea un nuevo DTO de DatosComputados
+            DatosComputados nuevosDatos = new DatosComputados();
+        
+            // Se le añade uno a la descarga y lo demás queda igual
+            long descargasTotales = documentoDownloading.getDatosComputados().getDescargasTotales() + 1; 
             double valoracionPromedio = documentoDownloading.getDatosComputados().getValoracionPromedio();
             long comentariosTotales = documentoDownloading.getDatosComputados().getComentariosTotales();
 
-            nuevosDatos.setDescargasTotales(descargasTotales); // se actualizan los datos
+            // Se actualizan los datos
+            nuevosDatos.setDescargasTotales(descargasTotales); 
             nuevosDatos.setValoracionPromedio(valoracionPromedio);
             nuevosDatos.setComentariosTotales(comentariosTotales);
+        
+            // Se actualizan los datos computados en el documento
+            documentoDownloading.setDatosComputados(nuevosDatos); 
 
-            documentoDownloading.setDatosComputados(nuevosDatos); // se actualizan los datos computados en el documento
-
-            // obtenemos el usuario que está descargando:
+            // Obtenemos el usuario que está descargando:
             UsuarioModel usuarioDownloading = usuarioService.getUserById(userId).orElseThrow(
                     () -> new UsuarioNotFoundException("el usuario con el id, no fue encontrado" + userId));
 
-            // se actualizará el campo de documentos descargados
-
-            DocDescargadosDTO nuevoDoc = new DocDescargadosDTO();
-
+            //Se actualizará el campo de documentos descargados
+            UsuarioModel.Descargados nuevoDoc = new UsuarioModel.Descargados();
             nuevoDoc.setDocumentoId(documentoDownloading.get_id());
             nuevoDoc.setFechaHora(LocalDate.now());
 
-            List<DocDescargadosDTO> docsActualizados = usuarioDownloading.getDocDescargados();
-            docsActualizados.add(nuevoDoc); // se añade ese nuevo documento
-            usuarioDownloading.setDocDescargados(docsActualizados); // se lo setea
+            List<UsuarioModel.Descargados> docsActualizados = usuarioDownloading.getDocDescargados();
+            docsActualizados.add(nuevoDoc); //Se añade un nuevo Documento
+            usuarioDownloading.setDocDescargados(docsActualizados); // Se actualizan los nuevos documentos
 
-            // ACTUALIZAR en la base de datos
+            // Actualiza en la base de datos
             usuarioService.insertUser(usuarioDownloading);
-            insertDocument(documentoDownloading);
+            documentoRepository.save(documentoDownloading);
 
             return new ArchivoDTO(file, fileBytes);
 
@@ -534,6 +566,7 @@ public class DocumentoService implements IDocumentoService {
     // Método común para actualizar los campos del documento.
 
     private void actualizarCamposDocumento(DocumentoModel documentoNuevo, DocumentoModel documentoAntiguo) {
+
         if (documentoNuevo.getAutores() != null)
             documentoAntiguo.setAutores(documentoNuevo.getAutores());
 
@@ -644,15 +677,14 @@ public class DocumentoService implements IDocumentoService {
 
             respuesta.setMessage("El documento con _id " + _id + " fue eliminado con éxito.");
             respuesta.setStatus(200);
-            return respuesta;
 
         } catch (Exception e) {
 
             respuesta.setMessage("No se pudo eliminar ese Documento :(");
             respuesta.setStatus(500);
-            return respuesta;
-
+            
         }
+        return respuesta;
     }
 
     @Override
@@ -661,7 +693,7 @@ public class DocumentoService implements IDocumentoService {
 
         try {
 
-            Drive drive = createDriveService();
+            Drive drive = createDrive();
 
             // Elimina el archivo con el fileId proporcionado
             drive.files().delete(fileId).execute();
@@ -675,16 +707,5 @@ public class DocumentoService implements IDocumentoService {
         }
         return result;
     }
-
-    // public void updateDownloadStats(DocumentoModel document) {
-    // DatosComputados datosComputados = document.getDatosComputados();
-    // long descargasTotales = datosComputados.getDescargasTotales() + 1;
-    // double valoracionPromedio = datosComputados.getValoracionPromedio();
-    // long comentariosTotales = datosComputados.getComentariosTotales();
-
-    // document.setDatosComputados(new DatosComputados(descargasTotales,
-    // valoracionPromedio, comentariosTotales));
-    // documentoRepository.save(document);
-    // }
 
 }

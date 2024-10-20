@@ -4,29 +4,42 @@ export default function Home() {
   // Referencia al input de archivo para poder acceder al archivo seleccionado
   const documentRef = useRef(null);
 
-  // Función que maneja la actualización del documento
-  const updateDocument = async (document, file) => {
-    const data = new FormData(); // Se utiliza FormData para enviar datos de forma multipart
-    data.append("document", JSON.stringify(document)); // Añadimos el documento como un string JSON
+ // Función que maneja la actualización del documento
+const insertDocument = async (document, file) => {
+  const data = new FormData(); // Se utiliza FormData para enviar datos de forma multipart
+  data.append("document", JSON.stringify(document)); // Añadimos el documento como un string JSON
 
-    // Si hay un archivo, también lo añadimos al FormData y usamos el endpoint que actualiza archivo y campos
-    if (file) {
-      data.append("file", file); // Añadimos el archivo PDF al FormData
-      return await fetch(
-        "http://localhost:8080/api/Documentos/insert", // Endpoint para actualizar archivo y campos
-        {
-          method: "POST", // Método PUT para actualizar
-          body: data, // Se envían los datos
-        }
-      );
-    } else {
-      // Si no hay archivo, se usa el endpoint que actualiza solo los campos
-      return await fetch("http://localhost:8080/api/Documentos/insert", {
-        method: "POST", // Método PUT para actualizar
-        body: data, // Se envían los datos sin archivo
-      });
-    }
-  };
+  // Credenciales del usuario
+  const username = 'danielGomez';
+  const password = 'CalamarRojo47';
+  const credentials = btoa(`${username}:${password}`); // Codificación Base64 de las credenciales
+
+  // Si hay un archivo, también lo añadimos al FormData y usamos el endpoint que actualiza archivo y campos
+  if (file) {
+    data.append("file", file); // Añadimos el archivo PDF al FormData
+    return await fetch(
+      "http://localhost:8080/api/Documentos/insert", // Endpoint para actualizar archivo y campos
+      {
+        method: "POST",
+        headers: {
+          'Authorization': `Basic ${credentials}`, // Añadir autenticación básica
+          // Aquí no necesitas 'Content-Type' ya que fetch maneja el tipo cuando se usa FormData
+        },
+        body: data, // Se envían los datos
+      }
+    );
+  } else {
+    // Si no hay archivo, se usa el endpoint que actualiza solo los campos
+    return await fetch("http://localhost:8080/api/Documentos/insert", {
+      method: "POST",
+      headers: {
+        'Authorization': `Basic ${credentials}`, // Añadir autenticación básica
+      },
+      body: data, // Se envían los datos sin archivo
+    });
+  }
+};
+
 
   // Función que se ejecuta al enviar el formulario
   const handleSubmit = async (e) => {
@@ -78,7 +91,7 @@ export default function Home() {
 
     // Llamada a la función que hace el fetch con la lógica adecuada para actualizar
     try {
-      const response = await updateDocument(document, file); // Llama a la función con el documento y el archivo (si existe)
+      const response = await insertDocument(document, file); // Llama a la función con el documento y el archivo (si existe)
 
       console.log(await response.json()); // Mostrar la respuesta en consola
     } catch (e) {
