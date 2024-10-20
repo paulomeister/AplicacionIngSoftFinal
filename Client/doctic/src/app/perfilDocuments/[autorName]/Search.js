@@ -61,21 +61,23 @@ export default function Search({ setSearchTitle, setFilterCategory, setFilterIdi
   };
 
   return (
-    <div className="container mx-auto p-6 flex-grow bg-[#DFE4F8] rounded relative mt-8 shadow-lg">
-      
-      {/* Barra de Búsqueda */}
-      <div className="relative flex items-center gap-2">
-          {/* Ícono FaSearch posicionado dentro del input */}
-          <FaSearch className="absolute left-4 text-gray-400" />
+   <div className="container mx-auto p-6 flex-grow bg-[#DFE4F8] rounded relative mt-8 shadow-lg">
           
-          <input
-          type="text"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)} // Actualiza el estado al escribir en la barra
-          placeholder="Buscar algo..."
-          className="flex-grow p-4 pl-12 rounded-full bg-white focus:outline-none focus:ring-4 focus:ring-blue-600 text-lg"
-          />
-      </div>
+      {/* Barra de Búsqueda */}
+  <div className="relative flex items-center">
+    {/* Ícono FaSearch posicionado dentro del input */}
+    <div className="absolute left-4 inset-y-0 flex items-center pointer-events-none">
+      <FaSearch className="text-gray-400" />
+    </div>
+    
+    <input
+      type="text"
+      value={searchQuery}
+      onChange={(e) => setSearchQuery(e.target.value)} // Actualiza el estado al escribir en la barra
+      placeholder="Buscar algo..."
+      className="w-full p-6 pl-12 rounded-full bg-white focus:outline-none focus:ring-4 focus:ring-blue-600 text-lg"
+    />
+  </div>
 
       {/* Botón estilo "pestaña" para abrir/cerrar filtros */}
       <button

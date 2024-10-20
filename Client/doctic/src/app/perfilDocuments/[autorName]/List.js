@@ -5,7 +5,7 @@ import axios from "axios";
 import { FaCalendarAlt, FaEye, FaEdit, FaTrash } from "react-icons/fa";
 import Link from "next/link";
 
-export default function List({ autorName, searchTitle, filterCategory, filterIdioma, filterDates }) {
+export default function List({ autorName, searchTitle, filterCategory, filterIdioma, filterDates, setAuthorNameFromList }) {
   const [documents, setDocuments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -23,6 +23,13 @@ export default function List({ autorName, searchTitle, filterCategory, filterIdi
         hasta: filterDates.to ? parseInt(filterDates.to) : "",
       });
       setDocuments(response.data);
+      
+      // Si obtenemos documentos, actualizamos el nombre del autor
+      if (response.data.length > 0) {
+        const firstAuthorName = response.data[0].autores[0]?.nombre;  // Obtenemos el primer autor
+        setAuthorNameFromList(firstAuthorName);  // Actualizamos el autor en PerfilDocuments
+      }
+
     } catch (err) {
       setError(err.message);
     } finally {

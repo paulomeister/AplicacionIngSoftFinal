@@ -10,39 +10,46 @@ export default function PerfilDocuments({ params }) {
   const [filterCategory, setFilterCategory] = useState([]); // Filtra Categorías como un array
   const [filterIdioma, setFilterIdioma] = useState(""); // Filtra Idiomas como string
   const [filterDates, setFilterDates] = useState({ from: "", to: "" }); // Filtra las fechas (desde, hasta)
+  const [authorNameFromList, setAuthorNameFromList] = useState("");  // Nuevo estado para el autor
 
   return (
-    <div className="min-h-screen bg-white text-black flex flex-col">
+    <div className="min-h-screen  text-black flex flex-col">
       {/* Contenedor para el título */}
-      <div className="container mx-auto p-6">
-        <h1 className="text-4xl font-bold text-left mb-8">
-          Documentos publicados por {autorName}
-        </h1>
-      </div>
-
+      <header className=" text-black py-6 mb-8">
+        <div className="container mx-auto px-6">
+          <h3 className="text-5xl font-bold text-center">
+            Documentos publicados por {authorNameFromList || autorName}
+          </h3>
+        </div>
+      </header>
+  
       {/* Contenedor para la barra de búsqueda */}
-      <div className="container mx-auto p-6">
+      <section className="container mx-auto px-6">
         <Search 
           setSearchTitle={setSearchTitle} 
           setFilterCategory={setFilterCategory} 
           setFilterIdioma={setFilterIdioma} 
           setFilterDates={setFilterDates} 
         />
-      </div>
-
+      </section>
+  
       {/* Contenedor para la lista de documentos */}
-      <div className="container mx-auto p-6 flex-grow">
+      <main className="container mx-auto px-6 py-8 flex-grow">
         <List 
           autorName={autorName} 
           searchTitle={searchTitle} 
           filterCategory={filterCategory} 
           filterIdioma={filterIdioma} 
           filterDates={filterDates} 
+          setAuthorNameFromList={setAuthorNameFromList}  
         />
-      </div>
+      </main>
+  
+      
     </div>
   );
 }
+
 
 
 
