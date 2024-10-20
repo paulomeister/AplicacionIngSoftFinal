@@ -78,7 +78,7 @@ public class JwtTokenVerifier extends OncePerRequestFilter {
         }
         catch(JwtException e) {
 
-            throw new IllegalStateException(String.format("Token \"%s\" no es confiable!", token));
+            throw new IllegalStateException(String.format("Token \"%s\" no es confiable!", token, e.getMessage()));
 
         }
 
