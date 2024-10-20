@@ -212,7 +212,7 @@ public class DocumentoService implements IDocumentoService {
 
             if (autores != null && !autores.isEmpty()) {
 
-                query.addCriteria(Criteria.where("autores.nombre").in(autores));
+                query.addCriteria(Criteria.where("autores.username").in(autores));
 
             }
 
