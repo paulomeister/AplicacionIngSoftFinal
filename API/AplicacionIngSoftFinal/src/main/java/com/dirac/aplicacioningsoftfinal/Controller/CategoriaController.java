@@ -3,6 +3,7 @@ package com.dirac.aplicacioningsoftfinal.Controller;
 import com.dirac.aplicacioningsoftfinal.Exception.IdNotFoundException;
 import com.dirac.aplicacioningsoftfinal.Service.ICategoriaService;
 
+import org.apache.catalina.connector.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,6 +40,11 @@ public class CategoriaController {
     @GetMapping("/getCatalog")
     public ResponseEntity<?> getCategoriesCatalog() {
         return ResponseEntity.status(HttpStatus.CREATED).body(categoriaService.getCatalog());
+    }
+
+    @GetMapping("/allDistinct")
+    public ResponseEntity<?> getAllDistinctCategories() {
+        return ResponseEntity.status().body(categoriaService.getCategoriesDistinct());
     }
 
 }

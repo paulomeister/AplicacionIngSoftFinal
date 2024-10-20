@@ -16,6 +16,6 @@ public interface ICategoriaService {
 
     List<CategoriaDTO> getCatalog();
 
-
+    List<CategoriaModel> getCategoriesDistinct();
 
 }

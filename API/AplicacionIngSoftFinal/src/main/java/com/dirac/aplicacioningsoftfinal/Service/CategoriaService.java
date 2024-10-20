@@ -92,4 +92,10 @@ public class CategoriaService implements ICategoriaService {
 
     }
 
+        @Override
+        public List<CategoriaModel> getCategoriesDistinct() {
+                // TODO Auto-generated method stub
+                throw new UnsupportedOperationException("Unimplemented method 'getCategoriesDistinct'");
+        }
+
 }
