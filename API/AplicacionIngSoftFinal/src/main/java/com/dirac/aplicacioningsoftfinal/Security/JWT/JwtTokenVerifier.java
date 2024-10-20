@@ -41,6 +41,7 @@ public class JwtTokenVerifier extends OncePerRequestFilter {
         if (Strings.isNullOrEmpty(authorizationHeader) || !authorizationHeader.startsWith(jwtConfigurationVariables.getTokenPrefix())) {
 
             filterChain.doFilter(request, response);
+            return;
 
         }
 
@@ -77,7 +78,7 @@ public class JwtTokenVerifier extends OncePerRequestFilter {
         }
         catch(JwtException e) {
 
-            throw new IllegalStateException(String.format("Token \"%s\" no es confiable!", token));
+            throw new IllegalStateException(String.format("Token \"%s\" no es confiable!", token, e.getMessage()));
 
         }
 

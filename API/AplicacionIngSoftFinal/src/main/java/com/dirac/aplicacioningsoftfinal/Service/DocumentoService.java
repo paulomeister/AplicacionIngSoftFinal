@@ -4,29 +4,47 @@ import com.dirac.aplicacioningsoftfinal.DTO.BusquedaFiltroDTO;
 import com.dirac.aplicacioningsoftfinal.DTO.OrdenDTO;
 import com.dirac.aplicacioningsoftfinal.DTO.Res;
 import com.dirac.aplicacioningsoftfinal.DTO.BusquedaOrdenarFiltrarDTO;
+import com.dirac.aplicacioningsoftfinal.DTO.DocDescargadosDTO;
+import com.dirac.aplicacioningsoftfinal.DTO.ArchivoDTO;
+import com.dirac.aplicacioningsoftfinal.DTO.HistorialDocumentosDTO;
 import com.dirac.aplicacioningsoftfinal.DTO.UrlDTO;
 import com.dirac.aplicacioningsoftfinal.Exception.CreationException;
 import com.dirac.aplicacioningsoftfinal.Exception.DeleteException;
+import com.dirac.aplicacioningsoftfinal.Exception.DownloadDocumentException;
 import com.dirac.aplicacioningsoftfinal.Exception.IdNotFoundException;
-import com.dirac.aplicacioningsoftfinal.Exception.InvalidVisibilityException;
 import com.dirac.aplicacioningsoftfinal.Exception.NoSuchDocumentFoundException;
 import com.dirac.aplicacioningsoftfinal.Exception.UpdateException;
+import com.dirac.aplicacioningsoftfinal.Exception.UsuarioNotFoundException;
 import com.dirac.aplicacioningsoftfinal.Model.DocumentoModel;
 import com.dirac.aplicacioningsoftfinal.Model.DocumentoModel.DatosComputados;
+import com.dirac.aplicacioningsoftfinal.Model.UsuarioModel;
 import com.dirac.aplicacioningsoftfinal.Repository.IDocumentoRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.api.client.auth.oauth2.Credential;
+import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
+import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
+import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
+import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.ByteArrayContent;
+import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
+import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.drive.DriveScopes;
+import com.google.api.services.drive.model.File;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.services.drive.Drive;
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.GeneralSecurityException;
+import java.time.LocalDate;
 import java.util.Collections;
 
 import org.bson.types.ObjectId;
@@ -38,16 +56,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.view.RedirectView;
-import java.io.InputStream;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -57,31 +67,67 @@ public class DocumentoService implements IDocumentoService {
 
     private final IDocumentoRepository documentoRepository;
     private final MongoTemplate mongoTemplate;
+    @Autowired
+    private IUsuarioService usuarioService;
 
+    @Autowired
+    public DocumentoService(IDocumentoRepository documentoRepository, MongoTemplate mongoTemplate) {
+        this.documentoRepository = documentoRepository;
+        this.mongoTemplate = mongoTemplate;
+    }
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
+    
+    private static final String APPLICATION_NAME = "AplicacionIngSoftFinal";
     private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
-    private static final String SERVICE_ACOUNT_KEY_PATH = getPathToGoodleCredentials();
+    private static final String TOKENS_DIRECTORY_PATH = "tokens";
+    private static final List<String> SCOPES = Collections.singletonList(DriveScopes.DRIVE_FILE);
+    private static final String CREDENTIALS_FILE_PATH = "./credentials.json";
+    private final static String folderId = "1mdVe9JNnoWZKE7eN9n-szy4Zk2u8DAuV";
+    
+    private Credential getDriveCredentials(NetHttpTransport HTTP_TRANSPORT) throws GeneralSecurityException, IOException {
+        
+        InputStream in = DriveService.class.getResourceAsStream(CREDENTIALS_FILE_PATH);
+        if (in == null) {
+            throw new FileNotFoundException("Resource not found: " + CREDENTIALS_FILE_PATH);
+        }
 
-    private static String getPathToGoodleCredentials() {
-        String currentDirectory = System.getProperty("user.dir");
-        Path filePath = Paths.get(currentDirectory, "cred.json");
-        return filePath.toString();
+        GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(in)); // Secrets
+        
+        GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(
+            HTTP_TRANSPORT, JSON_FACTORY, clientSecrets, SCOPES)
+                .setDataStoreFactory(new FileDataStoreFactory(new java.io.File(TOKENS_DIRECTORY_PATH)))
+                .setAccessType("offline")
+                .build();
+
+        LocalServerReceiver receiver = new LocalServerReceiver.Builder().setPort(8888).setCallbackPath("/Callback").build();
+        return new AuthorizationCodeInstalledApp(flow, receiver).authorize("user");
+
     }
 
-    public String uploadImageToDrive(MultipartFile file) throws GeneralSecurityException, IOException {
+    public Drive createDrive() throws GeneralSecurityException, IOException{
+
+        final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport(); // TRANSPORT
+
+        Drive drive = new Drive.Builder(HTTP_TRANSPORT, JSON_FACTORY, getDriveCredentials(HTTP_TRANSPORT))
+        .setApplicationName(APPLICATION_NAME)
+        .build(); 
+        return drive;
+    }
+
+
+    public String uploadToDrive(MultipartFile file) throws GeneralSecurityException, IOException {
 
         String res;
 
         try {
-            String folderId = "1mdVe9JNnoWZKE7eN9n-szy4Zk2u8DAuV";
-
-            Drive drive = createDriveService();
+            
+            Drive drive = createDrive(); // Crea el documento drive
 
             com.google.api.services.drive.model.File fileMetaData = new com.google.api.services.drive.model.File();
             fileMetaData.setName(file.getOriginalFilename());
             fileMetaData.setParents(Collections.singletonList(folderId));
 
+            //Contenido del header
             ByteArrayContent mediaContent = new ByteArrayContent("application/pdf", file.getBytes());
 
             // Sube el archivo a Google Drive
@@ -91,44 +137,33 @@ public class DocumentoService implements IDocumentoService {
             // retorna el id de lo que se subió
             res = uploadedFile.getId();
         } catch (Exception e) {
-            res = "ERROR";
+            res = e.getMessage();
         }
         return res;
     }
 
-    private Drive createDriveService() throws GeneralSecurityException, IOException {
 
-        GoogleCredential credential = GoogleCredential.fromStream(new FileInputStream(SERVICE_ACOUNT_KEY_PATH))
-                .createScoped(Collections.singleton(DriveScopes.DRIVE));
-
-        return new Drive.Builder(
-                GoogleNetHttpTransport.newTrustedTransport(),
-                JSON_FACTORY,
-                credential).build();
-
-    }
-
-    public com.google.api.services.drive.model.File getFileById(String fileId)
-            throws GeneralSecurityException, IOException {
-        Drive drive = createDriveService();
+    public com.google.api.services.drive.model.File getFileById(String fileId) throws GeneralSecurityException, IOException {
+        Drive drive = createDrive(); 
         return drive.files().get(fileId).setFields("id, name, mimeType").execute();
     }
 
-    public byte[] downloadFile(String fileId) throws GeneralSecurityException, IOException {
-        Drive drive = createDriveService();
+     public byte[] downloadFile(String fileId) throws GeneralSecurityException, IOException {
+         
+        Drive drive = createDrive(); // crea el servicio de drive
+
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
         drive.files().get(fileId).executeMediaAndDownloadTo(outputStream);
         return outputStream.toByteArray(); // Devuelve el contenido del archivo como byte[]
-    }
+     }
+
+
+
+
+
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    @Autowired
-    public DocumentoService(IDocumentoRepository documentoRepository, MongoTemplate mongoTemplate) {
-        this.documentoRepository = documentoRepository;
-        this.mongoTemplate = mongoTemplate;
-    }
 
     public UrlDTO recuperarUrlById(ObjectId id) {
 
@@ -139,7 +174,6 @@ public class DocumentoService implements IDocumentoService {
         return url;
 
     }
-
 
     // FILTRAR POR
     public List<DocumentoModel> busquedaFiltroDocumentos(BusquedaFiltroDTO entrada) {
@@ -178,7 +212,7 @@ public class DocumentoService implements IDocumentoService {
 
             if (autores != null && !autores.isEmpty()) {
 
-                query.addCriteria(Criteria.where("autores.nombre").in(autores));
+                query.addCriteria(Criteria.where("autores.username").in(autores));
 
             }
 
@@ -270,7 +304,6 @@ public class DocumentoService implements IDocumentoService {
             }
 
         }
-        //
 
         Boolean tieneOrden = entrada.getTieneOrden();
         List<OrdenDTO> orden = entrada.getOrden();
@@ -296,7 +329,7 @@ public class DocumentoService implements IDocumentoService {
 
     }
 
-    // --- --- //
+    // --- GETTERS --- //
 
     public DocumentoModel getDocumentById(ObjectId _id) {
 
@@ -366,159 +399,312 @@ public class DocumentoService implements IDocumentoService {
 
         return documents;
     }
+
     public List<DocumentoModel> getRecentDocuments() {
-        
+
         Pageable pageable = PageRequest.of(0, 5);
         List<DocumentoModel> documents = documentoRepository.findRecentDocuments(pageable);
-    
+
         if (documents.isEmpty()) {
             throw new NoSuchDocumentFoundException("No se encontraron documentos recientes.");
         }
-    
+
         return documents;
     }
 
     public List<DocumentoModel> getTopRatedDocuments() {
-        Pageable pageable = PageRequest.of(0, 5);  // Página 0, 5 resultados
+        Pageable pageable = PageRequest.of(0, 5); // Página 0, 5 resultados
         List<DocumentoModel> documents = documentoRepository.findTopRatedDocuments(pageable);
-    
+
         if (documents.isEmpty()) {
             throw new NoSuchDocumentFoundException("No se encontraron documentos valorados.");
         }
-    
+
         return documents;
     }
 
     public List<DocumentoModel> getMostDownloadedDocuments() {
-        Pageable pageable = PageRequest.of(0, 5);  // Página 0, 5 resultados
+        Pageable pageable = PageRequest.of(0, 5); // Página 0, 5 resultados
         List<DocumentoModel> documents = documentoRepository.findMostDownloadedDocuments(pageable);
-    
+
         if (documents.isEmpty()) {
             throw new NoSuchDocumentFoundException("No se encontraron documentos descargados.");
         }
-    
+        
         return documents;
     }
-
-
-    public ResponseEntity<?> downloadDocumentById(ObjectId id) throws Exception {
-        UrlDTO resultado = recuperarUrlById(id);
-        String visibilidad = resultado.getVisibilidad();
-
-        if (visibilidad.equals("publico")) {
-            DocumentoModel document = getDocumentById(id);
-            updateDownloadStats(document);
-
-            String url = resultado.getUrlArchivo();
-            URL castedUrl = new URL(url);
-            URLConnection connection = castedUrl.openConnection();
-            InputStream inputStream = connection.getInputStream();
-
-            String nombreArchivo = url.substring(url.lastIndexOf("/") + 1);
-            HttpHeaders headers = new HttpHeaders();
-            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; nombre=" + nombreArchivo);
-
-            return ResponseEntity.ok()
-                    .headers(headers)
-                    .contentType(MediaType.APPLICATION_PDF)
-                    .body(new InputStreamResource(inputStream));
-        }
-
-        return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                .body(String.format("El documento con id \"%s\" no se encuentra disponible para descargar", id));
-    }
-
-    public RedirectView downloadDocumentByTitle(String titulo) {
-        DocumentoModel document = getDocumentByTitle(titulo);
-        if (!document.getVisibilidad().equals("publico")) {
-            throw new InvalidVisibilityException();
-        }
-
-        updateDownloadStats(document);
-        return new RedirectView(document.getUrlArchivo());
-    }
-
-    public void updateDownloadStats(DocumentoModel document) {
-        DatosComputados datosComputados = document.getDatosComputados();
-        long descargasTotales = datosComputados.getDescargasTotales() + 1;
-        double valoracionPromedio = datosComputados.getValoracionPromedio();
-        long comentariosTotales = datosComputados.getComentariosTotales();
-
-        document.setDatosComputados(new DatosComputados(descargasTotales, valoracionPromedio, comentariosTotales));
-        documentoRepository.save(document);
-    }
-
+    
+    // FILE
     @Override
-    public String insertDocument(DocumentoModel documento) {
-        try {
-            documentoRepository.save(documento);
-            return "El documento con _id: " + documento.get_id() + " fue guardado con éxito";
-        } catch (Error e) {
-            throw new CreationException("documento");
-        }
-    }
-
-    @Override
-    public String updateDocument(ObjectId idDocumentoAntiguo, DocumentoModel documentoNuevo) {
-
+    public ArchivoDTO viewTheFile(String fileId, String userId, ObjectId documentId) {
         try {
 
-            DocumentoModel documentoAntiguo = documentoRepository.findById(idDocumentoAntiguo)
-                    .orElseThrow(() -> new IdNotFoundException("No se pudo hallar un documento con ese id"));
+            byte[] fileBytes = downloadFile(fileId);
+            com.google.api.services.drive.model.File file = getFileById(fileId);
 
-            // Each attribute is kept on
-            if (documentoNuevo.getAutores() != null)
-                documentoAntiguo.setAutores(documentoNuevo.getAutores());
+            // if(fileBytes.length != 0){ // Verifica que si se haya obtenido un archivo
 
-            if (documentoNuevo.getDatosComputados() != null)
-                documentoAntiguo.setDatosComputados(documentoNuevo.getDatosComputados());
+            //     // Se obtiene el documento el cuál se está descargando para verificar si existe.
+            //     DocumentoModel documentoDownloading = getDocumentById(documentId);
+    
+            //     // obtenemos el usuario que está descargando:
+            //     UsuarioModel usuarioDownloading = usuarioService.getUserById(userId).orElseThrow(
+            //             () -> new UsuarioNotFoundException("el usuario con el id, no fue encontrado" + userId));
+    
+            //     // Actualizaremos el campo del "historial" en el documento
+            //     UsuarioModel.Historial nuevoDoc = new UsuarioModel.Historial();
+    
+            //     nuevoDoc.setDocumentoId(documentoDownloading.get_id());
+            //     nuevoDoc.setFechaHora(LocalDate.now());
+    
+            //     List<UsuarioModel.Historial> historialDocumentos = usuarioDownloading.getHistorialDocumentos();
+            //     historialDocumentos.add(nuevoDoc); // se añade ese nuevo documento
+            //     usuarioDownloading.setHistorialDocumentos(historialDocumentos); // se lo setea
+    
+            //     // ACTUALIZAR en la base de datos
+            //     usuarioService.insertUser(usuarioDownloading);
+            // }
+                       
+            return new ArchivoDTO(file, fileBytes);
 
-            if (documentoNuevo.getDescripcion() != null)
-                documentoAntiguo.setDescripcion(documentoNuevo.getDescripcion());
-
-            if (documentoNuevo.getFechaSubida() != null)
-                documentoAntiguo.setFechaSubida(documentoNuevo.getFechaSubida());
-
-            if (documentoNuevo.getIdioma() != null)
-                documentoAntiguo.setIdioma(documentoNuevo.getIdioma());
-
-            if (documentoNuevo.getKeywords() != null)
-                documentoAntiguo.setKeywords(documentoNuevo.getKeywords());
-
-            if (documentoNuevo.getTitulo() != null)
-                documentoAntiguo.setTitulo(documentoNuevo.getTitulo());
-
-            if (documentoNuevo.getUrlArchivo() != null)
-                documentoAntiguo.setUrlArchivo(documentoNuevo.getUrlArchivo());
-
-            if (documentoNuevo.getValoraciones() != null)
-                documentoAntiguo.setValoraciones(documentoNuevo.getValoraciones());
-
-            if (documentoNuevo.getVisibilidad() != null)
-                documentoAntiguo.setVisibilidad(documentoNuevo.getVisibilidad());
-
-            // Document is saved
-            documentoRepository.save(documentoAntiguo);
-
-            return "El documento con _id " + documentoAntiguo.get_id() + " fue actualizado con éxito";
-
-        } catch (Error e) {
-            throw new UpdateException("documento\n" + e.getMessage());
+        } catch (Exception err) {
+            throw new DownloadDocumentException();
         }
 
     }
 
     @Override
-    public String deleteDocument(ObjectId _id) {
+    public ArchivoDTO downloadTheFile(String fileId, String userId, ObjectId documentId) {
         try {
-            documentoRepository.deleteById(_id);
 
-            return "El documento con _id " + _id + "fue eliminado con éxito.";
+            byte[] fileBytes = downloadFile(fileId);
+            com.google.api.services.drive.model.File file = getFileById(fileId);
+            
+            // // obtenemos el documento el cuál se está descargando
+            // DocumentoModel documentoDownloading = getDocumentById(documentId);
+            // // se crea un nuevo DTO de DatosComputados
+            // DatosComputados nuevosDatos = new DatosComputados();
+        
+            // // Se le añade uno a la descarga y lo demás queda igual
+            // long descargasTotales = documentoDownloading.getDatosComputados().getDescargasTotales() + 1; 
+            // double valoracionPromedio = documentoDownloading.getDatosComputados().getValoracionPromedio();
+            // long comentariosTotales = documentoDownloading.getDatosComputados().getComentariosTotales();
+
+            // // Se actualizan los datos
+            // nuevosDatos.setDescargasTotales(descargasTotales); 
+            // nuevosDatos.setValoracionPromedio(valoracionPromedio);
+            // nuevosDatos.setComentariosTotales(comentariosTotales);
+        
+            // // Se actualizan los datos computados en el documento
+            // documentoDownloading.setDatosComputados(nuevosDatos); 
+
+            // // Obtenemos el usuario que está descargando:
+            // UsuarioModel usuarioDownloading = usuarioService.getUserById(userId).orElseThrow(
+            //         () -> new UsuarioNotFoundException("el usuario con el id, no fue encontrado" + userId));
+
+            // //Se actualizará el campo de documentos descargados
+            // UsuarioModel.Descargados nuevoDoc = new UsuarioModel.Descargados();
+            // nuevoDoc.setDocumentoId(documentoDownloading.get_id());
+            // nuevoDoc.setFechaHora(LocalDate.now());
+
+            // List<UsuarioModel.Descargados> docsActualizados = usuarioDownloading.getDocDescargados();
+            // docsActualizados.add(nuevoDoc); //Se añade un nuevo Documento
+            // usuarioDownloading.setDocDescargados(docsActualizados); // Se actualizan los nuevos documentos
+
+            // // Actualiza en la base de datos
+            // usuarioService.insertUser(usuarioDownloading);
+            // documentoRepository.save(documentoDownloading);
+
+            return new ArchivoDTO(file, fileBytes);
 
         } catch (Exception e) {
-            throw new DeleteException("documento\n" + e.getMessage());
+            throw new DownloadDocumentException();
+        }
 
+    }
+
+    // INSERT
+
+    @Override
+    public Res insertDocument(MultipartFile file, String documentoJson) throws IOException, GeneralSecurityException {
+        try {
+            // Convertir el JSON a uno de tipo DocumentoModel
+            ObjectMapper mapper = new ObjectMapper();
+            DocumentoModel documento = mapper.readValue(documentoJson, DocumentoModel.class);
+
+            // Se sube el documento al repositorio
+            String documentURL = uploadToDrive(file);
+
+            documento.setUrlArchivo(documentURL); // Se modifica la nueva url del documento, el cuál es el ID del
+                                                  // documento!
+            documentoRepository.save(documento);
+
+            Res respuesta = new Res();
+
+            respuesta.setMessage("El documento con _id: " + documento.get_id()
+                    + " fue guardado con éxito y con fileId: " + documentURL);
+            respuesta.setStatus(200);
+
+            return respuesta;
+        } catch (Exception e) {
+            throw new CreationException("Documento");
         }
     }
 
+    public String insertDocument(DocumentoModel document) {
+        try {
+            documentoRepository.save(document);
+            String documentId = document.getIdAsString();
+            return "El documento " + documentId + " fue guardado con éxito";
+        } catch (Exception e) {
+            throw new CreationException("Documento");
+        }
+    }
+
+    // UPDATE
+
+    // Método común para actualizar los campos del documento.
+
+    private void actualizarCamposDocumento(DocumentoModel documentoNuevo, DocumentoModel documentoAntiguo) {
+        if (documentoNuevo.getAutores() != null)
+            documentoAntiguo.setAutores(documentoNuevo.getAutores());
+
+        if (documentoNuevo.getDatosComputados() != null)
+            documentoAntiguo.setDatosComputados(documentoNuevo.getDatosComputados());
+
+        if (documentoNuevo.getDescripcion() != null)
+            documentoAntiguo.setDescripcion(documentoNuevo.getDescripcion());
+
+        if (documentoNuevo.getFechaSubida() != null)
+            documentoAntiguo.setFechaSubida(documentoNuevo.getFechaSubida());
+
+        if (documentoNuevo.getIdioma() != null)
+            documentoAntiguo.setIdioma(documentoNuevo.getIdioma());
+
+        if (documentoNuevo.getKeywords() != null)
+            documentoAntiguo.setKeywords(documentoNuevo.getKeywords());
+
+        if (documentoNuevo.getTitulo() != null)
+            documentoAntiguo.setTitulo(documentoNuevo.getTitulo());
+
+        if (documentoNuevo.getValoraciones() != null)
+            documentoAntiguo.setValoraciones(documentoNuevo.getValoraciones());
+
+        if (documentoNuevo.getVisibilidad() != null)
+            documentoAntiguo.setVisibilidad(documentoNuevo.getVisibilidad());
+    }
+
+    @Override
+    public String updateDocument(String documentoStringifeado) {
+        try {
+            // Convertir el JSON a un DocumentoModel
+            ObjectMapper mapper = new ObjectMapper();
+            DocumentoModel documentoNuevo = mapper.readValue(documentoStringifeado, DocumentoModel.class);
+
+            // Obtener el documento antiguo por ID
+            DocumentoModel documentoAntiguo = getDocumentById(documentoNuevo.get_id());
+
+            if (documentoAntiguo == null) {
+                throw new NoSuchDocumentFoundException(
+                        "No existe un documento válido para el id: " + documentoNuevo.get_id().toHexString());
+            }
+
+            // Actualizar los campos del documento (sin archivo)
+            actualizarCamposDocumento(documentoNuevo, documentoAntiguo);
+
+            // Guardar el documento actualizado en la base de datos
+            documentoRepository.save(documentoAntiguo);
+
+            return "El documento fue actualizado exitosamente";
+
+        } catch (Exception e) {
+            throw new UpdateException("documento\n" + e.getMessage());
+        }
+    }
+
+    @Override
+    public String updateDocumentFile(String documentoJson, MultipartFile file) {
+        try {
+            // Convertir el JSON a un DocumentoModel
+            ObjectMapper mapper = new ObjectMapper();
+            DocumentoModel documentoNuevo = mapper.readValue(documentoJson, DocumentoModel.class);
+
+            // Obtener el documento antiguo por ID
+            DocumentoModel documentoAntiguo = getDocumentById(documentoNuevo.get_id());
+
+            if (documentoAntiguo == null) {
+                throw new NoSuchDocumentFoundException(
+                        "No existe un documento válido para el id: " + documentoNuevo.get_id().toHexString());
+            }
+
+            // Actualizar los campos del documento (sin archivo)
+            actualizarCamposDocumento(documentoNuevo, documentoAntiguo);
+
+            // Manejo del archivo: subir a Drive y actualizar el URL
+            String oldUrlArchivo = documentoAntiguo.getUrlArchivo();
+            String newUrlArchivo = uploadToDrive(file);
+            documentoAntiguo.setUrlArchivo(newUrlArchivo);
+
+            // Guardar el documento actualizado en la base de datos
+            documentoRepository.save(documentoAntiguo);
+
+            // Eliminar el archivo antiguo de Drive
+            if (oldUrlArchivo != null && !oldUrlArchivo.isEmpty()) {
+                deleteFileById(oldUrlArchivo);
+            }
+
+            return "El documento, junto con su archivo, fueron actualizados correctamente.";
+
+        } catch (Exception e) {
+            throw new UpdateException("PDF del Documento\n" + e.getMessage());
+        }
+    }
+    // DELETE:
+
+    @Override
+    public Res deleteDocument(ObjectId _id) {
+
+        Res respuesta = new Res();
+
+        try {
+            String documentUrl = documentoRepository.findById(_id)
+                    .orElseThrow(() -> new IdNotFoundException("Document id was not found")).getUrlArchivo();
+
+            // Se eliminan ambos
+            deleteFileById(documentUrl);
+            documentoRepository.deleteById(_id);
+
+            respuesta.setMessage("El documento con _id " + _id + " fue eliminado con éxito.");
+            respuesta.setStatus(200);
+
+        } catch (Exception e) {
+
+            respuesta.setMessage("No se pudo eliminar ese Documento :(");
+            respuesta.setStatus(500);
+            
+        }
+        return respuesta;
+    }
+
+    @Override
+    public String deleteFileById(String fileId) throws GeneralSecurityException, IOException {
+        String result;
+
+        try {
+
+            Drive drive = createDrive();
+
+            // Elimina el archivo con el fileId proporcionado
+            drive.files().delete(fileId).execute();
+
+            result = "El archivo con ID:" + fileId + "fue eliminado con éxito.";
+
+        } catch (Exception e) {
+
+            result = "ERROR: No se pudo eliminar ese documento del repositorio\n\n" + e.getMessage();
+
+        }
+        return result;
+    }
+      
 }

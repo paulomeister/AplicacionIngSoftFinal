@@ -4,6 +4,10 @@ import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import com.dirac.aplicacioningsoftfinal.DTO.DocDescargadosDTO;
+import com.dirac.aplicacioningsoftfinal.DTO.DocSubidosDTO;
+import com.dirac.aplicacioningsoftfinal.DTO.HistorialDocumentosDTO;
+import com.dirac.aplicacioningsoftfinal.DTO.PerfilDTO;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;
