@@ -29,6 +29,25 @@ public class CategoriaModel {
 
     private String nombre;
     private String descripcion;
+
+ 
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Data
+    public static class subCategorias {
+
+        @Id
+        private ObjectId categoriaId;
+
+        @JsonProperty("categoriaId")
+        public String returnIdAsString() {
+            return categoriaId != null ? categoriaId.toHexString() : null;
+        }
+
+    }
+
+
+
     private List<Map<String, String>> subcategorias;
     private String imagen;
 }

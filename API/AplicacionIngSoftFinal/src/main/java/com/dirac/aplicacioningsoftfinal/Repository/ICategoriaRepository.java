@@ -14,4 +14,5 @@ public interface ICategoriaRepository extends MongoRepository<CategoriaModel, St
 
     @Query(value = "{'_id': ?0}")
     List<CategoriaModel> findSubcategories(String id);
+    
 }
