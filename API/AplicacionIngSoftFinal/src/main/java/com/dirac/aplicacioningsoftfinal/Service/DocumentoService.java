@@ -521,4 +521,10 @@ public class DocumentoService implements IDocumentoService {
         }
     }
 
+    @Override
+    public String createDocument(DocumentoModel documento) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'createDocument'");
+    }
+
 }
