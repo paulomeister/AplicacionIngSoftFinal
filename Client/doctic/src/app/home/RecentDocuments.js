@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { FaCalendarAlt, FaStar, FaArrowDown, FaEye, FaClock } from "react-icons/fa"; 
-import Link from "next/link";  // Importar el componente Link
+import Link from "next/link";
+import axios from "axios";
 
 export default function Documentos() {
   const [documents, setDocuments] = useState([]);
@@ -10,19 +11,35 @@ export default function Documentos() {
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState(0); // 0: recientes, 1: valorados, 2: descargados
 
+
+
+  const axiosInstance = axios.create({
+    baseURL: "http://localhost:8080",
+  });
+
+
   const fetchDocuments = async (endpoint) => {
     setLoading(true);
+    setError(null);
     try {
-      const response = await fetch(`http://localhost:8080${endpoint}`);
-      if (!response.ok) throw new Error("Error al obtener los documentos");
-
-      const data = await response.json();
-      setDocuments(data);
-    } catch (err) {
-      setError(err.message);
+      const response = await axiosInstance.get(endpoint);
+      setDocuments(response.data);
+    } catch (err){
+      if (err.response) {
+        // El servidor respondió con un código de estado fuera del rango 2xx
+        setError(`Error: ${err.response.status} ${err.response.statusText}`);
+      } else if (err.request) {
+        // La solicitud fue hecha pero no hubo respuesta
+        setError("Error: No se recibió respuesta del servidor");
+      } else {
+        // Algo pasó al configurar la solicitud
+        setError(`Error: ${err.message}`);
+      }
     } finally {
       setLoading(false);
     }
+
+    
   };
 
   useEffect(() => {
