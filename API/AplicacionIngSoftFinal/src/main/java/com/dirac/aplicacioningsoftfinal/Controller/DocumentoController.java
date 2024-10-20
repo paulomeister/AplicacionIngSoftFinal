@@ -2,24 +2,29 @@ package com.dirac.aplicacioningsoftfinal.Controller;
 
 import com.dirac.aplicacioningsoftfinal.DTO.BusquedaFiltroDTO;
 import com.dirac.aplicacioningsoftfinal.DTO.BusquedaOrdenarFiltrarDTO;
+import com.dirac.aplicacioningsoftfinal.DTO.ArchivoDTO;
+import com.dirac.aplicacioningsoftfinal.DTO.Res;
 import com.dirac.aplicacioningsoftfinal.Exception.CreationException;
 import com.dirac.aplicacioningsoftfinal.Exception.DeleteException;
-import com.dirac.aplicacioningsoftfinal.Exception.InvalidVisibilityException;
 import com.dirac.aplicacioningsoftfinal.Exception.NoSuchDocumentFoundException;
 import com.dirac.aplicacioningsoftfinal.Exception.UpdateException;
 import com.dirac.aplicacioningsoftfinal.Model.DocumentoModel;
 import com.dirac.aplicacioningsoftfinal.Repository.IDocumentoRepository;
 import com.dirac.aplicacioningsoftfinal.Service.IDocumentoService;
+import com.dirac.aplicacioningsoftfinal.Service.IUsuarioService;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
-import org.springframework.web.servlet.view.RedirectView;
-
-import java.net.URI;
+import org.springframework.web.multipart.MultipartFile;
+import com.google.api.services.drive.model.File;
+import com.google.common.base.Optional;
+import com.google.common.net.HttpHeaders;
+import org.springframework.http.MediaType;
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -40,33 +45,86 @@ public class DocumentoController {
     @Autowired
     IDocumentoRepository documentoRepository;
 
-    @GetMapping("id/{id}/download")
-    public ResponseEntity<?> downloadDocumentById(@PathVariable("id") ObjectId id) {
+    @Autowired
+    IUsuarioService usuarioService;
+
+    //                                                              DRIVE                                                              
+
+    @GetMapping("/getFileById")
+    public ResponseEntity<Object> getFileById(@RequestParam("fileId") String fileId) {
         try {
-            return documentoService.downloadDocumentById(id);
-        } catch (NoSuchDocumentFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(String.format("El documento con id \"%s\" no se encuentra disponible", id));
+
+            com.google.api.services.drive.model.File file = documentoService.getFileById(fileId);
+
+            // Construye la URL para la visualización
+            String previewUrl = "https://drive.google.com/file/d/" + file.getId() + "/preview";
+
+            // Devuelve la URL en la respuesta
+            return ResponseEntity.ok(previewUrl);
+
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Ha ocurrido un error durante la descarga del documento.");
+                    .body("Error fetching file: " + e.getMessage());
+        }
+    }
+  
+
+    // VIEW
+    // !el fileId debe de ser el que se guarda en la BD, no el que está en google
+      // ejemplo:
+    // http://localhost:8080/api/Documentos/viewFile?fileId=10Hx51uIibcJEx7h8AWs6Rd5o7KFVqtRD&userId=66ebbc56e9670a5556f9781a&documentId=123412341234123212341239
+
+    @GetMapping("/viewFile")
+    public ResponseEntity<?> viewFile(@RequestParam("fileId") String fileId,
+            @RequestParam("userId") String userId,
+            @RequestParam("documentId") ObjectId documentId) {
+        try {
+
+            System.out.println("entra en el controller");
+            ArchivoDTO dto = documentoService.viewTheFile(fileId, userId, documentId);
+            System.out.println("sale en el controller");
+
+            File file = dto.getFile();
+            byte[] fileBytes = dto.getFileBytes();
+
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + file.getName() + "\"")
+                    .contentType(MediaType.APPLICATION_PDF)
+                    .body(fileBytes);
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("El documento no se pudo visualizar correctamente\n" + e.getMessage());
         }
     }
 
-    @GetMapping("titulo/{titulo}/download")
-    public RedirectView downloadDocumentByTitle(@PathVariable("titulo") String titulo) {
+    // DOWNLOAD
+    // !el fileId debe de ser el que se guarda en la BD, no el que está en google
+    // ejemplo:
+    // http://localhost:8080/api/Documentos/downloadFile?fileId=10Hx51uIibcJEx7h8AWs6Rd5o7KFVqtRD&userId=66ebbc56e9670a5556f9781a&documentId=123412341234123212341239
+    @GetMapping("/downloadFile")
+    public ResponseEntity<?> downloadFile(@RequestParam("fileId") String fileId,
+            @RequestParam("userId") String userId,
+            @RequestParam("documentId") ObjectId documentId) {
         try {
-            return documentoService.downloadDocumentByTitle(titulo);
-        } catch (NoSuchDocumentFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
-                    String.format("El documento con título \"%s\" no se encuentra disponible", titulo));
-        } catch (InvalidVisibilityException e) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "El documento no es visible para descarga.");
+
+            ArchivoDTO archivo = documentoService.downloadTheFile(fileId, userId, documentId);
+
+            File file = archivo.getFile();
+            byte[] fileBytes = archivo.getFileBytes();
+
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + file.getName() + "\"")
+                    .contentType(MediaType.APPLICATION_PDF)
+                    .body(fileBytes);
+
         } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
-                    "Ha ocurrido un error durante la descarga del documento.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("El documento no se pudo descargar\n\n" + e.getMessage());
         }
     }
+
+    //                                ----------------------------- BÚSQUEDA -----------------------------
 
     @PostMapping("/onSearch/filter/")
     public ResponseEntity<List<DocumentoModel>> findAndFilterDocuments(@RequestBody BusquedaFiltroDTO queryParams) {
@@ -82,6 +140,8 @@ public class DocumentoController {
 
     }
 
+    // ordenar por
+
     @PostMapping("/onSearch/filter/orderBy")
     public ResponseEntity<List<DocumentoModel>> findFilterAndOrder(@RequestBody BusquedaOrdenarFiltrarDTO queryParams) {
 
@@ -96,14 +156,14 @@ public class DocumentoController {
 
     }
 
-    // --- --- //
+    //                                --- -GETTERS -- //
 
     @GetMapping("/id/{_id}")
     public ResponseEntity<?> findDocumentByID(@PathVariable("_id") ObjectId _id) {
 
         try {
 
-            DocumentoModel document = documentoService.getDocument(_id);
+            DocumentoModel document = documentoService.getDocumentById(_id);
 
             return new ResponseEntity<DocumentoModel>(document, HttpStatus.OK);
 
@@ -128,6 +188,36 @@ public class DocumentoController {
 
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
 
+        }
+    }
+
+    @GetMapping("/recent")
+    public ResponseEntity<?> getRecentDocuments() {
+        try {
+            List<DocumentoModel> documents = documentoService.getRecentDocuments();
+            return new ResponseEntity<>(documents, HttpStatus.OK);
+        } catch (NoSuchDocumentFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/top-rated")
+    public ResponseEntity<?> getTopRatedDocuments() {
+        try {
+            List<DocumentoModel> documents = documentoService.getTopRatedDocuments();
+            return new ResponseEntity<>(documents, HttpStatus.OK);
+        } catch (NoSuchDocumentFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/most-downloaded")
+    public ResponseEntity<?> getMostDownloadedDocuments() {
+        try {
+            List<DocumentoModel> documents = documentoService.getMostDownloadedDocuments();
+            return new ResponseEntity<>(documents, HttpStatus.OK);
+        } catch (NoSuchDocumentFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
 
@@ -179,81 +269,138 @@ public class DocumentoController {
         }
     }
 
-    @GetMapping("/view/{_id}")
-    public ResponseEntity<?> viewDocument(@PathVariable ObjectId _id) {
-        try {
-            DocumentoModel document = documentoService.getDocument(_id);
-
-            if (document.getUrlArchivo() != null) {
-                URI location = URI.create(document.getUrlArchivo());
-
-                return ResponseEntity.status(HttpStatus.FOUND)
-                        .location(location).build();
-            } else {
-                return ResponseEntity.badRequest().build();
-            }
-        } catch (NoSuchDocumentFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        }
-    }
-
     @GetMapping("/getByLenguage/{idioma}")
     public ResponseEntity<?> findDocumentsByLenguage(@PathVariable("idioma") String idioma) {
         try {
-            List<DocumentoModel> documents = documentoService.getDocumentsByLenguage(idioma);
+            List<DocumentoModel> documents = documentoService.getDocumentsByLanguage(idioma);
             return new ResponseEntity<>(documents, HttpStatus.OK);
         } catch (NoSuchDocumentFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
 
-    // CREATE
+  //                                                                INSERTAR
+
+    // /api/Documentos/insert
+    // Método para insertar al "repositorio" y a la bd.
 
     @PostMapping("/insert")
-    public ResponseEntity<?> insertDocuments(@RequestBody DocumentoModel documento) {
+    public ResponseEntity<?> insertDocuments(
+            @RequestParam("document") String documentoJson,
+            @RequestParam("file") MultipartFile file) {
+
+        Res respuesta;
+
+        try {
+            respuesta = documentoService.insertDocument(file, documentoJson);
+            return new ResponseEntity<Res>(respuesta, HttpStatus.CREATED);
+
+        } 
+        
+        catch (CreationException err) {
+
+            respuesta = new Res(500,"Error al crear la publicación/documento: \n" + err.getMessage());
+            return ResponseEntity.status(500).body(respuesta);
+
+        } catch (IOException | GeneralSecurityException e) {
+
+            respuesta = new Res(500, "Error al subir el PDF");
+            return ResponseEntity.status(500).body(respuesta);
+        }
+    }
+
+    // ACTUALIZAR SOLAMENTE LOS DATOS y NO el archivo.
+    @PutMapping("/updateDoc")
+    public ResponseEntity<?> updateDocuments(@RequestParam("document") String documentToBeUpdated) {
+        Res respuesta = new Res();
         try {
 
-            String message = documentoService.createDocument(documento);
-            return new ResponseEntity<String>(message, HttpStatus.CREATED);
+            String mensaje = documentoService.updateDocument(documentToBeUpdated);
 
-        } catch (CreationException err) {
+            respuesta.setMessage(mensaje);
+            respuesta.setStatus(200);
+            return new ResponseEntity<Res>(respuesta, HttpStatus.OK);
 
-            return ResponseEntity.status(500).body(err.getMessage());
+        } catch (UpdateException err) {
+
+            respuesta.setMessage("El documento no pudo ser actualizado por lo siguiente: " + err.getMessage());
+            respuesta.setStatus(500);
+
+            return ResponseEntity.status(500).body(respuesta);
 
         }
     }
 
-    // UPDATE
-
-    @PutMapping("/update/{_id}")
-    public ResponseEntity<?> updateDocuments(@PathVariable("_id") ObjectId _id, @RequestBody DocumentoModel documento) {
+    @PutMapping("/updateDocWithFile") // ACTUALIZA TANTO LOS ATRIBUTOS como el nuevo URL
+    public ResponseEntity<?> updateDocumentAndFile(
+            @RequestParam("document") String documentToBeUpdated,
+            @RequestParam("file") MultipartFile file) {
+                Res respuesta = new Res();
         try {
 
-            String message = documentoService.updateDocument(_id, documento);
+            String message = documentoService.updateDocumentFile(documentToBeUpdated, file);
 
-            return new ResponseEntity<String>(message, HttpStatus.OK);
+            respuesta.setMessage(message);
+            respuesta.setStatus(200);
+
+            return new ResponseEntity<Res>(respuesta, HttpStatus.OK);
 
         } catch (UpdateException err) {
 
-            return ResponseEntity.status(500).body(err.getMessage());
+            respuesta.setMessage(err.getMessage());
+            respuesta.setStatus(500);
+
+            return ResponseEntity.status(500).body(respuesta);
 
         }
     }
 
     // DELETE
 
-    @DeleteMapping("/delete/{_id}")
+    @DeleteMapping("/delete/{_id}") // Este es el object ID
     public ResponseEntity<?> updateDocuments(@PathVariable("_id") ObjectId _id) {
+
+        Res message;
+
         try {
 
-            String message = documentoService.deleteDocument(_id);
+            message = documentoService.deleteDocument(_id);
 
-            return new ResponseEntity<String>(message, HttpStatus.OK);
+            return new ResponseEntity<Res>(message, HttpStatus.OK);
 
         } catch (DeleteException err) {
 
-            return ResponseEntity.status(500).body(err.getMessage());
+            message = new Res(500,"No se pudo eliminar el documento con ID: " + _id.toString());
+
+            return ResponseEntity.status(500).body(message);
 
         }
     }
+
+
+    @PostMapping("/uploadToDrive")
+    public ResponseEntity<Res> uploadToDrive(@RequestParam("file") MultipartFile file){
+        
+        System.out.println("Entró\n\n\n\n\n\n\n\n");
+
+        int status;
+        String res = "";
+
+        try{
+            
+            res = documentoService.uploadToDrive(file);
+            status = 200;
+
+        }catch(Exception e){
+            res = e.getMessage();
+            status = 500;
+        }
+
+        Res respuesta = new Res(status, res);
+
+        return ResponseEntity.status(status).body(respuesta);
+
+    }
+
+
 }

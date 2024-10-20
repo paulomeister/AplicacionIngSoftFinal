@@ -2,8 +2,6 @@ package com.dirac.aplicacioningsoftfinal.Service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import com.dirac.aplicacioningsoftfinal.DTO.UsuarioDTO;
 import com.dirac.aplicacioningsoftfinal.Model.UsuarioModel;
 import com.dirac.aplicacioningsoftfinal.Repository.IUsuarioRepository;
 
@@ -16,15 +14,20 @@ public class UsuarioService implements IUsuarioService {
     private IUsuarioRepository usuarioRepository;
 
     @Override
-    public Optional<UsuarioDTO> getUserById(String id){
-        Optional<UsuarioModel> usuarioModelOptional = usuarioRepository.findById(id);
-        return usuarioModelOptional.map(UsuarioDTO::fromUsuarioModel);
+    public Optional<UsuarioModel> getUserById(String id){
+        return usuarioRepository.findById(id);
     }
 
     @Override
-    public Optional<UsuarioDTO> getUserByUserName(String name) {
-        Optional<UsuarioModel> usuarioModelOptional = usuarioRepository.findUserByUserName(name);
-        return usuarioModelOptional.map(UsuarioDTO::fromUsuarioModel);
+    public Optional<UsuarioModel> getUserByUsername(String username) {
+        return usuarioRepository.findUserByUserName(username);
     }
+
+    @Override
+    public String insertUser(UsuarioModel usuario) {
+        usuarioRepository.save(usuario);
+        return "El usuario con _id: " + usuario.get_idAString() + "  sido guardado con éxito";
+    }
+
 }
 
