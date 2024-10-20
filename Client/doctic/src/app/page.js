@@ -100,48 +100,8 @@ const insertDocument = async (document, file) => {
   };
 
   return (
-    <>
-      <form
-        id="prueba"
-        onSubmit={handleSubmit} // Aquí se pasa la función correctamente
-        style={{
-          color: "white",
-          width: "100vw",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          flexDirection: "column",
-          marginTop: "200px",
-        }}
-      >
-        <h1>Sube tu documento a DOCTIC</h1>
-
-        <div style={{color:"white",marginBottom:"15px"}}> 
-          {/* Esta es una idea.. */}
-          <h2>Atributo 1..</h2>
-          <input></input>
-          <h2>Atributo 2..</h2>
-          <input></input>
-          <h2>Atributo N..</h2>
-          <input></input>
-        </div>
-
-        <input
-          type="file"
-          id="inputDocument"
-          accept=".pdf"
-          ref={documentRef} // Referencia al archivo para poder acceder a él
-        />
-        <button
-          style={{
-            border: "1px solid white",
-            margin: "30px",
-            display: "block",
-          }}
-        >
-          Enviar documento
-        </button>
-      </form>
-    </>
+    <div>
+      <h1>This is the homepage</h1>
+    </div>
   );
 }

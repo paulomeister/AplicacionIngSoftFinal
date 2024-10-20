@@ -74,3 +74,4 @@ next-env.d.ts
 
 application.properties
 
+tokens/StoredCredential

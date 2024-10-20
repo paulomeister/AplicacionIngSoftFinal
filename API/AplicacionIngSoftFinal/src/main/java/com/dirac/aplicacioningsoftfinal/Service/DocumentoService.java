@@ -82,7 +82,7 @@ public class DocumentoService implements IDocumentoService {
     private static final String TOKENS_DIRECTORY_PATH = "tokens";
     private static final List<String> SCOPES = Collections.singletonList(DriveScopes.DRIVE_FILE);
     private static final String CREDENTIALS_FILE_PATH = "./credentials.json";
-    private final static String folderId = "11sdYL6JJtIq1NSYEwPS1GwSxplfmXEXm";
+    private final static String folderId = "1mdVe9JNnoWZKE7eN9n-szy4Zk2u8DAuV";
     
     private Credential getDriveCredentials(NetHttpTransport HTTP_TRANSPORT) throws GeneralSecurityException, IOException {
         
@@ -111,7 +111,6 @@ public class DocumentoService implements IDocumentoService {
         Drive drive = new Drive.Builder(HTTP_TRANSPORT, JSON_FACTORY, getDriveCredentials(HTTP_TRANSPORT))
         .setApplicationName(APPLICATION_NAME)
         .build(); 
-
         return drive;
     }
 
@@ -443,28 +442,28 @@ public class DocumentoService implements IDocumentoService {
             byte[] fileBytes = downloadFile(fileId);
             com.google.api.services.drive.model.File file = getFileById(fileId);
 
-            if(fileBytes.length != 0){ // Verifica que si se haya obtenido un archivo
+            // if(fileBytes.length != 0){ // Verifica que si se haya obtenido un archivo
 
-                // Se obtiene el documento el cuál se está descargando para verificar si existe.
-                DocumentoModel documentoDownloading = getDocumentById(documentId);
+            //     // Se obtiene el documento el cuál se está descargando para verificar si existe.
+            //     DocumentoModel documentoDownloading = getDocumentById(documentId);
     
-                // obtenemos el usuario que está descargando:
-                UsuarioModel usuarioDownloading = usuarioService.getUserById(userId).orElseThrow(
-                        () -> new UsuarioNotFoundException("el usuario con el id, no fue encontrado" + userId));
+            //     // obtenemos el usuario que está descargando:
+            //     UsuarioModel usuarioDownloading = usuarioService.getUserById(userId).orElseThrow(
+            //             () -> new UsuarioNotFoundException("el usuario con el id, no fue encontrado" + userId));
     
-                // Actualizaremos el campo del "historial" en el documento
-                UsuarioModel.Historial nuevoDoc = new UsuarioModel.Historial();
+            //     // Actualizaremos el campo del "historial" en el documento
+            //     UsuarioModel.Historial nuevoDoc = new UsuarioModel.Historial();
     
-                nuevoDoc.setDocumentoId(documentoDownloading.get_id());
-                nuevoDoc.setFechaHora(LocalDate.now());
+            //     nuevoDoc.setDocumentoId(documentoDownloading.get_id());
+            //     nuevoDoc.setFechaHora(LocalDate.now());
     
-                List<UsuarioModel.Historial> historialDocumentos = usuarioDownloading.getHistorialDocumentos();
-                historialDocumentos.add(nuevoDoc); // se añade ese nuevo documento
-                usuarioDownloading.setHistorialDocumentos(historialDocumentos); // se lo setea
+            //     List<UsuarioModel.Historial> historialDocumentos = usuarioDownloading.getHistorialDocumentos();
+            //     historialDocumentos.add(nuevoDoc); // se añade ese nuevo documento
+            //     usuarioDownloading.setHistorialDocumentos(historialDocumentos); // se lo setea
     
-                // ACTUALIZAR en la base de datos
-                usuarioService.insertUser(usuarioDownloading);
-            }
+            //     // ACTUALIZAR en la base de datos
+            //     usuarioService.insertUser(usuarioDownloading);
+            // }
                        
             return new ArchivoDTO(file, fileBytes);
 
@@ -481,40 +480,40 @@ public class DocumentoService implements IDocumentoService {
             byte[] fileBytes = downloadFile(fileId);
             com.google.api.services.drive.model.File file = getFileById(fileId);
             
-            // obtenemos el documento el cuál se está descargando
-            DocumentoModel documentoDownloading = getDocumentById(documentId);
-            // se crea un nuevo DTO de DatosComputados
-            DatosComputados nuevosDatos = new DatosComputados();
+            // // obtenemos el documento el cuál se está descargando
+            // DocumentoModel documentoDownloading = getDocumentById(documentId);
+            // // se crea un nuevo DTO de DatosComputados
+            // DatosComputados nuevosDatos = new DatosComputados();
         
-            // Se le añade uno a la descarga y lo demás queda igual
-            long descargasTotales = documentoDownloading.getDatosComputados().getDescargasTotales() + 1; 
-            double valoracionPromedio = documentoDownloading.getDatosComputados().getValoracionPromedio();
-            long comentariosTotales = documentoDownloading.getDatosComputados().getComentariosTotales();
+            // // Se le añade uno a la descarga y lo demás queda igual
+            // long descargasTotales = documentoDownloading.getDatosComputados().getDescargasTotales() + 1; 
+            // double valoracionPromedio = documentoDownloading.getDatosComputados().getValoracionPromedio();
+            // long comentariosTotales = documentoDownloading.getDatosComputados().getComentariosTotales();
 
-            // Se actualizan los datos
-            nuevosDatos.setDescargasTotales(descargasTotales); 
-            nuevosDatos.setValoracionPromedio(valoracionPromedio);
-            nuevosDatos.setComentariosTotales(comentariosTotales);
+            // // Se actualizan los datos
+            // nuevosDatos.setDescargasTotales(descargasTotales); 
+            // nuevosDatos.setValoracionPromedio(valoracionPromedio);
+            // nuevosDatos.setComentariosTotales(comentariosTotales);
         
-            // Se actualizan los datos computados en el documento
-            documentoDownloading.setDatosComputados(nuevosDatos); 
+            // // Se actualizan los datos computados en el documento
+            // documentoDownloading.setDatosComputados(nuevosDatos); 
 
-            // Obtenemos el usuario que está descargando:
-            UsuarioModel usuarioDownloading = usuarioService.getUserById(userId).orElseThrow(
-                    () -> new UsuarioNotFoundException("el usuario con el id, no fue encontrado" + userId));
+            // // Obtenemos el usuario que está descargando:
+            // UsuarioModel usuarioDownloading = usuarioService.getUserById(userId).orElseThrow(
+            //         () -> new UsuarioNotFoundException("el usuario con el id, no fue encontrado" + userId));
 
-            //Se actualizará el campo de documentos descargados
-            UsuarioModel.Descargados nuevoDoc = new UsuarioModel.Descargados();
-            nuevoDoc.setDocumentoId(documentoDownloading.get_id());
-            nuevoDoc.setFechaHora(LocalDate.now());
+            // //Se actualizará el campo de documentos descargados
+            // UsuarioModel.Descargados nuevoDoc = new UsuarioModel.Descargados();
+            // nuevoDoc.setDocumentoId(documentoDownloading.get_id());
+            // nuevoDoc.setFechaHora(LocalDate.now());
 
-            List<UsuarioModel.Descargados> docsActualizados = usuarioDownloading.getDocDescargados();
-            docsActualizados.add(nuevoDoc); //Se añade un nuevo Documento
-            usuarioDownloading.setDocDescargados(docsActualizados); // Se actualizan los nuevos documentos
+            // List<UsuarioModel.Descargados> docsActualizados = usuarioDownloading.getDocDescargados();
+            // docsActualizados.add(nuevoDoc); //Se añade un nuevo Documento
+            // usuarioDownloading.setDocDescargados(docsActualizados); // Se actualizan los nuevos documentos
 
-            // Actualiza en la base de datos
-            usuarioService.insertUser(usuarioDownloading);
-            documentoRepository.save(documentoDownloading);
+            // // Actualiza en la base de datos
+            // usuarioService.insertUser(usuarioDownloading);
+            // documentoRepository.save(documentoDownloading);
 
             return new ArchivoDTO(file, fileBytes);
 
@@ -541,6 +540,7 @@ public class DocumentoService implements IDocumentoService {
             documentoRepository.save(documento);
 
             Res respuesta = new Res();
+
             respuesta.setMessage("El documento con _id: " + documento.get_id()
                     + " fue guardado con éxito y con fileId: " + documentURL);
             respuesta.setStatus(200);
@@ -566,7 +566,6 @@ public class DocumentoService implements IDocumentoService {
     // Método común para actualizar los campos del documento.
 
     private void actualizarCamposDocumento(DocumentoModel documentoNuevo, DocumentoModel documentoAntiguo) {
-
         if (documentoNuevo.getAutores() != null)
             documentoAntiguo.setAutores(documentoNuevo.getAutores());
 
@@ -707,5 +706,5 @@ public class DocumentoService implements IDocumentoService {
         }
         return result;
     }
-
+      
 }
