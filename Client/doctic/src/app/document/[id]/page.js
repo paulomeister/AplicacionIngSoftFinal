@@ -4,6 +4,7 @@
 import { useEffect, useState } from 'react';
 import { DocBasicInfo } from './components/DocBasicInfo';
 import { PdfViewer } from './components/PdfViewer';
+import { instance } from 'app/app/api/axios';
 
 export default function Page({params}) {
   const id = params.id;
@@ -11,19 +12,20 @@ export default function Page({params}) {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const getData = async () => {
-      try {
-        const res = await fetch(`http://localhost:8080/api/Documentos/id/${id}`);
-        if (!res.ok) {
-          throw new Error('Failed to fetch data');
-        }
-        const data = await res.json();
-        setData(data);
-      } catch (error) {
-        setError(error.message);
-      }
-    };
 
+    const getData = () => {
+      instance.get(`/Documentos/id/${id}`)
+      .then((response) => {
+        setData(response.data);
+      })
+      .catch((error) => {
+        if(error.response) {
+          setError(response.data);
+        } else {
+          console.log('Error', error.message);
+        }
+      })
+    }
     getData();
   }, []);
 
@@ -40,6 +42,7 @@ export default function Page({params}) {
       authors={data.autores}
       date={data.fechaSubida}
     />
+    {/*Recordar que userId = '', documentId= '' estan parseados por default para pruebas*/}
     <PdfViewer url={data.urlArchivo}/>
     </>
   )

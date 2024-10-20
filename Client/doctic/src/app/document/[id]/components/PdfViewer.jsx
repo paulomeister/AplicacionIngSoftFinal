@@ -7,7 +7,7 @@ import '@react-pdf-viewer/core/lib/styles/index.css';
 import '@react-pdf-viewer/default-layout/lib/styles/index.css';
 
 
-export const PdfViewer = ({ url }) => {
+export const PdfViewer = ({ url, userId = '', documentId= '' }) => {
 
     const transform = (slot) => ({
         ...slot,
@@ -40,7 +40,9 @@ export const PdfViewer = ({ url }) => {
         <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.js">
             <div style={{ height: '750px' }}>
                 <Viewer
-                    fileUrl={`/api/proxy?urlArchivo=${encodeURIComponent(url)}`}
+                    // xxxxxx fileUrl={`/api/proxy?urlArchivo=${encodeURIComponent(url)}`}
+                    // |||||| fileUrl={`http://localhost:8080/Documentos/viewFile?fileId=${url}&userId=${userId}&documentId=${documentId}`}
+                    fileUrl={`http://localhost:8080/Documentos/viewFile?fileId=${url}&userId=${userId}&documentId=${documentId}`}
                     plugins={[ defaultLayoutPluginInstance ]}
                 />
             </div>
