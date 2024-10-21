@@ -41,6 +41,7 @@ export const PdfViewer = ({ url, userId = '', documentId= '' }) => {
             <div  style={{ height: '750px' }}>
                 <Viewer
                     fileUrl={"http://localhost:8080/api/Documentos/viewFile?userId=66ebbc56e9670a5556f9781a&documentId=67132a785e9ca46b7f477a6a&fileId=1h1moDyZaGABnwspsFgnJj_0OFDLeM9ZC"}
+                    defaultScale={1.5}
                     plugins={[ defaultLayoutPluginInstance ]}
                 />
             </div>
