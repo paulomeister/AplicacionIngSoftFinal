@@ -1,0 +1,41 @@
+.filter-input, .filter-select {
+    border: 1px solid #ccc;
+    color: rgb(0, 0, 0);
+    border-radius: 10px;
+    margin: 10px;
+    margin-right: 10px;
+    margin-bottom: 10px;
+    padding: 10px;
+  }
+
+.filter-select {
+  margin-right: 40px;
+}
+
+.filter-input {
+  width: 20vw;
+  min-width: 250px;
+}
+
+.filter-btn{
+  background-color: #f3f0ff;  
+  color: rgb(0, 0, 0);
+  border: none;
+  cursor: pointer;
+  padding: 9px;
+  border-radius: 10px;
+  font-size: 85%;
+  margin-left: 10px;
+}
+    
+.filter-btn:hover {
+  background-color: #ffffff;
+}
+
+.hidden {
+  display: none;
+}
+
+.visble{
+  display: block;
+}

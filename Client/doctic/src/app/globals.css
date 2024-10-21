@@ -4,13 +4,8 @@
 
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #000000;
 }
-
-* {
-  box-sizing: border-box;
-}
-
 
 body {
   color: var(--foreground);
