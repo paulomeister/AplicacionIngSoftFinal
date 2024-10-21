@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { FaCalendarAlt, FaEye, FaEdit, FaTrash } from "react-icons/fa";
 import Link from "next/link";
+import { SpinerComp } from "app/app/document/[id]/components/SpinnerComp";
 
 export default function List({ autorName, searchTitle, filterCategory, filterIdioma, filterDates, setAuthorNameFromList }) {
   const [documents, setDocuments] = useState([]);
@@ -53,13 +54,12 @@ export default function List({ autorName, searchTitle, filterCategory, filterIdi
     console.log(`Eliminar documento con ID: ${id}`);
   };
 
-  if (loading) return <p className="text-center mt-8 text-lg">Cargando documentos...</p>;
+  if (loading) return <SpinerComp />;
   if (error) return <p className="text-center text-red-500 mt-8 text-lg">Error: {error}</p>;
 
   return (
-    <div className="container mx-auto p-6 flex-grow">
-      
-      <ul className="space-y-8">
+    <div className="container p-6 flex-grow">
+      <ul className="space-y-8 text-left"> {/* Asegura la alineación izquierda */}
         {documents.map((doc) => (
           <li key={doc._id} className="p-6 bg-white rounded shadow-md border">
             <h2 className="text-2xl font-semibold mb-2">{doc.titulo}</h2>
@@ -69,7 +69,7 @@ export default function List({ autorName, searchTitle, filterCategory, filterIdi
             <p className="text-base text-gray-600 mb-2 font-semibold">
               {doc.categoria.map((cat) => cat.nombre).join(", ")}
             </p>
-
+  
             <div className="flex justify-between items-center mt-4">
               <div className="flex gap-8">
                 <div className="flex items-center gap-2 text-gray-600">
@@ -83,12 +83,12 @@ export default function List({ autorName, searchTitle, filterCategory, filterIdi
                   </span>
                 </div>
               </div>
-
+  
               <div className="flex gap-4">
                 <Link href={`/document/${doc._id}`} className="flex items-center gap-2 text-blue-600 hover:underline">
                   <FaEye /> Ver
                 </Link>
-
+  
                 {/* Botón para Editar */}
                 <button 
                   onClick={() => handleEdit(doc._id)} 
@@ -96,7 +96,7 @@ export default function List({ autorName, searchTitle, filterCategory, filterIdi
                 >
                   <FaEdit /> Editar
                 </button>
-
+  
                 {/* Botón para Eliminar */}
                 <button 
                   onClick={() => handleDelete(doc._id)} 
