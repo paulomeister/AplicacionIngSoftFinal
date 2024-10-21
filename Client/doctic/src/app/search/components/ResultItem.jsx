@@ -12,7 +12,7 @@ const ResultItem = ({ results }) => {
           {/* Renderizar autores */}
           <div className="result-params">
           <p><strong className="result-author">Subido por: </strong> 
-            {result.autores.map((autor, i) => (
+            {result.autores?.map((autor, i) => (
               <span key={i}>{autor.nombre}, </span>
             ))}
           </p>
@@ -21,7 +21,7 @@ const ResultItem = ({ results }) => {
           {/* Renderizar categoría */}
           <div className="result-params">
           <p><strong>Categorías: </strong>
-          {result.categoria.map((cat, i) => (
+          {result.categoria?.map((cat, i) => (
             <span key={i}>{cat.nombre}, </span>
           ))}</p>
           </div>
