@@ -1,6 +1,6 @@
 export const DownloadButton = ({ url }) => {
   return (
-    <section className="flex flex-row justify-center">
+    <div className="flex flex-row justify-center items-center">
       <p className="text-sm">¿Quieres descargarlo?</p>
       <button
         onClick={() => window.open(url)}
@@ -9,6 +9,6 @@ export const DownloadButton = ({ url }) => {
       >
         Descargar PDF
       </button>
-    </section>
+    </div>
   );
 };
