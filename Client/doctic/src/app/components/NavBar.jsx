@@ -16,16 +16,18 @@ const Navbar = () => {
     <nav style={{ backgroundColor: '#001E58', padding: '10px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
    
       <div style={{ display: 'flex', alignItems: 'center' }}>
-        <Image src="/logo.png" alt="Logo" width={50} height={50} />
-        <h1 style={{ color: 'white', marginLeft: '10px' }}>DocTIC</h1>
+        <Link href="/" style={{ display: 'flex', alignItems: 'center' }}>
+          <Image src="/logo.png" alt="Logo" width={50} height={50} />
+          <h1 style={{ color: 'white', marginLeft: '10px' }}>DocTIC</h1>
+        </Link>
       </div>
 
       <div style={{ display: 'flex', gap: '20px' }}>
         <Link href="/" style={{ color: 'white', textDecoration: 'none' }}>
           Inicio
         </Link>
-        <Link href="/acerca-de" style={{ color: 'white', textDecoration: 'none' }}>
-          Acerca de
+        <Link href="/search" style={{ color: 'white', textDecoration: 'none' }}>
+          Buscar
         </Link>
       </div>
 

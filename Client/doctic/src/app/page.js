@@ -1,8 +1,1 @@
-export default function Home() {
-
-  return (
-    <div>
-      <h1>This is the homepage</h1>
-    </div>
-  );
-}
+/* IMPLEMENTED A REDIRECTION PATH FRON NEXT.CONFIG.MJS FROM ROOT ROUTE '/' TO '/HOME' WHERE IS THE CATALOG */
