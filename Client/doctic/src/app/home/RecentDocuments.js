@@ -81,10 +81,10 @@ export default function Documentos() {
             <li key={doc._id} className="p-6 bg-white rounded shadow-md border">
               <h2 className="text-2xl font-semibold mb-2">{doc.titulo}</h2>
               <p className="text-lg text-gray-700 mb-1">
-                <span className="font-semibold">Subido por:</span> {doc.autores[0]?.nombre}
+                <span className="font-semibold">Subido por:</span> {doc.autores?.[0].nombre}
               </p>
               <p className="text-base text-gray-600 mb-2 font-semibold">
-                {doc.categoria.map((cat) => cat.nombre).join(", ")}
+                {doc.categoria?.map((cat) => cat.nombre).join(", ")}
               </p>
 
               {/* Metadatos del documento */}
@@ -103,12 +103,12 @@ export default function Documentos() {
 
                   <div className={`flex items-center gap-2 ${getHighlightClass('rating')}`}>
                     <FaStar />
-                    <span>{doc.datosComputados.valoracionPromedio} / 5</span>
+                    <span>{doc.datosComputados?.valoracionPromedio == null ? 'Sin calificación' : `${doc.datosComputados?.valoracionPromedio} /5`}</span>
                   </div>
 
                   <div className={`flex items-center gap-2 ${getHighlightClass('downloads')}`}>
                     <FaArrowDown />
-                    <span>{doc.datosComputados.descargasTotales} descargas</span>
+                    <span>{doc.datosComputados?.descargasTotales || '0'} descargas</span>
                   </div>
                 </div>
 

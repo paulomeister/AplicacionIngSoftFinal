@@ -12,7 +12,7 @@ export const DocBasicInfo = ({ title, description, visibility, category, authors
       {/* Authors */}
       <a href='#' className={styles.authorText}>
         {authors
-          .filter(aut => aut.nombre)
+          ?.filter(aut => aut.nombre)
           .map((aut, index, array) => (
             <span
               id={index}
@@ -49,7 +49,7 @@ export const DocBasicInfo = ({ title, description, visibility, category, authors
 
       {/* Categories */}
       <div className={styles.categoriesContainer}>
-        {category.map((cat, index) => (
+        {category?.map((cat, index) => (
           <span key={index} className={styles.categoryBadge}>
             {cat.nombre}
           </span>
