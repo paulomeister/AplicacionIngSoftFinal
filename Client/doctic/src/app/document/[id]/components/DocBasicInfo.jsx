@@ -1,8 +1,9 @@
 import React from 'react';
 import styles from '../document.module.css';
 import { formatDate } from '../../../utils/dateUtils';
+import Link from 'next/link';
 
-export const DocBasicInfo = ({ title, description, visibility, category, authors, date }) => {
+export const DocBasicInfo = ({ title, description, visibility, category, authors, date, username }) => {
   
   return (
     <div className={styles.basicInfo}>
@@ -10,23 +11,24 @@ export const DocBasicInfo = ({ title, description, visibility, category, authors
       <h1 className={styles.title}>{title}</h1>
 
       {/* Authors */}
-      <a href='#' className={styles.authorText}>
-        {authors
+      {authors
           ?.filter(aut => aut.nombre)
           .map((aut, index, array) => (
-            <span
-              id={index}
-              key={index}
-              className={aut.estaRegistrado ? styles.authorTextReg : styles.authorTextUnReg}
-            >
-              {aut.nombre}
-            </span>
+            <Link href={`/perfilDocuments/${aut.username}`} className={styles.authorText} key={index}>
+              <span
+                id={index}
+                key={index}
+                className={aut.estaRegistrado ? styles.authorTextReg : styles.authorTextUnReg}
+              >
+                {aut.nombre}
+              </span>
+            </Link>
           ))
           .reduce((prev, curr, index) => (
             index === 0 ? [curr] : [...prev, ', ', curr] // Añadir coma entre autores, pero no al final
           ), [])
         }
-      </a>
+      
 
 
       {/* Date */}

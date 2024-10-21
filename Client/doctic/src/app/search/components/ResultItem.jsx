@@ -1,6 +1,7 @@
 'use client';
 import React from "react";
 import "./ResultItem.css";
+import Link from "next/link";
 
 const ResultItem = ({ results }) => {
   return (
@@ -29,7 +30,9 @@ const ResultItem = ({ results }) => {
           <p><strong>Disponible desde:</strong> {new Date(result.fechaSubida).toLocaleDateString()}</p>
 
           <div className="result-actions">
-            <button onClick={() => window.open(result.urlArchivo)}>Ver</button>
+            <button>
+              <Link href={`/document/${result._id}`}>Ver</Link>
+            </button>
           </div>
         </div>
       ))}
