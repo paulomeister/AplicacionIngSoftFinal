@@ -6,7 +6,6 @@
     margin-top: 3vh;
     border-radius: 8px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    width: 80vw;
     overflow: hidden;
     text-overflow: ellipsis; 
     white-space: nowrap;
@@ -42,8 +41,4 @@
   p{
     font-size: 80%;
     color: #686767;
-  }
-
-  .result-author{
-    color: #000000;
   }

@@ -1,23 +1,17 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import './AuthorInfo.css';
-import conection from './conection';
+import conectionUser from '../utils/conectionUser';
 
 const AuthorInfo = () => {
   const [autor, setAutor] = useState({});
 
-  useEffect(() => {
-    const fetchAuthorInfo = async () => {
-      try {
-        const response = await conection();
-        setAutor(response);
-      } catch (error) {
-        console.error(error);
-      }
-    };
+  const getAuthorInfo = async () => {
+    const response = await conectionUser();
+    setAutor(response);
+  }
 
-    fetchAuthorInfo();
-  }, []);
+  getAuthorInfo();
 
   return (
     <div className="author-info">
@@ -28,10 +22,12 @@ const AuthorInfo = () => {
       <div className="info-box">
         <p>Nombre: {autor.perfil?.nombre}</p>
         <p>Apellido: {autor.perfil?.apellido}</p>
+        <p>email: {autor.email}</p>
         <p>Fecha de registro: {autor.fechaRegistro}</p>
       </div>
     </div>
   );
 };
+
 
 export default AuthorInfo;

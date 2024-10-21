@@ -2,8 +2,11 @@
 import React, { useState, useEffect } from "react";
 import ResultItem from "./ResultItem";
 import conection from "./conection";
+import {AlertPop} from './AlertPopup';
+import SortMenu from './SortMenu';
+import "./ResultList.css";
 
-const ResultsList = ({ busqueda, sortCriteria }) => {
+const ResultsList = ({ busqueda, sortCriteria, onSortChange }) => {
   const [results, setResults] = useState([]); 
   const [loading, setLoading] = useState(true); 
   const [error, setError] = useState(null);
@@ -41,7 +44,7 @@ const ResultsList = ({ busqueda, sortCriteria }) => {
     });
   };
 
-  // ------- Ordenar los resultados filtrados según el criterio de orden -------
+  // ----------------------- Ordenar los resultados filtrados según el criterio de orden -------------------------
   const applySort = (results) => {
 
     return [...results].sort((a, b) => {
@@ -74,34 +77,30 @@ const ResultsList = ({ busqueda, sortCriteria }) => {
       }
     });
   };
+  //------------------------------------------------------------------------------------------------------------------
   
-
   // ------- Aplicar Filtros y Ordenamiento en los resultados -------
   const getFilteredAndSortedResults = () => {
     let filteredResults = applyFilters(results); 
     return applySort(filteredResults); 
   };
 
-  //------- Manejo del estado de carga -------------
-  if (loading) {
-    return <div>Cargando...</div>;
-  }
-
-  // ----------- Manejo de errores -------------- 
-  if (error) {
-    return <div>Error: {error}</div>;
-  }
-
-  // --------- Manejo de caso en el que no haya resultados -------- 
   const finalResults = getFilteredAndSortedResults();
 
-  if (finalResults.length === 0) {
-    return <div>No se encontraron documentos</div>;
+  // ------- Manejo de estado de carga y errores -------
+  if ((loading)||(error)||(finalResults.length === 0)) {
+    return (
+      <div className="results-error">
+        <AlertPop error={error} loading={loading} finalResults={finalResults}/>
+      </div>
+    )
   }
 
+  // ------- Renderizar resultados -------
   return (
     <div className="results-list">
       <ResultItem results={finalResults} />
+      <SortMenu onSortChange={onSortChange}/>
     </div>
   );
 };

@@ -1,9 +1,9 @@
 'use client';
 import React, { useState } from "react";
-import "./Search.css";
 import ResultsList from "./ResultsList";
 import SortMenu from "./SortMenu";
 import Filter from "./Filter";
+import "./Search.css";
 
 const Search = () => {
   const [mostrarResultados, setMostrarResultados] = useState(false); 
@@ -103,7 +103,7 @@ const Search = () => {
   };
 
   return (
-    <>
+    <div className="search-container">
       <div className="filter-container">
         <div className="search-bar">
           <input
@@ -132,11 +132,10 @@ const Search = () => {
       {/*------ Mostrar resultados después de buscar ------*/}
       {mostrarResultados && (
         <div className="divider">
-          <ResultsList busqueda={busqueda} sortCriteria={sortCriteria} /> {/* Pasa el criterio de orden */}
-          <SortMenu onSortChange={handleSortChange} /> {/* Pasa la función de ordenamiento */}
+          <ResultsList busqueda={busqueda} sortCriteria={sortCriteria} onSortChange={handleSortChange}/> {/* Pasa el criterio de orden */}
         </div>
       )}
-    </>
+    </div>
   );
 };
 

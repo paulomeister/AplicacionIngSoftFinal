@@ -1,11 +1,14 @@
 .sort-menu {
-  width: 150px;
+  min-width: 220px;
+  min-height: 260px;
+  max-height: 260px;
   background-color: #d1d1d1;
   padding: 10px;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   height: 100%;
-  margin-top: 1.5%;
+  margin-top: 25px;
+  margin-left: 50px;
 }
 
 .arrow-button {
@@ -24,7 +27,7 @@
 }
 
 .sort-options li {
-  padding: 5% 0;
+  padding: 8px 0;
   text-align: left;
   color: #333;
   cursor: pointer;
