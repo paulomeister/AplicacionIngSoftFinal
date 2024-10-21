@@ -1,0 +1,14 @@
+.results-error {
+    display: flex;
+    justify-content: center; 
+    align-items: center; 
+    width: 100%;
+  }
+  
+  .results-list{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 96vw;
+    overflow: hidden;
+  }
