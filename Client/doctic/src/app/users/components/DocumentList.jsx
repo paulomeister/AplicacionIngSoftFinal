@@ -1,60 +1,78 @@
-'use client';
+'use client';  
 import React, { useState, useEffect } from 'react';
-import conectionUser from '../utils/conectionUser';
+import { useRouter } from 'next/navigation';  
 import conectionDocuments from '../utils/conectionDocuments';
 import DocumentItem from './DocumentItem';
+import { AlertPop } from '../utils/AlertPopup';
 import './DocumentList.css';
 
-const DocumentList = () => {
-  const [titulosDocumentos, setTitulosDocumentos] = useState([]);
-  const [infDocumentos, setInfDocumentos] = useState([]);
-  const [loading, setLoading] = useState(true); // Añadir estado de carga para mejor manejo
+const DocumentList = ({ autor }) => {
+  const [titulosDocumentos, setTitulosDocumentos] = useState([]); 
+  const [infDocumentos, setInfDocumentos] = useState([]); 
+  const [loading, setLoading] = useState(true); 
 
-  const getDocumentos = async () => {
-    try {
-      // Primera llamada para obtener los títulos de los documentos
-      const response = await conectionUser();
-      setTitulosDocumentos(response.docSubidos); // Ajusta según la estructura de la respuesta
-    } catch (error) {
-      console.log(error);
+  const router = useRouter();  
+
+  // -------- Función para obtener los títulos de los documentos subidos por el autor ---------
+  const getDocumentos = () => {
+    if (autor.docSubidos && Array.isArray(autor.docSubidos)) {
+      const limitedTitles = autor.docSubidos.slice(0, 5);
+      setTitulosDocumentos(limitedTitles); 
     }
-  };
+  }
 
-  // Segunda llamada para obtener la información completa de los documentos usando los títulos
+  // ------- Función para obtener la información completa de los documentos usando los títulos --------
   const fetchDocumentDetails = async () => {
-    let docs = [];
+    let docs = []; 
     for (let i = 0; i < titulosDocumentos.length; i++) {
       try {
         const response = await conectionDocuments(titulosDocumentos[i].titulo);
-        docs.push(response);
+        docs.push(response); 
       } catch (error) {
-        console.error(error);
+        console.error(error); 
       }
     }
-    setInfDocumentos(docs);
-    setLoading(false); // Finalizar el estado de carga
+    setInfDocumentos(docs); 
+    setLoading(false);
   };
 
-  // Ejecutar las llamadas de forma controlada
+  // ------- useEffect para ejecutar getDocumentos cuando el componente se monta --------
   useEffect(() => {
-    getDocumentos(); // Obtener los títulos de los documentos
-  }, []); // Se ejecuta una sola vez al montar el componente
+    getDocumentos(); 
+  }, [autor]); 
 
+  // ------- useEffect para ejecutar fetchDocumentDetails cuando titulosDocumentos cambie -------
   useEffect(() => {
     if (titulosDocumentos.length > 0) {
-      fetchDocumentDetails(); // Obtener detalles de los documentos cuando ya tengamos los títulos
+      fetchDocumentDetails(); 
     }
-  }, [titulosDocumentos]); // Se ejecuta cuando titulosDocumentos cambia
+  }, [titulosDocumentos]); 
 
-  if (loading) {
-    return <p>Cargando documentos...</p>; // Mostrar mensaje de carga
+  // ----- Redirección al hacer clic en el botón ------
+  const handleRedirect = () => {
+    router.push('/users/allDocuments'); 
+  };
+
+  // ----- Manejo de warning pop-ups ------
+  if (loading || infDocumentos.length === 0) {
+    return (
+      <div className="results-error">
+        <AlertPop loading={loading} infDocumentos={infDocumentos} /> 
+      </div>
+    )
   }
-
-  return (
-    <div className="document-list">
-      <DocumentItem results={infDocumentos} />
-    </div>
-  );
+   // ------ Renderizado de Documentos ------
+   else {
+    return (
+      <div className="document-list-container">
+        <h2>Documentos Subidos Por {autor.username}</h2> 
+        <div className="document-list">
+          <DocumentItem results={infDocumentos} />
+        </div>
+        <button className="btn-ver-mas" onClick={handleRedirect}>Ver más</button> 
+      </div>
+    );
+  }
 };
 
 export default DocumentList;

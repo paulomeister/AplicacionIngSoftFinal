@@ -1,37 +1,48 @@
 .author-info {
-    text-align: center;
-    margin: 5%;
-    margin-top: 2%;
-    border-radius: 8px;
-    background-color: white;
-    border: 1px solid #ddd;
-    color: black;
-  }
-  
-  .author-avatar-container {
-    display: flex;
-    flex-direction: row;
-    margin-left: 10%;
-    margin-top: 3%;
-    align-items: center;
-  }
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  margin: 50px;
+  margin-top: 30px;
+  border-radius: 8px;
+  background-color: white;
+  border: 1px solid #ddd;
+  color: black;
+}
 
-  .author-avatar {
-    width: 15%;
-    border-radius: 50%;
-    margin-bottom: 0%;
-  }
+.author-avatar-container {
+  display: flex;
+  flex-direction: row;
+  margin-top: 30px;
+  width: 40%;
+  align-items: center;
+  justify-content: space-between;
+  margin-left: 10%;
+}
 
-  h2 {
-    font-size: 215%;
-    margin-left: 10%;
-  }
-  
-  .info-box {
-    padding: 1%;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    background-color: white;
-    margin: 2%
-  }
-  
+.author-avatar {
+  width: 40%;
+  border-radius: 50%;
+}
+
+h2 {
+  font-size: 215%;
+}
+
+.info-box {
+  display: flex;
+  flex-direction: column;
+  background-color: aquamarine;
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background-color: white;
+  margin: 20px 90px;
+  text-align: left;
+}
+
+.author-description {
+margin: 10px;
+margin-left: 20%;
+
+}

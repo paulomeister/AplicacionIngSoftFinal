@@ -10,10 +10,9 @@ const DocumentItem = ({ results }) => {
 
           {/* Renderizar categoría */}
           <div className="result-params">
-          <p><strong>Categorías: </strong>
-          {result.categoria.map((cat, i) => (
-            <span key={i}>{cat.nombre}, </span>
-          ))}</p>
+            <p><strong>Categorías: </strong>
+            {result.categoria.map((cat, i) => (<span key={i}>{cat.nombre}, </span>))}
+            </p>
           </div>
 
           <p><strong>Disponible desde:</strong> {new Date(result.fechaSubida).toLocaleDateString()}</p>
