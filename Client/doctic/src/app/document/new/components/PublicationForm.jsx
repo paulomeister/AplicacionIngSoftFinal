@@ -113,16 +113,7 @@ export const PublicationForm = () => {
     }
   };
 
-  const categoriasFinal = [
-    {
-      categoriaId: selectedCategoryWithId.categoriaId,
-      nombre: selectedCategoryWithId.nombre
-    },
-    ...selectedSubcategoriesWithId.map(subcat => ({
-      categoriaId: subcat.categoriaId,
-      nombre: subcat.nombre
-    }))
-  ];
+  
 
   
 
@@ -205,7 +196,7 @@ export const PublicationForm = () => {
 
 
     const data = new FormData();
-    const file = inputPDF?.files?.[0];
+    const file = inputPDF.files?.[0];
     data.append("document", JSON.stringify(document));
     data.append("file", file);
 
@@ -442,13 +433,7 @@ export const PublicationForm = () => {
             Crear Publicación
           </button>
 
-          <button
-        onClick={printCategoriasFinal} // Llama a la función printCategoriasFinal al hacer clic
-        className="bg-gray-700 text-white font-bold py-2 px-4 rounded-md hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-600 focus:ring-opacity-50"
-        type="button" // Cambié a type="button" para que no envíe el formulario
-      >
-        Probar
-      </button>
+          
           
           
 
