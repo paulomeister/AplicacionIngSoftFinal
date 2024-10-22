@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { FaCalendarAlt, FaEye, FaEdit, FaTrash } from "react-icons/fa";
 import Link from "next/link";
+import { SpinerComp } from "app/app/document/[id]/components/SpinnerComp";
 
 export default function List({ autorName, searchTitle, filterCategory, filterIdioma, filterDates, setAuthorNameFromList }) {
   const [documents, setDocuments] = useState([]);
@@ -53,11 +54,11 @@ export default function List({ autorName, searchTitle, filterCategory, filterIdi
     console.log(`Eliminar documento con ID: ${id}`);
   };
 
-  if (loading) return <p className="text-center mt-8 text-lg">Cargando documentos...</p>;
+  if (loading) return <SpinerComp />;
   if (error) return <p className="text-center text-red-500 mt-8 text-lg">Error: {error}</p>;
 
   return (
-    <div className="container mx-auto p-6 flex-grow">
+    <div className="container  p-6 flex-grow">
       
       <ul className="space-y-8">
         {documents.map((doc) => (

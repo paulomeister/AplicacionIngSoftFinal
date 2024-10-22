@@ -1,14 +1,104 @@
 'use client'
 
 import { instance } from "app/app/api/axios";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Modal, Spinner, Alert, Form, Badge} from "react-bootstrap";
+import axios from "axios";
 
 export const PublicationForm = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [selectedKeywords, setSelectedKeywords] = useState([]);
   const [newKeyword, setNewKeyword] = useState("");
+  const [categorias, setCategorias] = useState([]); // Estado para almacenar las categorías obtenidas de la API
+  const [subcategorias, setSubcategorias] = useState([]); // Estado para almacenar las subcategorías
+  const [selectedCategory, setSelectedCategory] = useState(""); // Estado para manejar la categoría seleccionada
+  const [selectedSubcategory, setSelectedSubcategory] = useState(""); // Estado para manejar la subcategoría seleccionada
+  //const [selectedSubcategories, setSelectedSubcategories] = useState([]); // Almacenar múltiples subcategorías seleccionadas
+  const [selectedCategoryWithId, setSelectedCategoryWithId] = useState({}); // Almacenar categoría seleccionada con ID
+  const [selectedSubcategoriesWithId, setSelectedSubcategoriesWithId] = useState([]); // Almacenar subcategorías con ID
+
+
+
+
+
+
+  // Fetch a la API para obtener las categorías
+  useEffect(() => {
+    const fetchCategorias = async () => {
+      try {
+        const response = await axios.get("http://localhost:8080/api/Categorias/allDistinct");
+        setCategorias(response.data); // Almacena el array de categorías
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      }
+    };
+    fetchCategorias();
+  }, []);
+
+  // Fetch para obtener las subcategorías basadas en la categoría seleccionada
+  const fetchSubcategorias = async (categoria) => {
+    try {
+      const response = await axios.get(`http://localhost:8080/api/Categorias/getSubcategoriesWithName/${categoria}`);
+      console.log("Subcategorías obtenidas:", response.data[0].subCategorias[0].nombre); // Log del JSON de subcategorías
+      
+      // Almacenar la categoría seleccionada con ID y nombre
+      setSelectedCategoryWithId({
+        categoriaId: response.data[0].documentoId, 
+        nombre: response.data[0].nombre,
+      });
+      
+      setSubcategorias(response.data[0].subCategorias); // Almacenar subcategorías
+    } catch (error) {
+      console.error("Error fetching subcategories:", error);
+      setError("Error al obtener subcategorías");
+    }
+  };
+  
+
+  // Manejo del cambio en la categoría seleccionada
+  const handleCategoryChange = (e) => {
+    const selectedCategory = e.target.value;
+    setSelectedCategory(selectedCategory);
+    
+    if (selectedCategory) {
+      // Llamamos al fetch de subcategorías
+      fetchSubcategorias(selectedCategory);
+    } else {
+      setSubcategorias([]); // Limpiar subcategorías si no hay categoría seleccionada
+    }
+  };
+
+  // Manejo del cambio en la subcategoría seleccionada
+  const handleSubcategoryChange = (e) => {
+    setSelectedSubcategory(e.target.value);
+  };
+
+  const handleSubcategoryAdd = () => {
+    const selectedSubcategoryObj = subcategorias.find(subcat => subcat.nombre === selectedSubcategory);
+  
+    if (selectedSubcategoryObj) {
+      // Mostrar el _id de la subcategoría seleccionada
+      console.log("Subcategoría seleccionada _id:", selectedSubcategoryObj._id);
+    }
+    
+    // Verifica si ya existe el objeto subcategoría seleccionado en el array
+    if (selectedSubcategoryObj && !selectedSubcategoriesWithId.some(subcat => subcat.categoriaId === selectedSubcategoryObj._id)) {
+      setSelectedSubcategoriesWithId([
+        ...selectedSubcategoriesWithId,
+        {
+          categoriaId: selectedSubcategoryObj._id,
+          nombre: selectedSubcategoryObj.nombre
+        }
+      ]);
+      setSelectedSubcategory(""); // Limpiar la selección de subcategoría
+    }
+  };
+
+  const RemoveSubcategory = (categoriaId) => {
+    setSelectedSubcategoriesWithId(selectedSubcategoriesWithId.filter(subcat => subcat.categoriaId !== categoriaId));
+  };
+  
 
   // Función para manejar la creación de keywords
   const handleKeywordAdd = (e) => {
@@ -23,6 +113,15 @@ export const PublicationForm = () => {
     }
   };
 
+  
+
+  
+
+  // Función para imprimir categoriasFinal
+  const printCategoriasFinal = () => {
+    console.log("Categorias Finales:", document);
+  };
+
   // Función para remover una keyword
   const removeKeyword = (keywordToRemove) => {
     setSelectedKeywords(selectedKeywords.filter((keyword) => keyword !== keywordToRemove));
@@ -34,8 +133,22 @@ export const PublicationForm = () => {
 
     const title = inputTitle.value;
     const description = inputDescription.value;
-    // **** PENDIENTE CAPTURA DE CATEGORIAS Y SUBCATEGORIAS DE FORMA ADECUADA *****
-    const category = inputCategory.value;
+
+    const categoriasFinal = [
+      {
+        categoriaId: selectedCategoryWithId.categoriaId,
+        nombre: selectedCategoryWithId.nombre
+      },
+      ...selectedSubcategoriesWithId.map(subcat => ({
+        categoriaId: subcat.categoriaId,
+        nombre: subcat.nombre
+      }))
+    ];
+    
+
+    
+
+    
     // **** PENDIENTE CAPTURA DE AUTORES DE FORMA ADECUADA *****
     const Authors = inputAuthors.value;
 
@@ -47,10 +160,7 @@ export const PublicationForm = () => {
       visibilidad: visiblity,
       keywords: selectedKeywords,
       // // Categoria y autores pendientes
-      // categoria: [ {
-      //   categoriaId: "66e9d445d5125e904b101538",
-      //   nombre: "IA",
-      // },],
+      categoria: categoriasFinal,
       // TODO: Se debe verificar que tenga por lo menos un Autor
       // autores: [{
       //   usuarioId: "66ebbc85e9670a5556f97822",
@@ -76,9 +186,17 @@ export const PublicationForm = () => {
       // year: new Date().getFullYear(),
     }
 
+    console.log("Documento a enviar:", document);
+
+    
+
+    
+
+    
+
 
     const data = new FormData();
-    const file = inputPDF.files[0];
+    const file = inputPDF.files?.[0];
     data.append("document", JSON.stringify(document));
     data.append("file", file);
 
@@ -90,8 +208,9 @@ export const PublicationForm = () => {
       console.log(response.data);
     })
     .catch((e) => {
+      console.log("Error al enviar el documento:", e.response ? e.response.data : e.message);
       setError(`Error: ${e.response ? e.response.statusText : e.message}`);
-    })
+  })
     .finally(() => {
       setLoading(false);
     })
@@ -185,6 +304,7 @@ export const PublicationForm = () => {
 
         
 
+        {/* Campo de selección de categoría */}
         <div className="mb-4">
           <label className="block text-gray-700 text-lg font-bold mb-2" htmlFor="category">
             Categoría
@@ -193,17 +313,70 @@ export const PublicationForm = () => {
             className="w-full p-2 border border-gray-300 rounded-md"
             id="category"
             name="category"
+            value={selectedCategory}
+            onChange={handleCategoryChange}
             required
             aria-required="true"
           >
             <option value="">Selecciona una categoría</option>
-            <option value="tecnología">Tecnología</option>
-            <option value="ciencia">Ciencia</option>
-            <option value="arte">Arte</option>
-            <option value="negocios">Negocios</option>
-            <option value="salud">Salud</option>
+            {categorias.map((categoria, index) => (
+              <option key={index} value={categoria}>
+                {categoria}
+              </option>
+            ))}
           </select>
         </div>
+
+        {/* Campo de selección de subcategoría */}
+          {subcategorias.length > 0 && (
+            <div className="mb-4">
+              <label className="block text-gray-700 text-lg font-bold mb-2" htmlFor="subcategory">
+                Subcategoría
+              </label>
+              <div className="flex gap-2">
+                <select
+                  className="w-full p-2 border border-gray-300 rounded-md"
+                  id="subcategory"
+                  name="subcategory"
+                  value={selectedSubcategory}
+                  onChange={handleSubcategoryChange}
+                  aria-required="true"
+                >
+                  <option value="">Selecciona una subcategoría</option>
+                  {subcategorias.map((subcategoria) => (
+                    <option key={subcategoria._id} value={subcategoria.nombre}>
+                      {subcategoria.nombre}
+                    </option>
+                  ))}
+                </select>
+                <button
+                  type="button"
+                  className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+                  onClick={handleSubcategoryAdd}
+                >
+                  Añadir
+                </button>
+              </div>
+
+              {/* Mostrar subcategorías seleccionadas como tags */}
+              {selectedSubcategoriesWithId.length > 0 && (
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginTop: "8px" }}>
+                  {selectedSubcategoriesWithId.map((subcategory, index) => (
+                    <Badge
+                      key={index}
+                      pill
+                      variant="primary"
+                      onClick={() => RemoveSubcategory(subcategory.categoriaId)} // Lógica para eliminar subcategoría por ID
+                      style={{ cursor: "pointer" }}
+                    >
+                      {subcategory.nombre} &times;
+                    </Badge>
+                  ))}
+                </div>
+              )}
+
+            </div>
+          )}
 
         <div className="mb-4">
           <label className="block text-gray-700 text-lg font-bold mb-2" htmlFor="authors">
@@ -259,8 +432,18 @@ export const PublicationForm = () => {
           >
             Crear Publicación
           </button>
+
+          
+          
+          
+
+       
+  
+
         </div>
       </form>
     </section>
+    
+
   );
 };

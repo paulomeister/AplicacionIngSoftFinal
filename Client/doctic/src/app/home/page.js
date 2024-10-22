@@ -1,4 +1,4 @@
-import RecentDocuments from './RecentDocuments';
+import RecentDocuments from './components/RecentDocuments';
 
 export default function HomePage() {
   return (
