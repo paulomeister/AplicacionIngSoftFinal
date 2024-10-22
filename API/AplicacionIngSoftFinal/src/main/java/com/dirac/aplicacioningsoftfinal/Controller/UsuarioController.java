@@ -1,4 +1,5 @@
 package com.dirac.aplicacioningsoftfinal.Controller;
+
 import com.dirac.aplicacioningsoftfinal.Exception.UsuarioNotFoundException;
 import com.dirac.aplicacioningsoftfinal.Model.UsuarioModel;
 import com.dirac.aplicacioningsoftfinal.Service.IUsuarioService;
@@ -27,9 +28,15 @@ public class UsuarioController {
 
     @GetMapping("/getByUsername/{username}")
     public ResponseEntity<?> getUserByUserName(@PathVariable("username") String username) {
-        UsuarioModel usuario= usuarioService.getUserByUsername(username)
+        UsuarioModel usuario = usuarioService.getUserByUsername(username)
                 .orElseThrow(() -> new UsuarioNotFoundException("Este Usuario no existe"));
 
         return ResponseEntity.ok(usuario);
     }
+
+    @GetMapping("/getAllUsers")
+    ResponseEntity<?> getAllUsers() {
+        return ResponseEntity.status(200).body(usuarioService.getAll());
+    }
+
 }

@@ -4,6 +4,7 @@ import { instance } from "app/app/api/axios";
 import { useState, useEffect } from "react";
 import { Modal, Spinner, Alert, Form, Badge} from "react-bootstrap";
 import axios from "axios";
+import {AuthorForm} from "./AuthorForm";
 
 export const PublicationForm = () => {
   const [loading, setLoading] = useState(false);
@@ -17,10 +18,6 @@ export const PublicationForm = () => {
   //const [selectedSubcategories, setSelectedSubcategories] = useState([]); // Almacenar múltiples subcategorías seleccionadas
   const [selectedCategoryWithId, setSelectedCategoryWithId] = useState({}); // Almacenar categoría seleccionada con ID
   const [selectedSubcategoriesWithId, setSelectedSubcategoriesWithId] = useState([]); // Almacenar subcategorías con ID
-
-
-
-
 
 
   // Fetch a la API para obtener las categorías
@@ -378,20 +375,7 @@ export const PublicationForm = () => {
             </div>
           )}
 
-        <div className="mb-4">
-          <label className="block text-gray-700 text-lg font-bold mb-2" htmlFor="authors">
-            Autores
-          </label>
-          <input
-            className="w-full p-2 border border-gray-300 rounded-md"
-            type="text"
-            id="authors"
-            name="authors"
-            placeholder="Ingresa los autores separados por comas"
-            required
-            aria-required="true"
-          />
-        </div>
+        <AuthorForm/>
 
         <div className="mb-4">
           <label className="block text-gray-700 text-lg font-bold mb-2" htmlFor="file">
