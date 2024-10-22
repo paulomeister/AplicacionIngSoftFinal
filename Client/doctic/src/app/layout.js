@@ -1,17 +1,11 @@
-import localFont from "next/font/local";
+import { Roboto_Flex } from 'next/font/google';
 import "./globals.css";
 import Navbar from './components/NavBar';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-  weight: "100 900",
-});
-const geistMono = localFont({
-  src: "./fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
-  weight: "100 900",
+const font = Roboto_Flex({
+  weight: ['300', '400', '500', '700'],
+  subsets: ['latin']
 });
 
 export const metadata = {
@@ -22,7 +16,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased d-flex flex-column h-vh`}>
+      <body className={`${font.className} antialiased d-flex flex-column h-vh`}>
         <Navbar /> 
         <main className="flex-grow-1 d-flex justify-content-center w-full p-4">
           {children}
