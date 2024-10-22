@@ -2,21 +2,24 @@
 import React, { useState, useEffect } from "react";
 import ResultItem from "./ResultItem";
 import conection from "./conection";
-import {AlertPop} from './AlertPopup';
+import { AlertPop } from './AlertPopup';
 import SortMenu from './SortMenu';
 import "./ResultList.css";
 
 const ResultsList = ({ busqueda, sortCriteria, onSortChange }) => {
-  const [results, setResults] = useState([]); 
-  const [loading, setLoading] = useState(true); 
+  const [results, setResults] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
 
-  //--------------------------------------- Hacer la petición a la API -------------------------------------------- 
+  const resultsPerPage = 10;
+
+  // --------------------------------------- Hacer la petición a la API --------------------------------------------
   const getResults = async () => {
     setLoading(true);
     try {
       const response = await conection(busqueda);
-      setResults(response); 
+      setResults(response);
       setLoading(false);
     } catch (error) {
       setError(error);
@@ -46,19 +49,16 @@ const ResultsList = ({ busqueda, sortCriteria, onSortChange }) => {
 
   // ----------------------- Ordenar los resultados filtrados según el criterio de orden -------------------------
   const applySort = (results) => {
-
     return [...results].sort((a, b) => {
-
-      // ---- Función para calcular el promedio de valoraciones de un documento -----
       const calcularPromedioValoracion = (valoraciones) => {
-        
-        if (valoraciones.length === 0) return 2.5; 
-
-        const suma = valoraciones.reduce((total, valoracion) => total + valoracion.puntuacion, 0); 
-        return suma / valoraciones.length;
+        if (valoraciones.length === 0) {
+          return 2.5;
+        } else {
+          const suma = valoraciones.reduce((total, valoracion) => total + valoracion.puntuacion, 0);
+          return suma / valoraciones.length;
+        }
       };
-  
-      // ---- Ordenar de acuerdo al criterio de ordenación seleccionado ----
+
       switch (sortCriteria) {
         case "alfabetico":
           return a.titulo.localeCompare(b.titulo);
@@ -77,30 +77,60 @@ const ResultsList = ({ busqueda, sortCriteria, onSortChange }) => {
       }
     });
   };
-  //------------------------------------------------------------------------------------------------------------------
-  
-  // ------- Aplicar Filtros y Ordenamiento en los resultados -------
+
   const getFilteredAndSortedResults = () => {
-    let filteredResults = applyFilters(results); 
-    return applySort(filteredResults); 
+    let filteredResults = applyFilters(results);
+    return applySort(filteredResults);
   };
 
   const finalResults = getFilteredAndSortedResults();
 
-  // ------- Manejo de estado de carga y errores -------
-  if ((loading)||(error)||(finalResults.length === 0)) {
-    return (
-      <div className="results-error">
-        <AlertPop error={error} loading={loading} finalResults={finalResults}/>
-      </div>
-    )
-  }
+  // ------- Lógica de paginación -------
+  const totalPages = Math.ceil(finalResults.length / resultsPerPage);
+  const indexOfLastResult = currentPage * resultsPerPage;
+  const indexOfFirstResult = indexOfLastResult - resultsPerPage;
+  const currentResults = finalResults.slice(indexOfFirstResult, indexOfLastResult);
 
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+
+    // ------- Manejo de estado de carga y errores -------
+    if (loading || error || finalResults.length === 0) {
+      return (
+        <div className="results-error">
+          <AlertPop error={error} loading={loading} finalResults={finalResults} />
+        </div>
+      )
+    }
+    
   // ------- Renderizar resultados -------
   return (
-    <div className="results-list">
-      <ResultItem results={finalResults} />
-      <SortMenu onSortChange={onSortChange}/>
+    <div className="results-container">
+      <div className="results-list">
+        <div className="result-items">
+          <ResultItem results={currentResults} />
+        </div>
+        <SortMenu onSortChange={onSortChange} />
+
+      </div>
+
+      {/* Paginación */}
+      <div className="pagination">
+        <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>
+          Anterior
+        </button>
+
+        {Array.from({ length: totalPages }, (_, index) => (
+          <button key={index + 1} onClick={() => handlePageChange(index + 1)} className={currentPage === index + 1 ? 'active' : ''}>
+            {index + 1}
+          </button>
+        ))}
+
+        <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages}>
+          Siguiente
+        </button>
+      </div>
     </div>
   );
 };
