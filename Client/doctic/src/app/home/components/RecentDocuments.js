@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { FaCalendarAlt, FaStar, FaArrowDown, FaEye, FaClock } from "react-icons/fa"; 
 import Link from "next/link";
 import axios from "axios";
+import { SpinerComp } from "../../document/[id]/components/SpinnerComp";
 
 export default function Documentos() {
   const [documents, setDocuments] = useState([]);
@@ -65,7 +66,7 @@ export default function Documentos() {
     return "text-gray-600";
   };
 
-  if (loading) return <p className="text-center mt-8 text-lg">Cargando documentos...</p>;
+  if (loading) return <SpinerComp/>;
   if (error) return <p className="text-center text-red-500 mt-8 text-lg">Error: {error}</p>;
 
   return (
