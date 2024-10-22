@@ -1,6 +1,7 @@
 'use client';
 import React from "react";
 import "./ResultItem.css";
+import Link from "next/link";
 
 const ResultItem = ({ results }) => {
   return (
@@ -12,7 +13,7 @@ const ResultItem = ({ results }) => {
           {/* Renderizar autores */}
           <div className="result-params">
           <p><strong className="result-author">Subido por: </strong> 
-            {result.autores.map((autor, i) => (
+            {result.autores?.map((autor, i) => (
               <span key={i}>{autor.nombre}, </span>
             ))}
           </p>
@@ -21,7 +22,7 @@ const ResultItem = ({ results }) => {
           {/* Renderizar categoría */}
           <div className="result-params">
           <p><strong>Categorías: </strong>
-          {result.categoria.map((cat, i) => (
+          {result.categoria?.map((cat, i) => (
             <span key={i}>{cat.nombre}, </span>
           ))}</p>
           </div>
@@ -29,7 +30,9 @@ const ResultItem = ({ results }) => {
           <p><strong>Disponible desde:</strong> {new Date(result.fechaSubida).toLocaleDateString()}</p>
 
           <div className="result-actions">
-            <button onClick={() => window.open(result.urlArchivo)}>Ver</button>
+            <button>
+              <Link href={`/document/${result._id}`}>Ver</Link>
+            </button>
           </div>
         </div>
       ))}

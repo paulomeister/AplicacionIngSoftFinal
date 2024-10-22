@@ -7,7 +7,7 @@ import '@react-pdf-viewer/core/lib/styles/index.css';
 import '@react-pdf-viewer/default-layout/lib/styles/index.css';
 
 
-export const PdfViewer = ({ url, userId = '', documentId= '' }) => {
+export const PdfViewer = ({ url, userId = '66ebbc56e9670a5556f9781a', documentId= '67132a785e9ca46b7f477a6a' }) => {
 
     const transform = (slot) => ({
         ...slot,
@@ -40,7 +40,8 @@ export const PdfViewer = ({ url, userId = '', documentId= '' }) => {
         <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.js">
             <div  style={{ height: '750px' }}>
                 <Viewer
-                    fileUrl={"http://localhost:8080/api/Documentos/viewFile?userId=66ebbc56e9670a5556f9781a&documentId=67132a785e9ca46b7f477a6a&fileId=1h1moDyZaGABnwspsFgnJj_0OFDLeM9ZC"}
+                    fileUrl={`http://localhost:8080/api/Documentos/viewFile?userId=${userId}&documentId=${documentId}&fileId=${url}`}
+                    defaultScale={1.5}
                     plugins={[ defaultLayoutPluginInstance ]}
                 />
             </div>
