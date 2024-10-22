@@ -10,5 +10,6 @@
     flex-direction: row;
     justify-content: space-between;
     width: 96vw;
-    overflow: hidden;
+    height: calc(100vh - 200px);
+    overflow-y: auto;
   }
