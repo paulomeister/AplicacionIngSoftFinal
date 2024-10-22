@@ -1,7 +1,6 @@
 'use client';
 import React, { useState } from "react";
 import ResultsList from "./ResultsList";
-import SortMenu from "./SortMenu";
 import Filter from "./Filter";
 import "./Search.css";
 
