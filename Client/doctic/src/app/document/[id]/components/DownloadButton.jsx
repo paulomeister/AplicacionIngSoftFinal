@@ -1,9 +1,15 @@
-'use client'
+"use client";
 import { instance } from "app/app/api/axios";
 import { useState } from "react";
 import { Alert } from "react-bootstrap";
+import { Axios } from "axios";
 
-export const DownloadButton = ({ userId ="66ebbc56e9670a5556f9781a",  documentId = "67132a785e9ca46b7f477a6a", url}) => {
+export const DownloadButton = ({
+  userId = "66ebbc56e9670a5556f9781a",
+  documentId = "66f5cb78c4cd20cadab20054",
+  fileId = "1h1moDyZaGABnwspsFgnJj_0OFDLeM9ZC",
+  // url,
+}) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [showAlert, setShowAlert] = useState(false);
@@ -13,32 +19,53 @@ export const DownloadButton = ({ userId ="66ebbc56e9670a5556f9781a",  documentId
     setError(null);
     setShowAlert(false); // Reset alert visibility
 
-    const fileId = url;
+    const form = new FormData();
+    form.append("fileId", fileId);
+    form.append("userId", userId);
+    form.append("documentId", documentId);
 
     try {
-      const response = await instance.get(`/Documentos/downloadFile`, {
-        params: {
-          fileId: fileId,
-          userId: userId,
-          documentId: documentId,
-        },
-        responseType: "blob", // Important for file downloads
-      });
+      const response = await fetch(
+        `http://localhost:8080/api/Documentos/downloadFile`,
+        {
+          method: "POST",
+          body: form,
+          headers: {
+            Authorization:
+              "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJlbnVuZXoiLCJhdXRob3JpdGllcyI6W3siYXV0aG9yaXR5IjoiUk9MRV9VU1VBUklPIn1dLCJpYXQiOjE3Mjk2NTk5ODIsImV4cCI6MTcyOTc0NjAwMH0.UUpMH4WU8mFVm9X2kuNYH880DYeKWSZfCNtz_N3i0kpagSFO9ssCSzYbsGaRXI2vf56-4-FXkyrc_oK0DVSZ9Q",
+          },
+        }
+      );
 
-      // Create a URL for the downloaded file
-      const fileBlob = new Blob([response.data]);
-      const url = window.URL.createObjectURL(fileBlob); // Ensure url is defined after the blob creation
+      if (!response.ok) {
+        throw new Error("Error al descargar el archivo");
+      }
+
+      // Convierte la respuesta en un blob (archivo binario)
+      const blob = await response.blob();
+
+      // Crea una URL para el archivo descargado
+      const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
+
+      // Extrae el nombre del archivo desde los headers
+      const contentDisposition = response.headers.get("content-disposition");
+      const filename = contentDisposition
+        ? contentDisposition.split("filename=")[1].replace(/"/g, "")
+        : "archivo.pdf"; // Si no hay filename, define uno por defecto
+
       link.href = url;
-      link.setAttribute("download", response.headers["content-disposition"].split("filename=")[1]); // Use the filename from the response headers
+      link.setAttribute("download", filename);
       document.body.appendChild(link);
       link.click();
+
+      // Limpia el DOM
       document.body.removeChild(link);
 
-      // Show alert after download
+      // Muestra alerta tras la descarga
       setShowAlert(true);
     } catch (e) {
-      setError(`Error: ${e.response ? e.response.statusText : e.message}`);
+      setError(`Error: ${e.message}`);
     } finally {
       setLoading(false);
     }
@@ -56,10 +83,14 @@ export const DownloadButton = ({ userId ="66ebbc56e9670a5556f9781a",  documentId
         {loading ? "Cargando..." : "Descargar PDF"}
       </button>
       {error && <p className="text-red-500 text-sm">{error}</p>}
-      
+
       {/* Alert for download success */}
       {showAlert && (
-        <Alert variant="success" onClose={() => setShowAlert(false)} dismissible>
+        <Alert
+          variant="success"
+          onClose={() => setShowAlert(false)}
+          dismissible
+        >
           El PDF se ha descargado con éxito.
         </Alert>
       )}
