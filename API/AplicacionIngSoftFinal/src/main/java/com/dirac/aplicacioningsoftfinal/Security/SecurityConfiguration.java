@@ -7,6 +7,7 @@ import com.dirac.aplicacioningsoftfinal.Service.RecuperadorUsuariosService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -40,6 +41,7 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http, AuthenticationManager authenticationManager) throws Exception {
 
+        
         http
                 .csrf((csrf) -> csrf.disable())
                 .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -51,8 +53,8 @@ public class SecurityConfiguration {
                         .requestMatchers("/","index.html", "/css/**","/js/**", "/registrarse")
                         .permitAll()
 
-                        .requestMatchers("/api/Documentos/downloadFile")
-                        .hasAnyRole(ADMIN.name(), USUARIO.name())
+                         .requestMatchers(HttpMethod.POST,"/api/Documentos/downloadFile")
+                         .hasAnyRole(USUARIO.name(), ADMIN.name())
 
                         .anyRequest()
                         .permitAll()
