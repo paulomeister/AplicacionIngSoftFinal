@@ -108,11 +108,10 @@ const ResultsList = ({ busqueda, sortCriteria, onSortChange }) => {
   return (
     <div className="results-container">
       <div className="results-list">
-        <div className="result-items">
-          <ResultItem results={currentResults} />
+        <ResultItem results={currentResults} />
+        <div className="sort-container">
+          <SortMenu onSortChange={onSortChange} />
         </div>
-        <SortMenu onSortChange={onSortChange} />
-
       </div>
 
       {/* Paginación */}

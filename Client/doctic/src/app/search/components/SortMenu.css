@@ -2,15 +2,15 @@
   position: sticky;
   top: 0;
   min-width: 220px;
+  max-width: 220px;
   min-height: 300px;
   max-height: 300px;
   background-color: #d1d1d1;
   padding: 10px;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  height: 100%;
-  margin-top: 25px;
-  margin-left: 50px;
+  margin-top: 10px;
+  margin-left: 20px;
 }
 
 strong{
@@ -19,7 +19,6 @@ strong{
 
 .sort-options {
   list-style: none;
-  padding: 0;
   margin-top: 12px;
 }
 

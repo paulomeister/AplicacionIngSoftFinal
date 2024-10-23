@@ -26,6 +26,7 @@
     display: flex;
     flex-direction: row;
     margin: 0 20px;
+    width: 90vw;
   }
 
   .search-input {
@@ -79,6 +80,7 @@
   
   .divider {
     max-height: 70vh;
+    width: 95vw;
     overflow-y: auto; 
   }
   

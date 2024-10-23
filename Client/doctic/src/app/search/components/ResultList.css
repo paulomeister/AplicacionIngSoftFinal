@@ -1,20 +1,35 @@
 .results-error {
   display: flex;
+  align-items: center;
   justify-content: center;
-  }
+}
 
 .results-container {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    padding: 20px;
+    width: 95vw;
   }
   
   .results-list{
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
-    width: 96vw;
+    align-items: space-between;
+    width: 95vw;
+    overflow: hidden;
+  }
+
+  .results-items{
+    min-width: none;
+    width: auto;
+    max-width: 75vw;
+  }
+
+  .sort-container {
+    display: flex;
+    justify-content: right;
+    position: fixed;
+    top: 1;
+    z-index: 10;
   }
 
   .pagination {

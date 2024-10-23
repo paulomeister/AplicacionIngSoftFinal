@@ -1,6 +1,6 @@
 'use client'
-
 import { Alert } from 'react-bootstrap';
+import "./AlertPopup.css";
 
 export const AlertPop = ({error, finalResults, loading}) => {
   //------- Manejo del estado de carga -------------

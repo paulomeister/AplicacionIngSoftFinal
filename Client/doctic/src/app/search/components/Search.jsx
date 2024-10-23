@@ -96,9 +96,9 @@ const Search = () => {
 
       {/*------ Mostrar resultados después de buscar ------*/}
       {mostrarResultados && (
-        <div className="divider">
+        <>
           <ResultsList busqueda={busqueda} sortCriteria={sortCriteria} onSortChange={handleSortChange} />
-        </div>
+        </>
       )}
     </div>
   );
