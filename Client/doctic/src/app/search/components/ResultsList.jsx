@@ -108,7 +108,9 @@ const ResultsList = ({ busqueda, sortCriteria, onSortChange }) => {
   return (
     <div className="results-container">
       <div className="results-list">
-        <ResultItem results={currentResults} />
+        <div className="results-items">
+          <ResultItem results={currentResults} />
+        </div>
         <div className="sort-container">
           <SortMenu onSortChange={onSortChange} />
         </div>
