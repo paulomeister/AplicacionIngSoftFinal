@@ -64,6 +64,7 @@ const Filter = ({ onUpdateFilters, filtros }) => {
             onChange={(e) => handleTipoChange(filtro.id, e)}
           >
             <option value="AUTOR">Autor</option>
+            <option value="KEYWORDS">Palabra clave</option>
             <option value="CATEGORIA">Categoría</option>
             <option value="DESDE">Desde año</option>
             <option value="HASTA">Hasta año</option>
@@ -73,6 +74,7 @@ const Filter = ({ onUpdateFilters, filtros }) => {
             type="text"
             placeholder={
               filtro.tipo === "AUTOR" ? "Escriba el nombre del autor": 
+              filtro.tipo === "KEYWORDS" ? "Escriba una palabra clave":
               filtro.tipo === "CATEGORIA" ? "Escriba la categoría": 
               filtro.tipo === "DESDE" || filtro.tipo === "HASTA" ? "Escriba el año (ej. 2022)": 
               filtro.tipo === "IDIOMA" ? "Escriba el idioma": "Filtrar con..." 

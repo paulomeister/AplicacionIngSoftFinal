@@ -30,10 +30,13 @@ const Search = () => {
 
   //-------- Función para mapear los filtros ------------ 
   const handleMapearFiltros = () => {
-    const { categorias, autores, idioma, desde, hasta } = filtros.reduce((acc, element) => {
+    const { categorias, autores, idioma, desde, hasta, keywords } = filtros.reduce((acc, element) => {
       switch (element.tipo) {
         case "CATEGORIA":
           acc.categorias.push(element.valor);
+          break;
+        case "KEYWORDS":
+          acc.keywords.push(element.valor);
           break;
         case "AUTOR":
           acc.autores.push(element.valor);
@@ -51,10 +54,9 @@ const Search = () => {
           break;
       }
       return acc;
-    }, { categorias: [], autores: [], idioma: "", desde: "", hasta: "" });
+    }, { categorias: [], keywords: [], autores: [], idioma: "", desde: "", hasta: "" });
 
-    // Update the busqueda state
-    setBusqueda({ titulo, tieneFiltros: filtros.length > 0, categorias, autores, idioma, desde, hasta });
+    setBusqueda({ titulo, tieneFiltros: filtros.length > 0, keywords, categorias, autores, idioma, desde, hasta });
   };
 
   // --------- Función para mostrar los resultados y cambiar valor del titulo -------------- 

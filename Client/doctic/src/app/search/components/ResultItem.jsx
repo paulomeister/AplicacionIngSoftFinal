@@ -1,7 +1,7 @@
 'use client';
 import React from "react";
-import "./ResultItem.css";
 import Link from "next/link";
+import "./ResultItem.css";
 
 const ResultItem = ({ results }) => {
   return (
@@ -14,7 +14,7 @@ const ResultItem = ({ results }) => {
           <div className="result-params">
           <p><strong className="result-author">Subido por: </strong> 
             {result.autores?.map((autor, i) => (
-              <span key={i}>{autor.nombre}, </span>
+              <Link href={`/users/${autor.username}`} className="result-author"><span key={i}>{autor.nombre}, </span></Link>
             ))}
           </p>
           </div>
