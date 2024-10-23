@@ -20,7 +20,9 @@ export const PublicationForm = () => {
   const [selectedSubcategoriesWithId, setSelectedSubcategoriesWithId] = useState([]); // Almacenar subcategorías con ID
   
   const onAuthorSubmit = (author) => {
-    setSelectedAuthors(author);
+
+    const {selectedAuthors, e}  = author;
+    setSelectedAuthors(selectedAuthors);
   }
   
   // Fetch a la API para obtener las categorías

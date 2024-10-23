@@ -82,7 +82,13 @@ useAuthor({USUARIO}, update?, documentId) (pista, el documentId se puede obtener
                 (a) => a.usuarioId === author._id && a.rol === "principal"
               )
             )}
-            handleCoAutorButton={() => {handleCoAutorButton(author); onAuthorSubmit(selectedAuthors);}}
+            handleCoAutorButton={() => {handleCoAutorButton(author); onAuthorSubmit(
+              (e) => {
+                console.log("Selected authors")
+                console.log(selectedAuthors)
+                console.log()
+                return {selectedAuthors,e}
+              });}}
           />
         ))}
       </ul>
