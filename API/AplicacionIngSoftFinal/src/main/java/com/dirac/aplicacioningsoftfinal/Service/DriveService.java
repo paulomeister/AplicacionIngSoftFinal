@@ -28,7 +28,7 @@ public class DriveService {
   private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
   private static final String TOKENS_DIRECTORY_PATH = "tokens";
   private static final List<String> SCOPES = Collections.singletonList(DriveScopes.DRIVE_FILE);
-  private static final String CREDENTIALS_FILE_PATH =   "C:/Users/sergi/Documents/university/fifth semester/ingesoft/AplicacionIngSoftFinal/credentials.json";
+  private static final String CREDENTIALS_FILE_PATH = "C:/Users/sergi/Documents/university/fifth semester/ingesoft/AplicacionIngSoftFinal/credentials.json";
 
   private static Credential getCredentials(final NetHttpTransport HTTP_TRANSPORT) throws IOException {
     InputStream in = DriveService.class.getResourceAsStream(CREDENTIALS_FILE_PATH);
@@ -62,8 +62,6 @@ public class DriveService {
         .execute();
     String folderId = folder.getId();
 
-    System.out.println("Carpeta creada con ID: " + folderId);
-
     // Subir archivo PDF a la carpeta creada
     File fileMetadata = new File();
     fileMetadata.setName("hola.pdf");
@@ -76,6 +74,5 @@ public class DriveService {
         .setFields("id, parents")
         .execute();
 
-    System.out.println("Archivo subido con ID: " + file.getId());
   }
 }

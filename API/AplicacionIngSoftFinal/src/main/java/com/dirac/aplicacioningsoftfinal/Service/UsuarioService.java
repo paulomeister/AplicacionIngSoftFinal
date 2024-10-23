@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import com.dirac.aplicacioningsoftfinal.Model.UsuarioModel;
 import com.dirac.aplicacioningsoftfinal.Repository.IUsuarioRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -27,6 +28,11 @@ public class UsuarioService implements IUsuarioService {
     public String insertUser(UsuarioModel usuario) {
         usuarioRepository.save(usuario);
         return "El usuario con _id: " + usuario.get_idAString() + "  sido guardado con éxito";
+    }
+
+    @Override
+    public List<UsuarioModel> getAll() {
+        return usuarioRepository.findAll();
     }
 
 }

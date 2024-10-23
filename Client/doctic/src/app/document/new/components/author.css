@@ -1,0 +1,160 @@
+.author-section{
+  
+}
+
+.author-name {
+  font-size: 20px;
+  color: black;
+}
+
+#author-name:hover {
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+#username {
+  margin: -3px;
+  padding: 0;
+  font-size: 11px;
+  color: black;
+  opacity: 0.6;
+  font-style: italic;
+}
+
+#username:hover {
+  color: black;
+  font-weight: bold;
+  font-style: normal;
+}
+
+.author-item {
+  display: grid;
+  grid-template-columns: 1fr 0.35fr;
+  gap: 45px;
+  margin-bottom: 10px;
+  border: 3.5px solid #dbdbdb;
+  border-radius: 50px;
+  padding: 15px 10px;
+}
+
+.author-btns {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 25px;
+  font-size: 18px;
+}
+
+.main-author {
+  background-color: #029aff;
+  padding: 5px 9px;
+  border-radius: 50px;
+  color: white;
+}
+
+.sec-author {
+  background-color: gray;
+  padding: 5px 9px;
+  border-radius: 50px;
+  color: white;
+}
+
+.author-btns button:hover {
+  opacity: 0.5;
+}
+
+.input-authors {
+  width: 90%;
+  border-radius: 50px;
+  border: 2px solid black;
+  box-shadow: #6076e1;
+  padding: 5px 15px;
+  font-size: 18px;
+  margin: auto 0;
+}
+
+.darker {
+  background-color: #6076e1;
+}
+
+#input-authors {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.authors-image-pub {
+  border-radius: 50px;
+  height: 50px;
+  border: 1px black solid;
+}
+
+.author-info{
+    display: flex;
+    align-items: center;
+    justify-content: start;
+    gap:15px;
+    padding-left: 15px;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+  }
+  
+  .pagination-button {
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    margin: 0 5px;
+    padding: 5px 10px;
+    cursor: pointer;
+  }
+  
+  .pagination-button.active {
+    background-color: #007bff;
+    color: white;
+  }
+  
+  .unregistered-author{
+    display: grid;
+    grid-template-columns: 1fr 0.2fr;
+    justify-content: start;
+  }
+
+
+  .input-authors-unregistered {
+    width: 30%;
+    border-radius: 50px;
+    border: 2px solid black;
+    box-shadow: #6076e1;
+    padding: 3px 15px;
+    font-size: 15px;
+    margin: auto 0;
+  }
+
+  .unregistered-btns{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .unregistered-btns button{
+    margin:0 15px;
+    width:30%;  
+    font-size: 17px;  
+  }
+
+  input {
+    border: 2px solid #cccccc; /* Borde del input */
+    padding: 10px;
+    border-radius: 8px; /* Bordes redondeados */
+    outline: none; /* Elimina el borde azul por defecto */
+    transition: box-shadow 0.3s ease; /* Suaviza la transición de la sombra */
+  }
+  
+  input:focus {
+    border-color: #7a86ff; /* Cambia el color del borde al hacer focus */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1), /* Sombra suave debajo */
+                0 4px 6px rgba(0, 0, 0, 0.08); /* Sombra adicional para dar profundidad */
+  }
