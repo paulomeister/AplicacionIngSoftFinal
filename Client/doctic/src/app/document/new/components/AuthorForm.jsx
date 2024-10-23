@@ -4,7 +4,7 @@ import React from "react";
 import { Author } from "./Author";
 import { useAuthor } from "./useAuthor";
 
-export const AuthorForm = () => {
+export const AuthorForm = ({onAuthorSubmit}) => {
   const USER = {
     id: "asdasda",
     username: "sergio",
@@ -31,11 +31,11 @@ export const AuthorForm = () => {
     addUnregisteredAuthor,
     setCurrentPage,
     isAPrincipalAuthor,
-  } = useAuthor(USER, true, "66ec6b6933773bc9a923255c");
+  } = useAuthor();
+  // useAuthor(USER, false, "");
   // se envía: USUARIO, update?, documentId
 
   /* 
-
 El USUARIO (es un objeto) se envía para los dos casos en los que se AGREGA y se ACTUALIZA.
 
 Cuando se refiere a usuario, es al usuario que está autenticado, puesto que al momento
@@ -82,7 +82,7 @@ useAuthor({USUARIO}, update?, documentId) (pista, el documentId se puede obtener
                 (a) => a.usuarioId === author._id && a.rol === "principal"
               )
             )}
-            handleCoAutorButton={() => handleCoAutorButton(author)}
+            handleCoAutorButton={() => {handleCoAutorButton(author); onAuthorSubmit(selectedAuthors);}}
           />
         ))}
       </ul>

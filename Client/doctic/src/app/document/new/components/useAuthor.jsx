@@ -15,13 +15,13 @@ export const useAuthor = (USER = {}, update = false, documentId = "") => {
 
   // Hace que el usuario que ya está "autenticado" ya esté dentro de los autores
   // SELECCIONADOS
-  const USERMAPPED = memo({
-    usuarioId: USER._id,
+  const USERMAPPED = {
+    usuarioId: USER?._id,
     estaRegistrado: true,
     role: "principal",
-    nombre: USER.perfil.nombre,
-    username: USER.username,
-  });
+    nombre: USER?.perfil?.nombre,
+    username: USER?.username,
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -40,9 +40,7 @@ export const useAuthor = (USER = {}, update = false, documentId = "") => {
         const URI = update
           ? `http://localhost:8080/api/Documentos/id/${documentId}`
           : "http://localhost:8080/api/Usuarios/getAllUsers";
-        const response = await fetch(
-          update ? `http://localhost:8080/api/Documentos/id/${documentId}` : ""
-        );
+        const response = await fetch(URI);
         const authorsInDoc = await response.json(); // recoge los autores que ya estén en el documento que recoge de la API
 
         // si se va a acutalizar
@@ -70,14 +68,16 @@ export const useAuthor = (USER = {}, update = false, documentId = "") => {
           });
 
           setAddUnregistered(false); // el componente para registrar autores debe estar oculto
-          setSelectedAuthors([...selectedAuthors, ...theAuthors, USERMAPPED]); // autores seleciconados para EDITAR el documetno // mostrar en el frontend el botón "Quitar"
+          // setSelectedAuthors([...selectedAuthors, ...theAuthors, USERMAPPED]); // autores seleciconados para EDITAR el documetno // mostrar en el frontend el botón "Quitar"
+          setSelectedAuthors([...selectedAuthors, ...theAuthors]); // autores seleciconados para EDITAR el documetno // mostrar en el frontend el botón "Quitar"
           setProvAuthors([...theAuthorsShown, ...data]); // autores seleccionados para MOSTRAR en el frontend
           setAuthors([...theAuthorsShown, ...data]);
-        } else {
-          setSelectedAuthors([USERMAPPED]); // COMO SELECCIONADO YA ESTÁ EL USER
         }
+        // } else {
+        //   setSelectedAuthors([USERMAPPED]); // COMO SELECCIONADO YA ESTÁ EL USER
+        // }
       } catch (e) {
-        console.error(e);
+        console.error(e.message);
       }
     };
 
