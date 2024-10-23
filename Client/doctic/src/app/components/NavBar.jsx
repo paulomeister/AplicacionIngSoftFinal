@@ -31,7 +31,7 @@ const Navbar = () => {
         </Link>
       </div>
 
-      <div style={{ position: 'relative' }}>
+      <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'right' }}>
         <Image 
           src={isLoggedIn ? "/user.png" : "/guest.svg"} 
           alt={isLoggedIn ? "User" : "Guest"} 

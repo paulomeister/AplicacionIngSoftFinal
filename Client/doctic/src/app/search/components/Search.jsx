@@ -1,7 +1,6 @@
 'use client';
 import React, { useState } from "react";
 import ResultsList from "./ResultsList";
-import SortMenu from "./SortMenu";
 import Filter from "./Filter";
 import "./Search.css";
 
@@ -10,22 +9,13 @@ const Search = () => {
   const [mostrarFiltros, setMostrarFiltros] = useState(false); 
 
   const [busqueda, setBusqueda] = useState({});
-
   const [filtros, setFiltros] = useState([]);
-
   const [titulo, setTitulo] = useState("");
-  let tieneFiltros = false;
-  let categorias = [];
-  let autores = [];
-  let idioma = "";
-  let desde = "";
-  let hasta = "";
-
   const [sortCriteria, setSortCriteria] = useState("");  
 
   //-------- Funcion para cambiar el valor de input ------------ 
   const handleInputChange = (event) => {
-  setTitulo(event.target.value);
+    setTitulo(event.target.value);
   };
 
   //-------- Función para mostrar los filtros ------------ 
@@ -40,64 +30,42 @@ const Search = () => {
 
   //-------- Función para mapear los filtros ------------ 
   const handleMapearFiltros = () => {
-    let newCategorias = [];
-    let newAutores = []; 
-    let newIdioma = "";
-    let newDesde = "";
-    let newHasta = "";
-  
-    for (const element of filtros) {
+    const { categorias, autores, idioma, desde, hasta, keywords } = filtros.reduce((acc, element) => {
       switch (element.tipo) {
         case "CATEGORIA":
-          newCategorias.push(element.valor);
+          acc.categorias.push(element.valor);
+          break;
+        case "KEYWORDS":
+          acc.keywords.push(element.valor);
           break;
         case "AUTOR":
-          newAutores.push(element.valor);
+          acc.autores.push(element.valor);
           break;
         case "IDIOMA":
-          newIdioma = element.valor;
+          acc.idioma = element.valor;
           break;
         case "DESDE":
-          newDesde = element.valor;
+          acc.desde = element.valor;
           break;
         case "HASTA":
-          newHasta = element.valor;
+          acc.hasta = element.valor;
           break;
         default:
           break;
       }
+      return acc;
+    }, { categorias: [], keywords: [], autores: [], idioma: "", desde: "", hasta: "" });
 
-      categorias = (newCategorias);
-      autores = (newAutores);
-      idioma = (newIdioma);
-      desde = (newDesde);
-      hasta = (newHasta);
-    }
+    setBusqueda({ titulo, tieneFiltros: filtros.length > 0, keywords, categorias, autores, idioma, desde, hasta });
   };
 
-  // --------- Función para actualizar valor de busqueda --------------- 
-  const updateBusqueda = () => {
-    setBusqueda({
-      titulo: titulo,
-      tieneFiltros: tieneFiltros,
-      categorias: categorias,
-      autores: autores,
-      idioma: idioma,
-      desde: desde,
-      hasta: hasta
-    });  
-  };
-
-
-  //-------- Función para mostrar los resultados y cambiar valor del titulo -------------- 
+  // --------- Función para mostrar los resultados y cambiar valor del titulo -------------- 
   const handleSearchClick = () => {
     handleMapearFiltros();
-    updateBusqueda();
-
     setMostrarResultados(true); 
   };
 
-  // ------------ Función para actualizar el criterio de ordenamiento -------------
+  // ------------ Función para actualizar el criterio de ordenamiento ------------- 
   const handleSortChange = (newSortCriteria) => {
     setSortCriteria(newSortCriteria);
   };
@@ -105,25 +73,24 @@ const Search = () => {
   return (
     <div className="search-container">
       <div className="filter-container">
-        <div className="search-bar">
-          <input
-            type="text"
-            placeholder="Buscar"
-            className="search-input"
-            onChange={handleInputChange}
-          />
-          <button className="search-btn" onClick={handleSearchClick}>
-            Buscar
-          </button>
+        <div className="filter-title">
+          <div className="search-bar">
+            <input
+              type="text"
+              placeholder="Buscar"
+              className="search-input"
+              onChange={handleInputChange}
+            />
+            <button className="search-btn" onClick={handleSearchClick}>
+              Buscar
+            </button>
+          </div>
+          <hr />
+
+          {mostrarFiltros && (
+            <Filter onUpdateFilters={updateFilters} filtros={filtros} />
+          )}
         </div>
-        <hr />
-
-        {mostrarFiltros && (
-          <Filter onUpdateFilters={updateFilters} filtros = {filtros} />
-        )}
-      </div>
-
-      <div className="colapse-container">
         <button className="colapse-btn" onClick={handleToggleFiltros}>
           {mostrarFiltros ? "Ocultar filtros" : "Mostrar filtros"}
         </button>
@@ -131,9 +98,9 @@ const Search = () => {
 
       {/*------ Mostrar resultados después de buscar ------*/}
       {mostrarResultados && (
-        <div className="divider">
-          <ResultsList busqueda={busqueda} sortCriteria={sortCriteria} onSortChange={handleSortChange}/> {/* Pasa el criterio de orden */}
-        </div>
+        <>
+          <ResultsList busqueda={busqueda} sortCriteria={sortCriteria} onSortChange={handleSortChange} />
+        </>
       )}
     </div>
   );

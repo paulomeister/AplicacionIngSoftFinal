@@ -55,16 +55,3 @@
   button:active {
     background-color: #0d47a1;
   }
-
-  .btn-ver-mas{
-    background-color: #259134;
-    padding: 1% 2%;
-  }
-
-  .btn-ver-mas:hover{
-    background-color: #2f9e2e;
-  }
-
-  .btn-ver-mas:active{
-    background-color: #259134;
-  }
