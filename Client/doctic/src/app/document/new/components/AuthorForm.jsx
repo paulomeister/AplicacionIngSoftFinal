@@ -31,7 +31,7 @@ export const AuthorForm = () => {
     addUnregisteredAuthor,
     setCurrentPage,
     isAPrincipalAuthor,
-  } = useAuthor(USER, true, "66ec6b6933773bc9a923255c");
+  } = useAuthor(USER, false, "");
   // se envía: USUARIO, update?, documentId
 
   /* 

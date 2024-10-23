@@ -48,7 +48,7 @@ public class DocumentoController {
     @Autowired
     IUsuarioService usuarioService;
 
-    //                                                              DRIVE                                                              
+    // DRIVE
 
     @GetMapping("/getFileById")
     public ResponseEntity<Object> getFileById(@RequestParam("fileId") String fileId) {
@@ -67,11 +67,10 @@ public class DocumentoController {
                     .body("Error fetching file: " + e.getMessage());
         }
     }
-  
 
     // VIEW
     // !el fileId debe de ser el que se guarda en la BD, no el que está en google
-      // ejemplo:
+    // ejemplo:
     // http://localhost:8080/api/Documentos/viewFile?fileId=10Hx51uIibcJEx7h8AWs6Rd5o7KFVqtRD&userId=66ebbc56e9670a5556f9781a&documentId=123412341234123212341239
 
     @GetMapping("/viewFile")
@@ -80,9 +79,7 @@ public class DocumentoController {
             @RequestParam("documentId") ObjectId documentId) {
         try {
 
-            System.out.println("entra en el controller");
             ArchivoDTO dto = documentoService.viewTheFile(fileId, userId, documentId);
-            System.out.println("sale en el controller");
 
             File file = dto.getFile();
             byte[] fileBytes = dto.getFileBytes();
@@ -102,7 +99,7 @@ public class DocumentoController {
     // !el fileId debe de ser el que se guarda en la BD, no el que está en google
     // ejemplo:
     // http://localhost:8080/api/Documentos/downloadFile?fileId=10Hx51uIibcJEx7h8AWs6Rd5o7KFVqtRD&userId=66ebbc56e9670a5556f9781a&documentId=123412341234123212341239
-    @GetMapping("/downloadFile")
+    @PostMapping("/downloadFile")
     public ResponseEntity<?> downloadFile(@RequestParam("fileId") String fileId,
             @RequestParam("userId") String userId,
             @RequestParam("documentId") ObjectId documentId) {
@@ -124,7 +121,7 @@ public class DocumentoController {
         }
     }
 
-    //                                ----------------------------- BÚSQUEDA -----------------------------
+    // ----------------------------- BÚSQUEDA -----------------------------
 
     @PostMapping("/onSearch/filter/")
     public ResponseEntity<List<DocumentoModel>> findAndFilterDocuments(@RequestBody BusquedaFiltroDTO queryParams) {
@@ -156,7 +153,7 @@ public class DocumentoController {
 
     }
 
-    //                                --- -GETTERS -- //
+    // --- -GETTERS -- //
 
     @GetMapping("/id/{_id}")
     public ResponseEntity<?> findDocumentByID(@PathVariable("_id") ObjectId _id) {
@@ -279,7 +276,7 @@ public class DocumentoController {
         }
     }
 
-  //                                                                INSERTAR
+    // INSERTAR
 
     // /api/Documentos/insert
     // Método para insertar al "repositorio" y a la bd.
@@ -295,11 +292,11 @@ public class DocumentoController {
             respuesta = documentoService.insertDocument(file, documentoJson);
             return new ResponseEntity<Res>(respuesta, HttpStatus.CREATED);
 
-        } 
-        
+        }
+
         catch (CreationException err) {
 
-            respuesta = new Res(500,"Error al crear la publicación/documento: \n" + err.getMessage());
+            respuesta = new Res(500, "Error al crear la publicación/documento: \n" + err.getMessage());
             return ResponseEntity.status(500).body(respuesta);
 
         } catch (IOException | GeneralSecurityException e) {
@@ -335,7 +332,7 @@ public class DocumentoController {
     public ResponseEntity<?> updateDocumentAndFile(
             @RequestParam("document") String documentToBeUpdated,
             @RequestParam("file") MultipartFile file) {
-                Res respuesta = new Res();
+        Res respuesta = new Res();
         try {
 
             String message = documentoService.updateDocumentFile(documentToBeUpdated, file);
@@ -370,28 +367,25 @@ public class DocumentoController {
 
         } catch (DeleteException err) {
 
-            message = new Res(500,"No se pudo eliminar el documento con ID: " + _id.toString());
+            message = new Res(500, "No se pudo eliminar el documento con ID: " + _id.toString());
 
             return ResponseEntity.status(500).body(message);
 
         }
     }
 
-
     @PostMapping("/uploadToDrive")
-    public ResponseEntity<Res> uploadToDrive(@RequestParam("file") MultipartFile file){
-        
-        System.out.println("Entró\n\n\n\n\n\n\n\n");
+    public ResponseEntity<Res> uploadToDrive(@RequestParam("file") MultipartFile file) {
 
         int status;
         String res = "";
 
-        try{
-            
+        try {
+
             res = documentoService.uploadToDrive(file);
             status = 200;
 
-        }catch(Exception e){
+        } catch (Exception e) {
             res = e.getMessage();
             status = 500;
         }
@@ -401,6 +395,5 @@ public class DocumentoController {
         return ResponseEntity.status(status).body(respuesta);
 
     }
-
 
 }
