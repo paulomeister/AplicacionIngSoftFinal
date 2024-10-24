@@ -31,7 +31,7 @@ export const UpdatePublicationForm = ({ documentData }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [categorias, setCategorias] = useState([]); // Estado para almacenar las categorías obtenidas de la API
-  const [selectedAuthors, setSelectedAuthors] = useState([]);
+  const [selectedAuthors, setSelectedAuthors] = useState(initialAuthors);
   
   const [subcategorias, setSubcategorias] = useState(initialSubcategories || []); // Estado para almacenar las subcategorías
   const [selectedCategory, setSelectedCategory] = useState(initialCategory.nombre); // Estado para manejar la categoría seleccionada
@@ -47,13 +47,13 @@ export const UpdatePublicationForm = ({ documentData }) => {
   const [selectedFile, setSelectedFile] = useState(null);
 
   useEffect(() => {
-    setSelectedAuthors(initialAuthors);
-     // Aquí asignamos los autores iniciales al cargar la página a selectedAuthors
-  }, [initialAuthors, setSelectedAuthors]);
-
+    setSelectedAuthors(initialAuthors); // Aquí asignamos los autores iniciales al cargar la página a selectedAuthors
+    console.log(selectedAuthors)
+}, []); // El array vacío asegura que solo se ejecute una vez
   const onAuthorSubmit = (selectedAuthors) => {
     
-    setSelectedAuthors(selectedAuthors); // actualiza el SelectedAuthors de este componente
+    setSelectedAuthors(selectedAuthors);
+    console.log(selectedAuthors) // actualiza el SelectedAuthors de este componente
   };
 
   // Fetch a la API para obtener las categorías

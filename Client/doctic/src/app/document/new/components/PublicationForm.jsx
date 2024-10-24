@@ -6,24 +6,20 @@ import { useState, useEffect, useRef } from "react";
 import { Spinner, Alert, Form, Badge } from "react-bootstrap";
 import axios from "axios";
 import { AuthorForm } from "./AuthorForm";
-import { FaFileUpload, FaCheckCircle} from 'react-icons/fa'; // Importamos el ícono de documento
-import {Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure} from "@nextui-org/react";
+import { FaFileUpload, FaCheckCircle } from 'react-icons/fa'; // Importamos el ícono de documento
+import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure } from "@nextui-org/react";
 
 
 export const PublicationForm = () => {
-  const {isOpen, onOpen, onClose, onOpenChange} = useDisclosure();
+  const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
   const [modalSuccedSubmit, setModalSuccedSubmit] = useState(false);
   const fileInputRef = useRef(null);
   const [selectedFile, setSelectedFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [fileError, setFileError] = useState(null);
-  const [categorias, setCategorias] = useState([]); 
+  const [categorias, setCategorias] = useState([]);
   const [selectedAuthors, setSelectedAuthors] = useState([]);
-  const [subcategorias, setSubcategorias] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState("");
-  const [selectedSubcategory, setSelectedSubcategory] = useState("");
-  const [selectedCategoryWithId, setSelectedCategoryWithId] = useState({});
   const [selectedSubcategoriesWithId, setSelectedSubcategoriesWithId] = useState([]);
   const [title, setTitle] = useState(""); // Estado para el título
   const [subcategorias, setSubcategorias] = useState([]); // Estado para almacenar las subcategorías
@@ -31,28 +27,27 @@ export const PublicationForm = () => {
   const [selectedSubcategory, setSelectedSubcategory] = useState(""); // Estado para manejar la subcategoría seleccionada
   //const [selectedSubcategories, setSelectedSubcategories] = useState([]); // Almacenar múltiples subcategorías seleccionadas
   const [selectedCategoryWithId, setSelectedCategoryWithId] = useState({}); // Almacenar categoría seleccionada con ID
-  const [selectedSubcategoriesWithId, setSelectedSubcategoriesWithId] =
-    useState([]); // Almacenar subcategorías con ID
-  
-    const handleOpen = () => {
-      onOpen();
-    }
-    
-    useEffect(() => {
-      if(modalSuccedSubmit) {
-        handleOpen();
-      }
-    }, [modalSuccedSubmit]);
 
-    const handleLoading = () => {
-      onOpen();
-    }
 
-    useEffect(() => {
-      if(loading) {
-        handleLoading();
-      }
-    }, [loading]);
+  const handleOpen = () => {
+    onOpen();
+  }
+
+  useEffect(() => {
+    if (modalSuccedSubmit) {
+      handleOpen();
+    }
+  }, [modalSuccedSubmit]);
+
+  const handleLoading = () => {
+    onOpen();
+  }
+
+  useEffect(() => {
+    if (loading) {
+      handleLoading();
+    }
+  }, [loading]);
 
 
   const onAuthorSubmit = (selectedAuthors) => {
@@ -139,13 +134,13 @@ export const PublicationForm = () => {
 
     if (file && file.size > maxFileSize) {
       setFileError("El archivo cargado excede el tamaño máximo de 2MB.");
-      fileInputRef.current.value = ""; 
-      setSelectedFile(null); 
+      fileInputRef.current.value = "";
+      setSelectedFile(null);
     } else {
       setFileError(null);
       setSelectedFile(file);
       if (file) {
-        const fileNameWithoutExtension = file.name.replace(/\.[^/.]+$/, ""); 
+        const fileNameWithoutExtension = file.name.replace(/\.[^/.]+$/, "");
         setTitle(fileNameWithoutExtension); // Actualiza el título con el nombre del archivo
       }
     }
@@ -211,22 +206,22 @@ export const PublicationForm = () => {
     <section
       aria-labelledby="publication-form-heading"
       className="max-w-screen-md w-[768px]"
-    >   
+    >
       <Modal backdrop="opaque" isOpen={isOpen} onOpenChange={onOpenChange}>
-          <ModalContent>
-            {(onclose) => {
-              if(loading) {
-                return (
-                  <>
-                    <ModalBody>
-                      <Spinner animation="border" role="status" />
-                    </ModalBody>
-                  </>
-                );
-              } else if(modalSuccedSubmit) {
-                return (
-                  <>
-                    <ModalContent>
+        <ModalContent>
+          {(onclose) => {
+            if (loading) {
+              return (
+                <>
+                  <ModalBody>
+                    <Spinner animation="border" role="status" />
+                  </ModalBody>
+                </>
+              );
+            } else if (modalSuccedSubmit) {
+              return (
+                <>
+                  <ModalContent>
                     {(onClose) => (
                       <>
                         <ModalHeader>
@@ -234,12 +229,12 @@ export const PublicationForm = () => {
                         </ModalHeader>
                       </>
                     )}
-                    </ModalContent>
-                  </>
-                );
-              }
-            }}
-          </ModalContent>
+                  </ModalContent>
+                </>
+              );
+            }
+          }}
+        </ModalContent>
       </Modal>
       {/* Mensaje de error */}
       {error && <Alert variant="danger">{error}</Alert>}
@@ -251,13 +246,13 @@ export const PublicationForm = () => {
           Por favor completa el formulario a continuación para crear una nueva
           publicación.
         </p>
-          
+
         {/* Subir Archivo */}
         <div className="mb-4">
           <label className="block text-gray-700 text-lg font-bold mb-2" htmlFor="file">
             Sube un archivo (PDF)
           </label>
-          <div 
+          <div
             className={`w-full p-6 border-2 ${selectedFile ? 'border-green-500 bg-green-50' : 'border-dashed border-gray-300 hover:border-blue-500 hover:bg-blue-50'} rounded-md flex flex-col items-center justify-center cursor-pointer`}
             onClick={() => fileInputRef.current.click()}
           >
@@ -411,7 +406,7 @@ export const PublicationForm = () => {
           </div>
         )}
 
-        
+
 
         <div className="mb-4">
           <label className="block text-gray-700 text-lg font-bold mb-2" htmlFor="visibility">
