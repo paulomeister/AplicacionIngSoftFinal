@@ -83,28 +83,44 @@ export default function Search({ setSearchTitle, setFilterCategory, setFilterIdi
   return (
     <div className="container mx-auto p-3 flex-grow bg-[#f3f0ff] rounded relative  max-w-full">
 
-      {/* Barra de Búsqueda */}
-      <div className="relative flex items-center bg-[#f3f0ff] ">
-        {/* Ícono FaSearch posicionado dentro del input como botón */}
-        <button
-          onClick={handleSearch} // Llama a la función de búsqueda
-          className="absolute right-4 inset-y-0 flex items-center text-gray-400 hover:text-blue-600 focus:outline-none"
-        >
-          <FaSearch className="text-2xl"/>
-        </button>
-        <input
-          type="text"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)} // Actualiza el estado al escribir en la barra
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') {
-              handleSearch(); // Ejecuta la búsqueda al presionar Enter
-            }
-          }}
-          placeholder="Buscar algo..."
-          className="w-full p-6 pl-12 rounded-full bg-white focus:outline-none focus:ring-4 focus:ring-blue-600 text-lg"
-        />
-      </div>   
+          {/* Barra de Búsqueda */}
+<div className="relative flex items-center bg-[#f3f0ff]">
+  {/* Ícono FaSearch posicionado dentro del input como botón */}
+  <button
+    onClick={handleSearch} // Llama a la función de búsqueda
+    className="absolute right-6 inset-y-0 flex items-center text-gray-400 hover:text-blue-600 focus:outline-none"
+  >
+    <FaSearch className="text-2xl" />
+  </button>
+
+  {/* Botón con "X" para limpiar el input */}
+  {searchQuery && (
+    <>
+      {/* Línea vertical divisoria */}
+      <span className="absolute right-16 top-1/2 transform -translate-y-1/2 h-10 w-px bg-gray-300" />
+
+      <button
+        onClick={() => setSearchQuery("")} // Limpiar el input
+        className="absolute right-20 inset-y-0 flex items-center text-gray-400 hover:text-red-600 focus:outline-none"
+      >
+        <span className="text-4xl">×</span>
+      </button>
+    </>
+  )}
+
+  <input
+    type="text"
+    value={searchQuery}
+    onChange={(e) => setSearchQuery(e.target.value)} // Actualiza el estado al escribir en la barra
+    onKeyDown={(e) => {
+      if (e.key === 'Enter') {
+        handleSearch(); // Ejecuta la búsqueda al presionar Enter
+      }
+    }}
+    placeholder="Buscar algo..."
+    className="w-full p-6 pl-12 pr-20 rounded-full bg-white focus:outline-none focus:ring-4 focus:ring-blue-600 text-lg shadow-sm"
+  />
+</div>
       <hr className="my-4 border-t-2 border-gray-400" />
       {/* Botón estilo "pestaña" para abrir/cerrar filtros */}
       <button
