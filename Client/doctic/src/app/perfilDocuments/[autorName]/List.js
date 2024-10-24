@@ -57,6 +57,7 @@ export default function List({
   const handleEdit = (id) => {
     // Funcionalidad futura para editar el documento
     console.log(`Editar documento con ID: ${id}`);
+    window.location.href = `/edit-document/${id}`;
   };
 
   const handleDelete = (id) => {
