@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { SpinerComp } from "app/app/document/[id]/components/SpinnerComp";
 import { DocumentListItem } from "./DocumentListItem";
+import Pagination from '@mui/material/Pagination';
+import Stack from '@mui/material/Stack';
 
 export default function List({
   autorName,
@@ -16,6 +18,10 @@ export default function List({
   const [documents, setDocuments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  // Estados para la paginación
+  const [currentPage, setCurrentPage] = useState(1);
+  const documentsPerPage = 5; // Documentos por página
 
   // FUNCTION FOR MODAL:
 
@@ -51,6 +57,7 @@ export default function List({
   useEffect(() => {
     if (autorName) {
       fetchDocuments();
+      setCurrentPage(1); // Reiniciar a la primera página cuando cambian los filtros
     }
   }, [autorName, searchTitle, filterCategory, filterIdioma, filterDates]); // Actualiza la lista cuando cambie cualquier filtro
 
@@ -60,10 +67,11 @@ export default function List({
   };
 
   const handleDelete = (id) => {
-
     async function fetchToDelete() {
-
-      const data=  await fetch(`http://localhost:8080/api/Documentos/delete/${id}`,{method:"DELETE"})
+      const data = await fetch(
+        `http://localhost:8080/api/Documentos/delete/${id}`,
+        { method: "DELETE" }
+      );
       const response = await data.json();
 
       if (response.status === 200) {
@@ -71,11 +79,22 @@ export default function List({
       } else {
         return;
       }
-
     }
 
-
     fetchToDelete();
+  };
+
+  // Paginación - Cálculo de los índices
+  const indexOfLastDocument = currentPage * documentsPerPage;
+  const indexOfFirstDocument = indexOfLastDocument - documentsPerPage;
+  const currentDocuments = documents.slice(indexOfFirstDocument, indexOfLastDocument);
+
+  // Total de páginas
+  const totalPages = Math.ceil(documents.length / documentsPerPage);
+
+  // Manejo del cambio de página con Material UI Pagination
+  const handlePageChange = (event, page) => {
+    setCurrentPage(page);
   };
 
   if (loading) return <SpinerComp />;
@@ -85,9 +104,9 @@ export default function List({
     );
 
   return (
-    <div className="container  p-6 flex-grow">
+    <div className="container p-6 flex-grow">
       <ul className="space-y-8">
-        {documents.map((doc) => (
+        {currentDocuments.map((doc) => (
           <DocumentListItem
             key={doc._id}
             doc={doc}
@@ -96,6 +115,18 @@ export default function List({
           ></DocumentListItem>
         ))}
       </ul>
+
+      {/* Paginación utilizando Material UI */}
+      <Stack spacing={2} direction="row" justifyContent="center" mt={4}>
+        <Pagination
+          count={totalPages}
+          page={currentPage}
+          onChange={handlePageChange}
+          color="primary"
+        />
+      </Stack>
     </div>
   );
 }
+
+
