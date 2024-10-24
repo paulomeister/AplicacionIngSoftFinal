@@ -6,6 +6,9 @@ import { SpinerComp } from "app/app/document/[id]/components/SpinnerComp";
 import { DocumentListItem } from "./DocumentListItem";
 import Pagination from '@mui/material/Pagination';
 import Stack from '@mui/material/Stack';
+import { useRouter } from 'next/router';
+
+
 
 export default function List({
   autorName,
@@ -61,10 +64,15 @@ export default function List({
     }
   }, [autorName, searchTitle, filterCategory, filterIdioma, filterDates]); // Actualiza la lista cuando cambie cualquier filtro
 
-  const handleEdit = (id) => {
-    // Funcionalidad futura para editar el documento
-    console.log(`Editar documento con ID: ${id}`);
-  };
+   // Importamos el hook useRouter
+
+const handleEdit = (id) => {
+  const router = useRouter(); // Inicializamos el router
+
+  // Redirigir al usuario a la página de edición del documento con el ID proporcionado
+  router.push(`/document/edit/${id}`);
+};
+
 
   const handleDelete = (id) => {
     async function fetchToDelete() {
