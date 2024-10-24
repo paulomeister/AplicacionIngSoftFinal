@@ -1,6 +1,6 @@
 // useAuthors.js
 import { useEffect, useState, useRef, useCallback, memo } from "react";
-import { nanoid } from "nanoid";
+import { customAlphabet } from "nanoid";
 
 export const useAuthor = (
   onAuthorSubmit,
@@ -23,7 +23,7 @@ export const useAuthor = (
   const USERMAPPED = {
     usuarioId: USER?._id,
     estaRegistrado: true,
-    role: "principal",
+    rol: "principal",
     nombre: USER?.perfil?.nombre,
     username: USER?.username,
   };
@@ -118,17 +118,17 @@ export const useAuthor = (
 
 
   const handleCoAutorButton = (author) => {
-    const isSelected = selectedAuthors.some((a) => a.usuarioId === author._id);
+    const isSelected = selectedAuthors.some((a) => a.username === author.username);
 
     if (isSelected) {
       setSelectedAuthors(
-        selectedAuthors.filter((au) => au.usuarioId !== author._id)
+        selectedAuthors.filter((au) => au.username !== author.username)
       );
     } else {
       const theAuthor = {
         usuarioId: author._id,
         estaRegistrado: true,
-        role: "coautor",
+        rol: "coautor",
         nombre: author.perfil.nombre,
         username: author.username,
       };
@@ -155,10 +155,12 @@ export const useAuthor = (
       return;
     }
 
+    const nanoid = customAlphabet('1234567890abcdef', 24)
+
     const unregisteredAuthor = {
       usuarioId: nanoid(),
       estaRegistrado: false,
-      role: "coautor",
+      rol: "coautor",
       nombre: newAuthorName,
       username: newUsername,
     };
@@ -180,6 +182,8 @@ export const useAuthor = (
     setSelectedAuthors([unregisteredAuthor, ...selectedAuthors]);
     setProvAuthors(updatingAuthors);
     setAuthors(updatingAuthors);
+    unregisteredName.current.value = "";
+    unregisteredUsername.current.value = "";
   };
 
   const indexOfLastAuthor = currentPage * authorsPerPage;

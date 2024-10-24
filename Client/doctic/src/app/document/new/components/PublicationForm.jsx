@@ -134,6 +134,8 @@ export const PublicationForm = () => {
       })),
     ];
 
+    console.log(selectedAuthors);
+
     const document = {
       titulo: inputTitle,
       descripcion: inputDescription,
@@ -141,8 +143,7 @@ export const PublicationForm = () => {
       categoria: categoriasFinal,
       autores: selectedAuthors,
       fechaSubida: new Date(),
-      year: new Date().getFullYear(),
-      autores: [{ usuarioId: "" }],
+      year: new Date().getFullYear()
     };
 
     const data = new FormData();

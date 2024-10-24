@@ -70,12 +70,12 @@ useAuthor({USUARIO}, update?, documentId) (pista, el documentId se puede obtener
       </div>
 
       <ul className="list-none mt-6">
-        {currentAuthors.map((author) => (
+        {currentAuthors.map((author, key) => (
           <Author
-            key={author._id}
+            key={key}
             author={author}
             isSelected={Boolean(
-              selectedAuthors.some((a) => a.usuarioId === author._id)
+              selectedAuthors.some((a) => a.username === author.username)
             )}
             isPrincipal={Boolean(
               selectedAuthors.some(
@@ -121,12 +121,14 @@ useAuthor({USUARIO}, update?, documentId) (pista, el documentId se puede obtener
               type="text"
               placeholder="Nombre"
               ref={unregisteredName}
+              value={unregisteredName.value}
               className="w-full p-2 mb-4 border border-gray-300 rounded focus:outline-none focus:border-blue-400"
             />
             <input
               type="text"
               placeholder="@nombreDeUsuario"
               ref={unregisteredUsername}
+              value={unregisteredUsername.value}
               className="w-full p-2 mb-4 border border-gray-300 rounded focus:outline-none focus:border-blue-400"
             />
             <div className="unregistered-btns">
