@@ -87,6 +87,9 @@ public class DocumentoModel {
     private Date fechaSubida;
 
     //
+    private int year;
+
+    //
     private DatosComputados datosComputados;
 
     @AllArgsConstructor
