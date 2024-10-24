@@ -172,6 +172,7 @@ export const PublicationForm = () => {
       .post("/Documentos/insert", data)
       .then((response) => {
         console.log(response.data);
+
       })
       .catch((e) => {
         console.log(
@@ -323,7 +324,7 @@ export const PublicationForm = () => {
                   <Badge
                     key={index}
                     pill
-                    variant="primary"
+                    variant="secondary"
                     onClick={() => RemoveSubcategory(subcategory.categoriaId)} // Lógica para eliminar subcategoría por ID
                     style={{ cursor: "pointer" }}
                   >
@@ -380,7 +381,7 @@ export const PublicationForm = () => {
 
         <div className="flex justify-center">
           <button
-            className="bg-gray-700 text-white font-bold py-2 px-4 rounded-md hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-600 focus:ring-opacity-50"
+            className="bg-primary text-white font-bold py-2 px-4 rounded-md hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-600 focus:ring-opacity-50"
             type="submit"
           >
             Crear Publicación

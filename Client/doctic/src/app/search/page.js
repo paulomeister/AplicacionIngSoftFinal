@@ -1,12 +1,10 @@
 import Search from "./components/Search";
-import "./page.css";
+// import "./page.css";
 
 function searchPage() {
     return (
-        <div>
-            <Search />
-        </div>
-      );
+        <Search />
+    );
 }
 
 export default searchPage

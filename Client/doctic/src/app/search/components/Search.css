@@ -1,18 +1,18 @@
 .search-container {
   position: relative;
-  width: 100%;
+  width: 100vw;
 }
 
 .filter-container {
     position: sticky;
-    top: 0;
+    top: 70px;
     z-index: 10;
     display: flex;
     flex-direction: column;
     align-items: center;
   }
 
-  .filter-title{
+  .filter-title {
     background-color: #f3f0ff;
     border-radius: 8px;
     padding-bottom: 12px;
