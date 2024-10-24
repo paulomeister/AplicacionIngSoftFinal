@@ -10,6 +10,7 @@ export const PublicationForm = () => {
   const fileInputRef = useRef(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [fileError, setFileError] = useState(null);
   const [categorias, setCategorias] = useState([]); // Estado para almacenar las categorías obtenidas de la API
   const [selectedAuthors, setSelectedAuthors] = useState([]);
   const [subcategorias, setSubcategorias] = useState([]); // Estado para almacenar las subcategorías
@@ -112,6 +113,20 @@ export const PublicationForm = () => {
         (subcat) => subcat.categoriaId !== categoriaId
       )
     );
+  };
+
+  const handleFileInputChange = (e) => {
+    const file = e.target.files[0];
+    const maxFileSize = 2 * 1024 * 1024; // 2MB in bytes
+
+    if (file && file.size > maxFileSize) {
+      setFileError("El archivo cargado excede el tamaño máximo de 2MB.");
+      fileInputRef.current.value = ""; // Clear the input
+    } else {
+      setFileError(null);
+      // Puedes manejar el archivo aquí si es válido
+      console.log("Archivo subido correctamente:", file);
+    }
   };
 
   const formHandler = (event) => {
@@ -338,7 +353,10 @@ export const PublicationForm = () => {
             required
             aria-required="true"
             ref={fileInputRef}
+            onChange={handleFileInputChange}
           />
+          <span className="text-gray-500 text-sm">Tamaño máximo de 2MB</span>
+          <span className="text-red-500 text-sm ml-2">{fileError}</span>
         </div>
 
         <div className="mb-4">
