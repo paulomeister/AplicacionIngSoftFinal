@@ -59,30 +59,24 @@ const Filter = ({ onUpdateFilters, filtros }) => {
       {/* Renderiza los filtros adicionales */}
       {filtrosAdicionales.map((filtro) => (
         <div key={filtro.id} className="filter-item">
-          <select
-            className="filter-select"
-            value={filtro.tipo || ''} // Si el tipo es nulo, muestra una opción vacía
-            onChange={(e) => handleTipoChange(filtro.id, e)}
-          >
-            <option value="" disabled>
-              Selecciona un tipo de filtro
-            </option>
-            <option value="AUTOR" disabled={tiposSeleccionados.includes("AUTOR") && filtro.tipo !== "AUTOR"}>
+          <select className="filter-select" value={filtro.tipo || ''} onChange={(e) => handleTipoChange(filtro.id, e)}>
+            <option value="" disabled>Selecciona filtro</option>
+            <option value="AUTOR" disabled={tiposSeleccionados.includes("AUTOR")}>
               Autor
             </option>
-            <option value="KEYWORDS" disabled={tiposSeleccionados.includes("KEYWORDS") && filtro.tipo !== "KEYWORDS"}>
+            <option value="KEYWORDS" disabled={tiposSeleccionados.includes("KEYWORDS")}>
               Palabra clave
             </option>
-            <option value="CATEGORIA" disabled={tiposSeleccionados.includes("CATEGORIA") && filtro.tipo !== "CATEGORIA"}>
+            <option value="CATEGORIA" disabled={tiposSeleccionados.includes("CATEGORIA")}>
               Categoría
             </option>
-            <option value="DESDE" disabled={tiposSeleccionados.includes("DESDE") && filtro.tipo !== "DESDE"}>
+            <option value="DESDE" disabled={tiposSeleccionados.includes("DESDE")}>
               Desde año
             </option>
-            <option value="HASTA" disabled={tiposSeleccionados.includes("HASTA") && filtro.tipo !== "HASTA"}>
+            <option value="HASTA" disabled={tiposSeleccionados.includes("HASTA")}>
               Hasta año
             </option>
-            <option value="IDIOMA" disabled={tiposSeleccionados.includes("IDIOMA") && filtro.tipo !== "IDIOMA"}>
+            <option value="IDIOMA" disabled={tiposSeleccionados.includes("IDIOMA")}>
               Idioma
             </option>
           </select>

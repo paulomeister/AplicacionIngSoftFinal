@@ -43,9 +43,10 @@ const DocumentListComplete = ({autor}) => {
   else{
     return (
       <div className="document-list">
-        {
-          <DocumentItem results={infDocumentos} />
-        }
+        <div className="document-list-title">
+          <h1>Documentos Escritos por {autor.username}</h1>
+        </div>
+        <DocumentItem results={infDocumentos} />
       </div>
     );
   }

@@ -1,17 +1,14 @@
 'use client';  
 import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';  
 import conectionDocuments from '../utils/conectionDocuments';
 import DocumentItem from './DocumentItem';
 import { AlertPop } from '../utils/AlertPopup';
 import './DocumentList.css';
 
-const DocumentList = ({ autor }) => {
+const DocumentList = ({ autor, onVerTodos }) => {
   const [titulosDocumentos, setTitulosDocumentos] = useState([]); 
   const [infDocumentos, setInfDocumentos] = useState([]); 
   const [loading, setLoading] = useState(true); 
-
-  const router = useRouter();  
 
   // -------- Función para obtener los títulos de los documentos subidos por el autor ---------
   const getDocumentos = () => {
@@ -60,10 +57,12 @@ const DocumentList = ({ autor }) => {
    else {
     return (
       <div className="document-list-container">
-        <h2>Documentos Subidos Por {autor.username}</h2> 
+        <h2> Pre-view: Documentos Escritos Por {autor.username}</h2> 
+        <hr/>
         <div className="document-list">
           <DocumentItem results={infDocumentos} />
         </div>
+        <button className="ver-todos-btn" onClick={onVerTodos}>Ver todos</button>
       </div>
     );
   }
