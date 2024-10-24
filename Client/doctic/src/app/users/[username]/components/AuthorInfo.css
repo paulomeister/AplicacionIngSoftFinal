@@ -4,8 +4,6 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: 50vw;
-  height: 50vh;
   border-radius: 10px;
   margin-top: 15px;
   padding: 20px;
@@ -21,11 +19,10 @@
 }
 
 .author-avatar{
+  box-sizing: border-box;
   border-radius: 50%;
-  min-height: 100px;
-  height: 68%;
-  width: auto;
-  margin-left: 20px;
+  width:30%; 
+  height:30%;
 }
 
 .author-name-container{
@@ -53,5 +50,32 @@
 }
 
 .info-box p{
+  margin-top: 10px;
+}
+
+.author-name-container{
+  display: flex;
+  justify-content: center;    
+  flex-direction: column;
+  margin-left: 20px;
+}
+
+.names{
+  font-size: 40px;
+  font-weight: bold;
+}
+
+.username{
+  font-size: small;
+  color:gray;
+  margin-top: -4px;
+}
+
+#span-doctic{
+  color:#0089af;
+  font-weight: bold;
+}
+
+.date{
   margin-top: 10px;
 }

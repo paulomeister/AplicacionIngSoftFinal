@@ -1,12 +1,11 @@
 .document-list-container {
-  background-color: rgba(249, 252, 255, 0.733);
   display: flex;
   flex-direction: column;
   align-items: center;
   margin-top: 20px;
   margin-bottom: 20px;
   padding: 20px;
-  width: 50vw;
+  width: 40vw;
   border: 1px solid rgba(164, 176, 192, 0.295);
   border-radius: 10px;
 }
@@ -32,8 +31,8 @@ hr{
 }
 
 .ver-todos-btn{
-  background-color: #00bb4b;
-  color: rgb(0, 0, 0);
+  background-color: #068438;
+  color: rgb(255, 255, 255);
   border: none;
   cursor: pointer;
   padding: 9px;
@@ -45,4 +44,31 @@ hr{
 
 .ver-todos-btn:hover{
   background-color: #00a33b;
+}
+
+.written-by{
+  font-weight: bold;
+  color:black;
+  font-style: italic;
+}
+
+.written-by-text:not(.written-by){
+  color:#707070;
+}
+
+.document-title-author{
+  font-size: 23px;
+}
+
+.document-title-author:hover{
+  cursor:pointer;
+  text-decoration: underline;
+}
+
+.result-item{
+  color:black
+}
+
+.result-actions{
+  margin-top: -10px;
 }

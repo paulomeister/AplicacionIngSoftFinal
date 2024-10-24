@@ -1,4 +1,4 @@
-'use client';
+"use client";
 import React from "react";
 import Link from "next/link";
 import "./DocumentItem.css";
@@ -8,28 +8,46 @@ const DocumentItem = ({ results }) => {
     <div>
       {results.map((result, index) => (
         <div key={index} className="result-item">
-          <h3><strong>{result.titulo}</strong></h3>
+          <Link href={`/document/${result._id}`} className="document-title-author">
+            <strong>{result.titulo}</strong>
+          </Link>
 
           {/* Renderizar autores */}
           <div className="result-params">
-          <p><strong className="result-author">Autores: </strong> 
-            {result.autores?.map((autor, i) => (
-              <Link href={`/users/${autor.username}`} className="result-author" key={i}> 
-              <span>{autor.nombre}{i < result.autores.length - 1 ? ", " : ""} </span> 
-              </Link>
-            ))}
-          </p>
+            <p>
+              <strong className="result-author">Autores: </strong>
+              {result.autores?.map((autor, i) => (
+                <Link
+                  href={`/users/${autor.username}`}
+                  className="result-author"
+                  key={i}
+                >
+                  <span>
+                    {autor.nombre}
+                    {i < result.autores.length - 1 ? ", " : ""}{" "}
+                  </span>
+                </Link>
+              ))}
+            </p>
           </div>
 
           {/* Renderizar categoría */}
           <div className="result-params">
-          <p><strong>Categorías: </strong>
-          {result.categoria?.map((cat, i) => (
-            <span key={i}>{cat.nombre}{i < result.categoria.length - 1 ? ", " : ""}</span>
-          ))}</p>
+            <p>
+              <strong>Categorías: </strong>
+              {result.categoria?.map((cat, i) => (
+                <span key={i}>
+                  {cat.nombre}
+                  {i < result.categoria.length - 1 ? ", " : ""}
+                </span>
+              ))}
+            </p>
           </div>
 
-          <p><strong>Disponible desde:</strong> {new Date(result.fechaSubida).toLocaleDateString()}</p>
+          <p>
+            <strong>Disponible desde:</strong>{" "}
+            {new Date(result.fechaSubida).toLocaleDateString()}
+          </p>
 
           <div className="result-actions">
             <button>

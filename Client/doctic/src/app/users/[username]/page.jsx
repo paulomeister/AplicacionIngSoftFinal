@@ -36,16 +36,16 @@ function App({ params }) {
   };
 
   return (
-    <>
+    <div id="back">
       {!verTodos && (
         <div className="app">
           <AuthorInfo autor={autor} />
-          <DocumentList autor={autor} onVerTodos={handleVerTodos} />
+          {<DocumentList autor={autor} onVerTodos={handleVerTodos} />}
         </div>
       )}
 
       {verTodos && <DocumentListComplete autor={autor} />}
-    </>
+    </div>
   );
 }
 

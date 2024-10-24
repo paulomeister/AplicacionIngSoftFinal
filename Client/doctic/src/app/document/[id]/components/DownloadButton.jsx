@@ -32,11 +32,7 @@ export const DownloadButton = ({
           body: form,
           headers: {
             Authorization:
-<<<<<<< HEAD
               "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJlbnVuZXoiLCJhdXRob3JpdGllcyI6W3siYXV0aG9yaXR5IjoiUk9MRV9VU1VBUklPIn1dLCJpYXQiOjE3Mjk3MjIxOTYsImV4cCI6MTcyOTc0NjAwMH0.ULIjma7sXLM-i3PmE5aF5UOP9N81CwC6E04nbHZVifeOSovpTGU2El8HsHbJ0y3TDh3nvTPQmB9EsgY_cg_e7Q",
-=======
-              "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJlbnVuZXoiLCJhdXRob3JpdGllcyI6W3siYXV0aG9yaXR5IjoiUk9MRV9VU1VBUklPIn1dLCJpYXQiOjE3Mjk3Mjg0NTYsImV4cCI6MTcyOTc0NjAwMH0.HCBbGqwC1E1pd7d618gMfh3FPewM0OOGLflw-9ywmhcX7ZYGtqJQOv57zMYOfCwND9vXKxnPp1KclO-JX5iIeg",
->>>>>>> main
           },
         }
       );
