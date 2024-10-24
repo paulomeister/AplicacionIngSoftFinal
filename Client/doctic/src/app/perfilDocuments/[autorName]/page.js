@@ -13,7 +13,7 @@ export default function PerfilDocuments({ params }) {
   const [authorNameFromList, setAuthorNameFromList] = useState("");  // Nuevo estado para el autor
 
   return (
-    <div className="container min-h-screen  text-black flex flex-col w-full ">
+    <div className="container text-black flex flex-col w-screen">
       {/* Contenedor para el título */}
       <header className=" text-black py-3 mb-8">
         <div className="container mx-auto px-6">
@@ -34,7 +34,7 @@ export default function PerfilDocuments({ params }) {
       </section>
   
       {/* Contenedor para la lista de documentos */}
-      <main className="px-6 py-8 flex-grow max-w-6xl ">
+      <section className="px-6 py-8 flex-grow max-w-screen ">
         <List 
           autorName={autorName} 
           searchTitle={searchTitle} 
@@ -43,7 +43,7 @@ export default function PerfilDocuments({ params }) {
           filterDates={filterDates} 
           setAuthorNameFromList={setAuthorNameFromList}  
         />
-      </main>
+      </section>
   
       
     </div>

@@ -1,16 +1,49 @@
 "use client";
 
-import Link from 'next/link';
+// import Link from 'next/link';
 import Image from 'next/image';
 import { useState } from 'react';
 
-const Navbar = () => {
+import {Navbar, NavbarBrand, NavbarContent, NavbarItem, Link, Button} from "@nextui-org/react";
+
+export const NavbarComp = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
   };
+
+  return (
+    <Navbar position="sticky" isBordered maxWidth="2xl">
+      <NavbarBrand>
+        <Image src="/logo.png" alt="Logo" width={50} height={50} />
+        <p className="font-bold  text-inherit">DocTIC</p>
+      </NavbarBrand>
+      <NavbarContent className="sm:flex gap-4" justify="center">
+        <NavbarItem>
+          <Link color="foreground" href="/home">
+            Inicio
+          </Link>
+        </NavbarItem>
+        <NavbarItem>
+          <Link color="foreground" href="/search">
+            Buscar
+          </Link>
+        </NavbarItem>
+      </NavbarContent>
+      <NavbarContent justify="end">
+        <NavbarItem className="lg:flex">
+          <Link href="#">Login</Link>
+        </NavbarItem>
+        <NavbarItem>
+          <Button as={Link} color="primary" href="#" variant="flat">
+            Sign Up
+          </Button>
+        </NavbarItem>
+      </NavbarContent>
+    </Navbar>
+  );
 
   return (
     <nav style={{ backgroundColor: '#001E58', padding: '10px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -73,4 +106,4 @@ const Navbar = () => {
   );
 };
 
-export default Navbar;
+export default NavbarComp;
