@@ -9,7 +9,7 @@ const Filter = ({ onUpdateFilters, filtros }) => {
   const handleAgregarFiltro = () => {
     setFiltrosAdicionales((prevFiltros) => [
       ...prevFiltros,
-      { id: prevFiltros.length, valor: "", tipo: "AUTOR" } 
+      { id: prevFiltros.length, valor: "", tipo: null } // Tipo inicial nulo
     ]);
     onUpdateFilters(filtrosAdicionales);
   };
@@ -40,7 +40,6 @@ const Filter = ({ onUpdateFilters, filtros }) => {
   // -------- Función para eliminar un filtro individual ----------
   const handleEliminarFiltro = (id) => {
     const nuevosFiltros = filtrosAdicionales.filter((filtro) => filtro.id !== id); 
-
     setFiltrosAdicionales(nuevosFiltros);
     onUpdateFilters(nuevosFiltros); 
   };
@@ -53,6 +52,8 @@ const Filter = ({ onUpdateFilters, filtros }) => {
   };
   //---------------------------------------------------------
 
+  const tiposSeleccionados = filtrosAdicionales.map((filtro) => filtro.tipo);
+
   return (
     <>
       {/* Renderiza los filtros adicionales */}
@@ -60,31 +61,49 @@ const Filter = ({ onUpdateFilters, filtros }) => {
         <div key={filtro.id} className="filter-item">
           <select
             className="filter-select"
-            value={filtro.tipo}
+            value={filtro.tipo || ''} // Si el tipo es nulo, muestra una opción vacía
             onChange={(e) => handleTipoChange(filtro.id, e)}
           >
-            <option value="AUTOR">Autor</option>
-            <option value="KEYWORDS">Palabra clave</option>
-            <option value="CATEGORIA">Categoría</option>
-            <option value="DESDE">Desde año</option>
-            <option value="HASTA">Hasta año</option>
-            <option value="IDIOMA">Idioma</option>
+            <option value="" disabled>
+              Selecciona un tipo de filtro
+            </option>
+            <option value="AUTOR" disabled={tiposSeleccionados.includes("AUTOR") && filtro.tipo !== "AUTOR"}>
+              Autor
+            </option>
+            <option value="KEYWORDS" disabled={tiposSeleccionados.includes("KEYWORDS") && filtro.tipo !== "KEYWORDS"}>
+              Palabra clave
+            </option>
+            <option value="CATEGORIA" disabled={tiposSeleccionados.includes("CATEGORIA") && filtro.tipo !== "CATEGORIA"}>
+              Categoría
+            </option>
+            <option value="DESDE" disabled={tiposSeleccionados.includes("DESDE") && filtro.tipo !== "DESDE"}>
+              Desde año
+            </option>
+            <option value="HASTA" disabled={tiposSeleccionados.includes("HASTA") && filtro.tipo !== "HASTA"}>
+              Hasta año
+            </option>
+            <option value="IDIOMA" disabled={tiposSeleccionados.includes("IDIOMA") && filtro.tipo !== "IDIOMA"}>
+              Idioma
+            </option>
           </select>
           <input
             type="text"
             placeholder={
-              filtro.tipo === "AUTOR" ? "Escriba el nombre del autor": 
-              filtro.tipo === "KEYWORDS" ? "Escriba una palabra clave":
-              filtro.tipo === "CATEGORIA" ? "Escriba la categoría": 
-              filtro.tipo === "DESDE" || filtro.tipo === "HASTA" ? "Escriba el año (ej. 2022)": 
-              filtro.tipo === "IDIOMA" ? "Escriba el idioma": "Filtrar con..." 
+              filtro.tipo === "AUTOR" ? "Escriba el nombre del autor" : 
+              filtro.tipo === "KEYWORDS" ? "Escriba una palabra clave" :
+              filtro.tipo === "CATEGORIA" ? "Escriba la categoría" : 
+              filtro.tipo === "DESDE" || filtro.tipo === "HASTA" ? "Escriba el año (ej. 2022)" : 
+              filtro.tipo === "IDIOMA" ? "Escriba el idioma" : "Filtrar con..." 
             }
             className="filter-input"
             value={filtro.valor}
-            onChange={(e) => handleInputChange(filtro.id, e)} // Actualiza el valor del input
+            onChange={(e) => handleInputChange(filtro.id, e)}
+            disabled={!filtro.tipo}
           />
           {/* Botón de eliminar filtro */}
-          <button className="filter-btn" onClick={() => handleEliminarFiltro(filtro.id)}><strong>Eliminar</strong></button>
+          <button className="filter-btn" onClick={() => handleEliminarFiltro(filtro.id)}>
+            <strong>Eliminar</strong>
+          </button>
         </div>
       ))}
 
@@ -96,11 +115,9 @@ const Filter = ({ onUpdateFilters, filtros }) => {
 
         {/* Muestra el botón de eliminar todos si hay filtros */}
         {filtrosAdicionales.length > 0 && (
-          <>
-            <button className="filter-btn" onClick={handleEliminarTodosFiltros}>
-              <strong>Eliminar todos los filtros</strong>
-            </button>
-          </>
+          <button className="filter-btn" onClick={handleEliminarTodosFiltros}>
+            <strong>Eliminar todos los filtros</strong>
+          </button>
         )}
       </div>
     </>
