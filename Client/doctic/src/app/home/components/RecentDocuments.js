@@ -71,7 +71,7 @@ export default function Documentos() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <div className="container p-6 flex-grow">
+      <div className="container mx-auto p-6 flex-grow">
         {/* Título de la sección con icono */}
         <h1 className="text-4xl font-bold text-left mb-8 flex items-center gap-3">
           {sectionTitles[activeTab].icon} {sectionTitles[activeTab].title}

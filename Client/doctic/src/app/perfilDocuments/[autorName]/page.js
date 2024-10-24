@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import Search from "./Search";
-import List from './List';
+import Search from "./components/Search";
+import List from "./components/List";
 
 export default function PerfilDocuments({ params }) {
   const autorName = decodeURIComponent(params.autorName);  // Decodifica el nombre del autor desde la URL
