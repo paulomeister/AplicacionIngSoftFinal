@@ -2,12 +2,17 @@
 
 import { instance } from "app/app/api/axios";
 import { useState, useEffect, useRef } from "react";
-import { Modal, Spinner, Alert, Form, Badge } from "react-bootstrap";
+// import { Modal, Spinner, Alert, Form, Badge } from "react-bootstrap";
+import { Spinner, Alert, Form, Badge } from "react-bootstrap";
 import axios from "axios";
 import { AuthorForm } from "./AuthorForm";
 import { FaFileUpload, FaCheckCircle} from 'react-icons/fa'; // Importamos el ícono de documento
+import {Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure} from "@nextui-org/react";
+
 
 export const PublicationForm = () => {
+  const {isOpen, onOpen, onClose, onOpenChange} = useDisclosure();
+  const [modalSuccedSubmit, setModalSuccedSubmit] = useState(false);
   const fileInputRef = useRef(null);
   const [selectedFile, setSelectedFile] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -21,6 +26,34 @@ export const PublicationForm = () => {
   const [selectedCategoryWithId, setSelectedCategoryWithId] = useState({});
   const [selectedSubcategoriesWithId, setSelectedSubcategoriesWithId] = useState([]);
   const [title, setTitle] = useState(""); // Estado para el título
+  const [subcategorias, setSubcategorias] = useState([]); // Estado para almacenar las subcategorías
+  const [selectedCategory, setSelectedCategory] = useState(""); // Estado para manejar la categoría seleccionada
+  const [selectedSubcategory, setSelectedSubcategory] = useState(""); // Estado para manejar la subcategoría seleccionada
+  //const [selectedSubcategories, setSelectedSubcategories] = useState([]); // Almacenar múltiples subcategorías seleccionadas
+  const [selectedCategoryWithId, setSelectedCategoryWithId] = useState({}); // Almacenar categoría seleccionada con ID
+  const [selectedSubcategoriesWithId, setSelectedSubcategoriesWithId] =
+    useState([]); // Almacenar subcategorías con ID
+  
+    const handleOpen = () => {
+      onOpen();
+    }
+    
+    useEffect(() => {
+      if(modalSuccedSubmit) {
+        handleOpen();
+      }
+    }, [modalSuccedSubmit]);
+
+    const handleLoading = () => {
+      onOpen();
+    }
+
+    useEffect(() => {
+      if(loading) {
+        handleLoading();
+      }
+    }, [loading]);
+
 
   const onAuthorSubmit = (selectedAuthors) => {
     setSelectedAuthors(selectedAuthors); // actualiza el SelectedAuthors de este componente
@@ -28,6 +61,7 @@ export const PublicationForm = () => {
 
   // Fetch a la API para obtener las categorías
   useEffect(() => {
+    setModalSuccedSubmit(false);
     const fetchCategorias = async () => {
       try {
         const response = await axios.get(
@@ -158,6 +192,8 @@ export const PublicationForm = () => {
       .post("/Documentos/insert", data)
       .then((response) => {
         console.log(response.data);
+        setModalSuccedSubmit(true);
+
       })
       .catch((e) => {
         console.log(
@@ -175,14 +211,37 @@ export const PublicationForm = () => {
     <section
       aria-labelledby="publication-form-heading"
       className="max-w-screen-md w-[768px]"
-    >
-      <Modal show={loading} centered>
-        <Modal.Body className="text-center">
-          <Spinner animation="border" role="status" />
-          <span className="sr-only">Cargando...</span>
-        </Modal.Body>
+    >   
+      <Modal backdrop="opaque" isOpen={isOpen} onOpenChange={onOpenChange}>
+          <ModalContent>
+            {(onclose) => {
+              if(loading) {
+                return (
+                  <>
+                    <ModalBody>
+                      <Spinner animation="border" role="status" />
+                    </ModalBody>
+                  </>
+                );
+              } else if(modalSuccedSubmit) {
+                return (
+                  <>
+                    <ModalContent>
+                    {(onClose) => (
+                      <>
+                        <ModalHeader>
+                          ¡Creación de documento exitosa!
+                        </ModalHeader>
+                      </>
+                    )}
+                    </ModalContent>
+                  </>
+                );
+              }
+            }}
+          </ModalContent>
       </Modal>
-
+      {/* Mensaje de error */}
       {error && <Alert variant="danger">{error}</Alert>}
       <h1 id="publication-form-heading" className="text-4xl font-bold mb-4">
         Crear Publicación
