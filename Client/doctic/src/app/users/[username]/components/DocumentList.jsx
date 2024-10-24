@@ -48,11 +48,6 @@ const DocumentList = ({ autor }) => {
     }
   }, [titulosDocumentos]); 
 
-  // ----- Redirección al hacer clic en el botón ------
-  const handleRedirect = () => {
-    router.push('/users/allDocuments'); 
-  };
-
   // ----- Manejo de warning pop-ups ------
   if (loading || infDocumentos.length === 0) {
     return (
@@ -69,7 +64,6 @@ const DocumentList = ({ autor }) => {
         <div className="document-list">
           <DocumentItem results={infDocumentos} />
         </div>
-        <button className="btn-ver-mas" onClick={handleRedirect}>Ver más</button> 
       </div>
     );
   }
