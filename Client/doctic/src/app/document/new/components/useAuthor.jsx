@@ -2,7 +2,12 @@
 import { useEffect, useState, useRef, useCallback, memo } from "react";
 import { nanoid } from "nanoid";
 
-export const useAuthor = (USER = {}, update = false, documentId = "") => {
+export const useAuthor = (
+  onAuthorSubmit,
+  USER = {},
+  update = false,
+  documentId = ""
+) => {
   const [authors, setAuthors] = useState([]);
   const [provAuthors, setProvAuthors] = useState([]);
   const [selectedAuthors, setSelectedAuthors] = useState([]);
@@ -43,10 +48,9 @@ export const useAuthor = (USER = {}, update = false, documentId = "") => {
         const response = await fetch(URI);
         const authorsInDoc = await response.json(); // recoge los autores que ya estén en el documento que recoge de la API
 
-        // si se va a acutalizar
+        // si se va a actualizar:
         if (update) {
           const theAuthors = authorsInDoc.autores;
-          console.log(theAuthors);
           const theAuthorsShown = [];
 
           theAuthors.forEach((auth) => {
@@ -61,7 +65,7 @@ export const useAuthor = (USER = {}, update = false, documentId = "") => {
                   fotoPerfil:
                     "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/Unknown_person.jpg/434px-Unknown_person.jpg",
                   nombre: auth.nombre,
-                  apellido:""
+                  apellido: "",
                 },
               });
             }
@@ -84,6 +88,13 @@ export const useAuthor = (USER = {}, update = false, documentId = "") => {
     fetchData();
   }, []);
 
+  // Apenas se actualice el estado del componente, que lo envíe al componente 
+  // PADRE de PublicationForm.
+  
+  useEffect(() => {
+    onAuthorSubmit(selectedAuthors); // envía desde el hook
+  }, [selectedAuthors]);
+
   const handleChange = useCallback(
     (e) => {
       const newAuthor = e.target.value;
@@ -104,6 +115,7 @@ export const useAuthor = (USER = {}, update = false, documentId = "") => {
     },
     [authors]
   );
+
 
   const handleCoAutorButton = (author) => {
     const isSelected = selectedAuthors.some((a) => a.usuarioId === author._id);
