@@ -12,6 +12,8 @@ import Link from "next/link";
 
 
 export const UpdatePublicationForm = ({ documentData }) => {
+
+  
   // Extraemos los valores iniciales de documentData
   const {
     titulo: initialTitle,
@@ -23,12 +25,14 @@ export const UpdatePublicationForm = ({ documentData }) => {
     subcategorias: initialSubcategories,
   } = extractDocumentData(documentData);
 
+
   const fileInputRef = useRef(null);
   const [fileError, setFileError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [categorias, setCategorias] = useState([]); // Estado para almacenar las categorías obtenidas de la API
-  const [selectedAuthors, setSelectedAuthors] = useState(initialAuthors);
+  const [selectedAuthors, setSelectedAuthors] = useState([]);
+  
   const [subcategorias, setSubcategorias] = useState(initialSubcategories || []); // Estado para almacenar las subcategorías
   const [selectedCategory, setSelectedCategory] = useState(initialCategory.nombre); // Estado para manejar la categoría seleccionada
   const [selectedSubcategory, setSelectedSubcategory] = useState(""); // Estado para manejar la subcategoría seleccionada
@@ -42,8 +46,13 @@ export const UpdatePublicationForm = ({ documentData }) => {
   const [isFileChangeRequested, setIsFileChangeRequested] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
 
+  useEffect(() => {
+    setSelectedAuthors(initialAuthors);
+     // Aquí asignamos los autores iniciales al cargar la página a selectedAuthors
+  }, [initialAuthors, setSelectedAuthors]);
 
   const onAuthorSubmit = (selectedAuthors) => {
+    
     setSelectedAuthors(selectedAuthors); // actualiza el SelectedAuthors de este componente
   };
 

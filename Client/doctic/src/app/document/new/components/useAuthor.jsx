@@ -1,4 +1,3 @@
-// useAuthors.js
 import { useEffect, useState, useRef, useCallback, memo } from "react";
 import { customAlphabet } from "nanoid";
 
@@ -18,16 +17,6 @@ export const useAuthor = (
   const unregisteredName = useRef("");
   const unregisteredUsername = useRef("");
 
-  // Hace que el usuario que ya está "autenticado" ya esté dentro de los autores
-  // SELECCIONADOS
-  const USERMAPPED = {
-    usuarioId: USER?._id,
-    estaRegistrado: true,
-    rol: "principal",
-    nombre: USER?.perfil?.nombre,
-    username: USER?.username,
-  };
-
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -39,26 +28,20 @@ export const useAuthor = (
 
         setAuthors(data);
         setProvAuthors(data);
-        // Pre-seleccionar autor principal
 
-        // obtener los datos de los usuarios que ya están en el documento
         const URI = update
           ? `http://localhost:8080/api/Documentos/id/${documentId}`
           : "http://localhost:8080/api/Usuarios/getAllUsers";
         const response = await fetch(URI);
         const authorsInDoc = await response.json(); // recoge los autores que ya estén en el documento que recoge de la API
 
-        // si se va a actualizar:
         if (update) {
           const theAuthors = authorsInDoc.autores;
           const theAuthorsShown = [];
 
           theAuthors.forEach((auth) => {
-            // si el autor no está registrado entonces muestreme en el frontend dicho autor
             if (!auth.estaRegistrado) {
               theAuthorsShown.push({
-                // ESTO ES PARA QUE EN EL FRONTEND SE VEAN ESOS AUTORES SELECCIONADOS
-
                 _id: auth.usuarioId,
                 username: auth.username,
                 perfil: {
@@ -71,15 +54,11 @@ export const useAuthor = (
             }
           });
 
-          setAddUnregistered(false); // el componente para registrar autores debe estar oculto
-          // setSelectedAuthors([...selectedAuthors, ...theAuthors, USERMAPPED]); // autores seleciconados para EDITAR el documetno // mostrar en el frontend el botón "Quitar"
-          setSelectedAuthors([...selectedAuthors, ...theAuthors]); // autores seleciconados para EDITAR el documetno // mostrar en el frontend el botón "Quitar"
-          setProvAuthors([...theAuthorsShown, ...data]); // autores seleccionados para MOSTRAR en el frontend
+          setAddUnregistered(false);
+          setSelectedAuthors([...selectedAuthors, ...theAuthors]);
+          setProvAuthors([...theAuthorsShown, ...data]);
           setAuthors([...theAuthorsShown, ...data]);
         }
-        // } else {
-        //   setSelectedAuthors([USERMAPPED]); // COMO SELECCIONADO YA ESTÁ EL USER
-        // }
       } catch (e) {
         console.error(e.message);
       }
@@ -88,11 +67,24 @@ export const useAuthor = (
     fetchData();
   }, []);
 
-  // Apenas se actualice el estado del componente, que lo envíe al componente 
-  // PADRE de PublicationForm.
-  
+  // Hook modificado para incluir el autor adicional por defecto
   useEffect(() => {
-    onAuthorSubmit(selectedAuthors); // envía desde el hook
+    const defaultAuthor = {
+      usuarioId: "671aa9d3977f359d06bd523a",
+      estaRegistrado: true,
+      rol: "principal",
+      nombre: "Pepito",
+      username: "probador",
+    };
+
+    // Incluimos el autor por defecto si no está ya seleccionado
+    const updatedAuthors = selectedAuthors.some(
+      (author) => author.usuarioId === defaultAuthor.usuarioId
+    )
+      ? selectedAuthors
+      : [defaultAuthor, ...selectedAuthors ];
+
+    onAuthorSubmit(updatedAuthors); // Enviamos los autores con el predeterminado al componente padre
   }, [selectedAuthors]);
 
   const handleChange = useCallback(
@@ -116,9 +108,10 @@ export const useAuthor = (
     [authors]
   );
 
-
   const handleCoAutorButton = (author) => {
-    const isSelected = selectedAuthors.some((a) => a.username === author.username);
+    const isSelected = selectedAuthors.some(
+      (a) => a.username === author.username
+    );
 
     if (isSelected) {
       setSelectedAuthors(
@@ -155,7 +148,7 @@ export const useAuthor = (
       return;
     }
 
-    const nanoid = customAlphabet('1234567890abcdef', 24)
+    const nanoid = customAlphabet("1234567890abcdef", 24);
 
     const unregisteredAuthor = {
       usuarioId: nanoid(),
@@ -212,3 +205,4 @@ export const useAuthor = (
     isAPrincipalAuthor,
   };
 };
+

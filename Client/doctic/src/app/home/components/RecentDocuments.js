@@ -1,54 +1,62 @@
-"use client"; // Habilita funciones del cliente
+"use client";
 
 import { useState, useEffect } from "react";
-import { FaCalendarAlt, FaStar, FaArrowDown, FaEye, FaClock } from "react-icons/fa"; 
+import { FaCalendarAlt, FaStar, FaArrowDown, FaEye, FaClock } from "react-icons/fa";
 import Link from "next/link";
 import axios from "axios";
 import { SpinerComp } from "../../document/[id]/components/SpinnerComp";
 
 export default function Documentos() {
-  const [documents, setDocuments] = useState([]);
+  const [recentDocuments, setRecentDocuments] = useState([]);
+  const [topRatedDocuments, setTopRatedDocuments] = useState([]);
+  const [mostDownloadedDocuments, setMostDownloadedDocuments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState(0); // 0: recientes, 1: valorados, 2: descargados
-
-
 
   const axiosInstance = axios.create({
     baseURL: "http://localhost:8080",
   });
 
-
-  const fetchDocuments = async (endpoint) => {
+  const fetchDocuments = async (endpoint, setDocumentState) => {
     setLoading(true);
     setError(null);
     try {
       const response = await axiosInstance.get(endpoint);
-      setDocuments(response.data);
-    } catch (err){
+      setDocumentState(response.data);
+    } catch (err) {
       if (err.response) {
-        // El servidor respondió con un código de estado fuera del rango 2xx
         setError(`Error: ${err.response.status} ${err.response.statusText}`);
       } else if (err.request) {
-        // La solicitud fue hecha pero no hubo respuesta
         setError("Error: No se recibió respuesta del servidor");
       } else {
-        // Algo pasó al configurar la solicitud
         setError(`Error: ${err.message}`);
       }
     } finally {
       setLoading(false);
     }
-
-    
   };
 
   useEffect(() => {
-    let endpoint = "/api/Documentos/recent";
-    if (activeTab === 1) endpoint = "/api/Documentos/top-rated";
-    else if (activeTab === 2) endpoint = "/api/Documentos/most-downloaded";
+    let endpoint;
+    let setDocumentState;
 
-    fetchDocuments(endpoint);
+    if (activeTab === 0 && recentDocuments.length === 0) {
+      endpoint = "/api/Documentos/recent";
+      setDocumentState = setRecentDocuments;
+    } else if (activeTab === 1 && topRatedDocuments.length === 0) {
+      endpoint = "/api/Documentos/top-rated";
+      setDocumentState = setTopRatedDocuments;
+    } else if (activeTab === 2 && mostDownloadedDocuments.length === 0) {
+      endpoint = "/api/Documentos/most-downloaded";
+      setDocumentState = setMostDownloadedDocuments;
+    }
+
+    if (endpoint) {
+      fetchDocuments(endpoint, setDocumentState);
+    } else {
+      setLoading(false); // Si ya hay documentos, no es necesario mostrar el spinner
+    }
   }, [activeTab]);
 
   const sectionTitles = [
@@ -66,13 +74,19 @@ export default function Documentos() {
     return "text-gray-600";
   };
 
-  if (loading) return <SpinerComp/>;
+  const documents =
+    activeTab === 0
+      ? recentDocuments
+      : activeTab === 1
+      ? topRatedDocuments
+      : mostDownloadedDocuments;
+
+  if (loading) return <SpinerComp />;
   if (error) return <p className="text-center text-red-500 mt-8 text-lg">Error: {error}</p>;
 
   return (
     <div className="min-h-screen flex flex-col">
       <div className="container mx-auto p-6 flex-grow">
-        {/* Título de la sección con icono */}
         <h1 className="text-4xl font-bold text-left mb-8 flex items-center gap-3">
           {sectionTitles[activeTab].icon} {sectionTitles[activeTab].title}
         </h1>
@@ -88,7 +102,6 @@ export default function Documentos() {
                 {doc.categoria?.map((cat) => cat.nombre).join(", ")}
               </p>
 
-              {/* Metadatos del documento */}
               <div className="flex justify-between items-center mt-4">
                 <div className="flex gap-8">
                   <div className={`flex items-center gap-2 ${getHighlightClass('date')}`}>
@@ -113,7 +126,6 @@ export default function Documentos() {
                   </div>
                 </div>
 
-                {/* Botón de Ver usando Link sin <a> */}
                 <Link href={`/document/${doc._id}`} className="flex items-center gap-2 text-blue-600 hover:underline">
                   <FaEye /> Ver
                 </Link>
@@ -123,7 +135,6 @@ export default function Documentos() {
         </ul>
       </div>
 
-      {/* Indicadores en forma de esferas al final */}
       <div className="flex justify-center gap-4 mt-auto p-4">
         {[0, 1, 2].map((index) => (
           <button
