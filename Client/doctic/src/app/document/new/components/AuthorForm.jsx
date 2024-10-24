@@ -31,7 +31,7 @@ export const AuthorForm = ({onAuthorSubmit}) => {
     addUnregisteredAuthor,
     setCurrentPage,
     isAPrincipalAuthor,
-  } = useAuthor();
+  } = useAuthor(onAuthorSubmit);
   // useAuthor(USER, false, "");
   // se envía: USUARIO, update?, documentId
 
@@ -82,14 +82,7 @@ useAuthor({USUARIO}, update?, documentId) (pista, el documentId se puede obtener
                 (a) => a.usuarioId === author._id && a.rol === "principal"
               )
             )}
-            handleCoAutorButton={() => {handleCoAutorButton(author); onAuthorSubmit(
-              (e) => {
-                console.log("Selected authors")
-                console.log(selectedAuthors)
-                console.log()
-                return {selectedAuthors,e}
-              });}}
-          />
+            handleCoAutorButton={() => {handleCoAutorButton(author)}}          />
         ))}
       </ul>
 
