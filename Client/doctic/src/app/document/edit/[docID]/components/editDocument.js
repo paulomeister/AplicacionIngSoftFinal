@@ -32,7 +32,7 @@ export const UpdatePublicationForm = ({ documentData }) => {
   const [error, setError] = useState(null);
   const [categorias, setCategorias] = useState([]); // Estado para almacenar las categorías obtenidas de la API
   const [selectedAuthors, setSelectedAuthors] = useState(initialAuthors);
-
+  const [dragging, setDragging] = useState(false);
   const [subcategorias, setSubcategorias] = useState(initialSubcategories || []); // Estado para almacenar las subcategorías
   const [selectedCategory, setSelectedCategory] = useState(initialCategory.nombre); // Estado para manejar la categoría seleccionada
   const [selectedSubcategory, setSelectedSubcategory] = useState(""); // Estado para manejar la subcategoría seleccionada
@@ -155,6 +155,22 @@ export const UpdatePublicationForm = ({ documentData }) => {
       setSelectedFile(file);
 
     }
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    setDragging(true);
+  };
+
+  const handleDragLeave = () => {
+    setDragging(false);
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    setDragging(false);
+    const file = e.dataTransfer.files[0];
+    handleFileInputChange({ target: { files: [file] } });
   };
 
   const formHandlerNoFile = (event) => {
@@ -285,13 +301,11 @@ export const UpdatePublicationForm = ({ documentData }) => {
         Actualizar Publicación
       </h1>
       <form onSubmit={isFileChangeRequested ? formHandler : formHandlerNoFile}>
-        {/* Subir Archivo */}
-        <div className="mb-4">
+      <div className="mb-4">
           <label className="block text-gray-700 text-lg font-bold mb-2" htmlFor="file">
             Sube un archivo (PDF)
           </label>
 
-          {/* Si ya existe un archivo */}
           {initialUrlArchivo && !isFileChangeRequested ? (
             <div className="mb-4">
               <p className="block text-lg font-bold mb-2">
@@ -300,7 +314,7 @@ export const UpdatePublicationForm = ({ documentData }) => {
               <div className="w-full p-6 border-2 border-green-500 bg-green-50 rounded-md flex flex-col items-center justify-center">
                 <FaCheckCircle size={32} className="text-green-500 mb-2" />
                 <span className="text-lg font-medium text-green-600">Archivo cargado:</span>
-                <span className="text-gray-700 text-sm">{`${title}.pdf`}</span> {/* Nombre del archivo con la extensión PDF */}
+                <span className="text-gray-700 text-sm">{`${title}.pdf`}</span>
 
                 <div className="flex items-center gap-2 mt-4">
                   <Link href={`/document/${documentData._id}`} passHref>
@@ -321,41 +335,39 @@ export const UpdatePublicationForm = ({ documentData }) => {
             </div>
           ) : (
             <>
-              {/* Si el usuario decide cambiar el archivo */}
               {isFileChangeRequested && (
-                <div className="mb-4">
-                  <div
-                    className={`w-full p-6 border-2 ${selectedFile ? 'border-green-500 bg-green-50' : 'border-dashed border-gray-300 hover:border-blue-500 hover:bg-blue-50'} rounded-md flex flex-col items-center justify-center cursor-pointer`}
-                    onClick={() => fileInputRef.current.click()}
-                  >
-                    <input
-                      className="hidden"
-                      type="file"
-                      id="file"
-                      name="file"
-                      accept=".pdf"
-                      required
-                      aria-required="true"
-                      ref={fileInputRef}
-                      onChange={handleFileInputChange}
-                    />
+                <div
+                  className={`w-full p-6 border-2 ${dragging ? 'border-blue-600 bg-blue-100' : selectedFile ? 'border-green-500 bg-green-50' : 'border-dashed border-gray-300 hover:border-blue-500 hover:bg-blue-50'} rounded-md flex flex-col items-center justify-center cursor-pointer`}
+                  onClick={() => fileInputRef.current.click()}
+                  onDragOver={handleDragOver}
+                  onDragLeave={handleDragLeave}
+                  onDrop={handleDrop}
+                >
+                  <input
+                    className="hidden"
+                    type="file"
+                    id="file"
+                    name="file"
+                    accept=".pdf"
+                    required
+                    aria-required="true"
+                    ref={fileInputRef}
+                    onChange={handleFileInputChange}
+                  />
 
-                    {selectedFile ? (
-                      <>
-                        <FaCheckCircle size={32} className="text-green-500 mb-2" />
-                        <span className="text-lg font-medium text-green-600">Archivo cargado:</span>
-                        <span className="text-gray-700 text-sm">{selectedFile.name}</span>
-                      </>
-                    ) : (
-                      <>
-                        <FaFileUpload size={32} className="text-blue-500 mb-2" />
-                        <span className="text-lg font-medium text-teal-600">Selecciona Documentos Para Subir</span>
-                        <span className="text-gray-500 text-sm">o arrastra acá</span>
-                      </>
-                    )}
-                  </div>
-
-                  {fileError && <p className="text-red-500">{fileError}</p>}
+                  {selectedFile ? (
+                    <>
+                      <FaCheckCircle size={32} className="text-green-500 mb-2" />
+                      <span className="text-lg font-medium text-green-600">Archivo cargado:</span>
+                      <span className="text-gray-700 text-sm">{selectedFile.name}</span>
+                    </>
+                  ) : (
+                    <>
+                      <FaFileUpload size={32} className="text-blue-500 mb-2" />
+                      <span className="text-lg font-medium text-teal-600">Selecciona o arrastra un documento PDF aquí</span>
+                      <span className="text-gray-500 text-sm">Tamaño máximo 2MB</span>
+                    </>
+                  )}
                 </div>
               )}
 
@@ -374,7 +386,6 @@ export const UpdatePublicationForm = ({ documentData }) => {
           )}
 
           {fileError && <span className="text-red-500 text-sm ml-2">{fileError}</span>}
-          <span className="text-gray-500 text-sm">Tamaño máximo de 2MB</span>
         </div>
 
         {/* Titulo*/}
