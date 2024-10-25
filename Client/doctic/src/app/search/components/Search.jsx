@@ -20,6 +20,7 @@ const Search = () => {
 
   //-------- Función para mostrar los filtros ------------ 
   const handleToggleFiltros = () => {
+    console.log(filtros);
     setMostrarFiltros((prevState) => !prevState);
   };
 
@@ -33,22 +34,34 @@ const Search = () => {
     const { categorias, autores, idioma, desde, hasta, keywords } = filtros.reduce((acc, element) => {
       switch (element.tipo) {
         case "CATEGORIA":
-          acc.categorias.push(element.valor);
+          if(element.valor){
+            acc.categorias.push(element.valor);
+          }
           break;
         case "KEYWORDS":
-          acc.keywords.push(element.valor);
+          if(element.valor){
+            acc.keywords.push(element.valor);
+          }
           break;
         case "AUTOR":
-          acc.autores.push(element.valor);
+          if(element.valor){
+            acc.autores.push(element.valor);
+          }
           break;
         case "IDIOMA":
-          acc.idioma = element.valor;
+          if(element.valor){
+            acc.idioma = element.valor;
+          }
           break;
         case "DESDE":
-          acc.desde = element.valor;
+          if(element.valor){
+            acc.desde = element.valor;
+          }
           break;
         case "HASTA":
-          acc.hasta = element.valor;
+          if(element.valor){
+            acc.hasta = element.valor;
+          }
           break;
         default:
           break;

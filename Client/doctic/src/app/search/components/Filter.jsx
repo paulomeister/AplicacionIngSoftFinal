@@ -18,11 +18,23 @@ const Filter = ({ onUpdateFilters, filtros }) => {
   // -------- Función para manejar el cambio de valor en el input de cada filtro ----------
   const handleInputChange = (id, event) => {
     const { value } = event.target;
-    const nuevosFiltros = filtrosAdicionales.map((filtro) =>
-      filtro.id === id ? { ...filtro, valor: value } : filtro
-    );
-    setFiltrosAdicionales(nuevosFiltros);
-    onUpdateFilters(nuevosFiltros); 
+
+    // --------- Si el filtro es "DESDE" o "HASTA", solo permitir números y máximo 4 dígitos ----------
+    if (["DESDE", "HASTA"].includes(filtrosAdicionales.find(f => f.id === id)?.tipo)) {
+      if (/^\d{0,4}$/.test(value)) { 
+        const nuevosFiltros = filtrosAdicionales.map((filtro) =>
+          filtro.id === id ? { ...filtro, valor: value } : filtro
+        );
+        setFiltrosAdicionales(nuevosFiltros);
+        onUpdateFilters(nuevosFiltros);
+      }
+    } else {
+      const nuevosFiltros = filtrosAdicionales.map((filtro) =>
+        filtro.id === id ? { ...filtro, valor: value } : filtro
+      );
+      setFiltrosAdicionales(nuevosFiltros);
+      onUpdateFilters(nuevosFiltros);
+    }
   };
   //---------------------------------------------------------
 
@@ -33,7 +45,7 @@ const Filter = ({ onUpdateFilters, filtros }) => {
       filtro.id === id ? { ...filtro, tipo: value } : filtro
     );
     setFiltrosAdicionales(nuevosFiltros);
-    onUpdateFilters(nuevosFiltros); 
+    onUpdateFilters(nuevosFiltros);
   };
   //---------------------------------------------------------
 
@@ -41,14 +53,14 @@ const Filter = ({ onUpdateFilters, filtros }) => {
   const handleEliminarFiltro = (id) => {
     const nuevosFiltros = filtrosAdicionales.filter((filtro) => filtro.id !== id); 
     setFiltrosAdicionales(nuevosFiltros);
-    onUpdateFilters(nuevosFiltros); 
+    onUpdateFilters(nuevosFiltros);
   };
   //---------------------------------------------------------
 
   // -------- Función para eliminar todos los filtros ----------
   const handleEliminarTodosFiltros = () => {
     setFiltrosAdicionales([]);
-    onUpdateFilters([]); 
+    onUpdateFilters([]);
   };
   //---------------------------------------------------------
 
