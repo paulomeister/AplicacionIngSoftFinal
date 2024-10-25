@@ -47,12 +47,15 @@ export function DocumentListItem({ doc, handleEdit, handleDelete }) {
             <FaEye /> Ver
           </Link>
           {/* Botón para Editar */}
-          <button
-            onClick={() => handleEdit(doc._id)}
-            className="flex items-center gap-2 text-green-500 hover:underline"
-          >
-            <FaEdit /> Editar
-          </button>
+
+                {/* Botón para Editar */}
+                <Link href={`/document/edit/${doc._id}`}
+                   className="flex items-center gap-2 text-green-500 hover:underline">
+                    <FaEdit /> Editar
+               
+                </Link>
+
+          
           <>
             <Button
               variant="red"

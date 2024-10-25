@@ -2,100 +2,114 @@
 
 import { instance } from "app/app/api/axios";
 import { useState, useEffect, useRef } from "react";
-import { Modal, Spinner, Alert, Form, Badge } from "react-bootstrap";
+// import { Modal, Spinner, Alert, Form, Badge } from "react-bootstrap";
+import { Spinner, Alert, Form, Badge } from "react-bootstrap";
 import axios from "axios";
 import { AuthorForm } from "./AuthorForm";
+import { FaFileUpload, FaCheckCircle } from 'react-icons/fa'; // Importamos el ícono de documento
+import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure } from "@nextui-org/react";
+
 
 export const PublicationForm = () => {
+  const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
+  const [modalSuccedSubmit, setModalSuccedSubmit] = useState(false);
   const fileInputRef = useRef(null);
+  const [selectedFile, setSelectedFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [categorias, setCategorias] = useState([]); // Estado para almacenar las categorías obtenidas de la API
+  const [fileError, setFileError] = useState(null);
+  const [dragging, setDragging] = useState(false);
+  const [categorias, setCategorias] = useState([]);
   const [selectedAuthors, setSelectedAuthors] = useState([]);
+  const [selectedSubcategoriesWithId, setSelectedSubcategoriesWithId] = useState([]);
+  const [title, setTitle] = useState(""); // Estado para el título
   const [subcategorias, setSubcategorias] = useState([]); // Estado para almacenar las subcategorías
   const [selectedCategory, setSelectedCategory] = useState(""); // Estado para manejar la categoría seleccionada
   const [selectedSubcategory, setSelectedSubcategory] = useState(""); // Estado para manejar la subcategoría seleccionada
   //const [selectedSubcategories, setSelectedSubcategories] = useState([]); // Almacenar múltiples subcategorías seleccionadas
   const [selectedCategoryWithId, setSelectedCategoryWithId] = useState({}); // Almacenar categoría seleccionada con ID
-  const [selectedSubcategoriesWithId, setSelectedSubcategoriesWithId] =
-    useState([]); // Almacenar subcategorías con ID
 
-  const onAuthorSubmit = (selectedAuthors) => {
+
+  const handleOpen = () => {
+    onOpen();
+  }
+
+  useEffect(() => {
+    if (modalSuccedSubmit) {
+      handleOpen();
+    }
+  }, [modalSuccedSubmit]);
+
+  const handleLoading = () => {
+    onOpen();
+  }
+
+  useEffect(() => {
+    if (loading) {
+      handleLoading();
+    }
+  }, [loading]);
+
+
+  const onAuthorsChange = (selectedAuthors) => {
     setSelectedAuthors(selectedAuthors); // actualiza el SelectedAuthors de este componente
   };
 
   // Fetch a la API para obtener las categorías
   useEffect(() => {
+    setModalSuccedSubmit(false);
     const fetchCategorias = async () => {
       try {
         const response = await axios.get(
           "http://localhost:8080/api/Categorias/allDistinct"
         );
-        setCategorias(response.data); // Almacena el array de categorías
+        setCategorias(response.data);
       } catch (error) {
         console.error("Error fetching categories:", error);
       }
     };
     fetchCategorias();
   }, []);
-  // Fetch para obtener las subcategorías basadas en la categoría seleccionada
+
   const fetchSubcategorias = async (categoria) => {
     try {
       const response = await axios.get(
         `http://localhost:8080/api/Categorias/getSubcategoriesWithName/${categoria}`
       );
-      console.log(response.data);
-      console.log(
-        "Subcategorías obtenidas:",
-        response.data[0].subCategorias[0]?.nombre
-      ); // Log del JSON de subcategorías
-      // Almacenar la categoría seleccionada con ID y nombre
       setSelectedCategoryWithId({
         categoriaId: response.data[0].documentoId,
         nombre: response.data[0].nombre,
       });
-
-      setSubcategorias(response.data[0].subCategorias); // Almacenar subcategorías
+      setSubcategorias(response.data[0].subCategorias);
     } catch (error) {
       console.error("Error fetching subcategories:", error.message);
       setError("Error al obtener subcategorías");
     }
   };
 
-  // Manejo del cambio en la categoría seleccionada
   const handleCategoryChange = (e) => {
     const selectedCategory = e.target.value;
-    console.log(selectedCategory);
     setSelectedCategory(selectedCategory);
 
     if (selectedCategory) {
-      // Llamamos al fetch de subcategorías
       fetchSubcategorias(selectedCategory);
     } else {
-      setSubcategorias([]); // Limpiar subcategorías si no hay categoría seleccionada
+      setSubcategorias([]);
     }
   };
-  // Manejo del cambio en la subcategoría seleccionada
+
   const handleSubcategoryChange = (e) => {
     setSelectedSubcategory(e.target.value);
   };
+
   const handleSubcategoryAdd = () => {
     const selectedSubcategoryObj = subcategorias.find(
       (subcat) => subcat.nombre === selectedSubcategory
     );
 
-    if (selectedSubcategoryObj) {
-      // Mostrar el _id de la subcategoría seleccionada
-      console.log("Subcategoría seleccionada _id:", selectedSubcategoryObj._id);
-    }
-
-    // Verifica si ya existe el objeto subcategoría seleccionado en el array
-    if (
-      selectedSubcategoryObj &&
-      !selectedSubcategoriesWithId.some(
-        (subcat) => subcat.categoriaId === selectedSubcategoryObj._id
-      )
-    ) {
+    if (selectedSubcategoryObj && !selectedSubcategoriesWithId.some(
+      (subcat) => subcat.categoriaId === selectedSubcategoryObj._id
+    )) {
       setSelectedSubcategoriesWithId([
         ...selectedSubcategoriesWithId,
         {
@@ -103,15 +117,50 @@ export const PublicationForm = () => {
           nombre: selectedSubcategoryObj.nombre,
         },
       ]);
-      setSelectedSubcategory(""); // Limpiar la selección de subcategoría
+      setSelectedSubcategory("");
     }
   };
+
   const RemoveSubcategory = (categoriaId) => {
     setSelectedSubcategoriesWithId(
       selectedSubcategoriesWithId.filter(
         (subcat) => subcat.categoriaId !== categoriaId
       )
     );
+  };
+
+  const handleFileInputChange = (e) => {
+    const file = e.target.files[0];
+    const maxFileSize = 2 * 1024 * 1024; // 2MB en bytes
+
+    if (file && file.size > maxFileSize) {
+      setFileError("El archivo cargado excede el tamaño máximo de 2MB.");
+      fileInputRef.current.value = "";
+      setSelectedFile(null);
+    } else {
+      setFileError(null);
+      setSelectedFile(file);
+      if (file) {
+        const fileNameWithoutExtension = file.name.replace(/\.[^/.]+$/, "");
+        setTitle(fileNameWithoutExtension); // Actualiza el título con el nombre del archivo
+      }
+    }
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    setDragging(true);
+  };
+
+  const handleDragLeave = () => {
+    setDragging(false);
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    setDragging(false);
+    const file = e.dataTransfer.files[0];
+    handleFileInputChange({ target: { files: [file] } });
   };
 
   const formHandler = (event) => {
@@ -141,8 +190,7 @@ export const PublicationForm = () => {
       categoria: categoriasFinal,
       autores: selectedAuthors,
       fechaSubida: new Date(),
-      year: new Date().getFullYear(),
-      autores: [{ usuarioId: "" }],
+      year: new Date().getFullYear()
     };
 
     const data = new FormData();
@@ -156,6 +204,8 @@ export const PublicationForm = () => {
       .post("/Documentos/insert", data)
       .then((response) => {
         console.log(response.data);
+        setModalSuccedSubmit(true);
+
       })
       .catch((e) => {
         console.log(
@@ -174,29 +224,92 @@ export const PublicationForm = () => {
       aria-labelledby="publication-form-heading"
       className="max-w-screen-md w-[768px]"
     >
-      <Modal show={loading} centered>
-        <Modal.Body className="text-center">
-          <Spinner animation="border" role="status" />
-          <span className="sr-only">Cargando...</span>
-        </Modal.Body>
+      <Modal backdrop="opaque" isOpen={isOpen} onOpenChange={onOpenChange}>
+        <ModalContent>
+          {(onclose) => {
+            if (loading) {
+              return (
+                <>
+                  <ModalBody>
+                    <Spinner animation="border" role="status" />
+                  </ModalBody>
+                </>
+              );
+            } else if (modalSuccedSubmit) {
+              return (
+                <>
+                  <ModalContent>
+                    {(onClose) => (
+                      <>
+                        <ModalHeader>
+                          ¡Creación de documento exitosa!
+                        </ModalHeader>
+                      </>
+                    )}
+                  </ModalContent>
+                </>
+              );
+            }
+          }}
+        </ModalContent>
       </Modal>
-
       {/* Mensaje de error */}
       {error && <Alert variant="danger">{error}</Alert>}
       <h1 id="publication-form-heading" className="text-4xl font-bold mb-4">
         Crear Publicación
       </h1>
+
       <form onSubmit={formHandler}>
         <p id="form-description" className="text-xl text-gray-600 mb-4">
           Por favor completa el formulario a continuación para crear una nueva
           publicación.
         </p>
 
+        {/* Subir Archivo */}
         <div className="mb-4">
-          <label
-            className="block text-gray-700 text-lg font-bold mb-2"
-            htmlFor="title"
+          <label className="block text-gray-700 text-lg font-bold mb-2" htmlFor="file">
+            Sube un archivo (PDF)
+          </label>
+          <div
+            className={`w-full p-6 border-2 ${dragging ? 'border-blue-600 bg-blue-100' : selectedFile ? 'border-green-500 bg-green-50' : 'border-dashed border-gray-300 hover:border-blue-500 hover:bg-blue-50'} rounded-md flex flex-col items-center justify-center cursor-pointer`}
+            onClick={() => fileInputRef.current.click()}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
           >
+            <input
+              className="hidden"
+              type="file"
+              id="file"
+              name="file"
+              accept=".pdf"
+              required
+              aria-required="true"
+              ref={fileInputRef}
+              onChange={handleFileInputChange}
+            />
+
+            {selectedFile ? (
+              <>
+                <FaCheckCircle size={32} className="text-green-500 mb-2" />
+                <span className="text-lg font-medium text-green-600">Archivo cargado:</span>
+                <span className="text-gray-700 text-sm">{selectedFile.name}</span>
+              </>
+            ) : (
+              <>
+                <FaFileUpload size={32} className="text-blue-500 mb-2" />
+                <span className="text-lg font-medium text-teal-600">Selecciona o arrastra un documento PDF aquí</span>
+                <span className="text-gray-500 text-sm">Tamaño máximo 2MB</span>
+              </>
+            )}
+          </div>
+
+          {fileError && <span className="text-red-500 text-sm ml-2">{fileError}</span>}
+        </div>
+
+        {/* Titulo */}
+        <div className="mb-4">
+          <label className="block text-gray-700 text-lg font-bold mb-2" htmlFor="title">
             Título
           </label>
           <input
@@ -204,6 +317,8 @@ export const PublicationForm = () => {
             type="text"
             id="title"
             name="title"
+            value={title} // Usamos el estado title
+            onChange={(e) => setTitle(e.target.value)} // Permite cambiar el título si el usuario lo desea
             placeholder="Ingresa el título de la publicación"
             required
             aria-required="true"
@@ -213,10 +328,7 @@ export const PublicationForm = () => {
         </div>
 
         <div className="mb-4">
-          <label
-            className="block text-gray-700 text-lg font-bold mb-2"
-            htmlFor="description"
-          >
+          <label className="block text-gray-700 text-lg font-bold mb-2" htmlFor="description">
             Descripción
           </label>
           <textarea
@@ -232,13 +344,9 @@ export const PublicationForm = () => {
           ></textarea>
           <span className="text-gray-500 text-sm">Máximo 800 caracteres</span>
         </div>
-
-        {/* Campo de selección de categoría */}
+        {/* Categoría */}
         <div className="mb-4">
-          <label
-            className="block text-gray-700 text-lg font-bold mb-2"
-            htmlFor="category"
-          >
+          <label className="block text-gray-700 text-lg font-bold mb-2" htmlFor="category">
             Categoría
           </label>
           <select
@@ -259,13 +367,10 @@ export const PublicationForm = () => {
           </select>
         </div>
 
-        {/* Campo de selección de subcategoría */}
+        {/* Subcategoría */}
         {subcategorias.length > 0 && (
           <div className="mb-4">
-            <p
-              className="block text-gray-700 text-lg font-bold mb-2"
-              htmlFor="subcategory"
-            >
+            <p className="block text-gray-700 text-lg font-bold mb-2" htmlFor="subcategory">
               Subcategoría
             </p>
             <div className="flex gap-2">
@@ -293,7 +398,6 @@ export const PublicationForm = () => {
               </button>
             </div>
 
-            {/* Mostrar subcategorías seleccionadas como tags */}
             {selectedSubcategoriesWithId.length > 0 && (
               <div
                 style={{
@@ -307,8 +411,8 @@ export const PublicationForm = () => {
                   <Badge
                     key={index}
                     pill
-                    variant="primary"
-                    onClick={() => RemoveSubcategory(subcategory.categoriaId)} // Lógica para eliminar subcategoría por ID
+                    variant="secondary"
+                    onClick={() => RemoveSubcategory(subcategory.categoriaId)}
                     style={{ cursor: "pointer" }}
                   >
                     {subcategory.nombre} &times;
@@ -319,32 +423,12 @@ export const PublicationForm = () => {
           </div>
         )}
 
-        <AuthorForm onAuthorSubmit={onAuthorSubmit} />
+        <AuthorForm onAuthorsChange={onAuthorsChange} />
+
+
 
         <div className="mb-4">
-          <label
-            className="block text-gray-700 text-lg font-bold mb-2"
-            htmlFor="file"
-          >
-            Sube un archivo (PDF)
-          </label>
-          <input
-            className="w-full p-2 border border-gray-300 rounded-md"
-            type="file"
-            id="file"
-            name="file"
-            accept=".pdf"
-            required
-            aria-required="true"
-            ref={fileInputRef}
-          />
-        </div>
-
-        <div className="mb-4">
-          <label
-            className="block text-gray-700 text-lg font-bold mb-2"
-            htmlFor="visibility"
-          >
+          <label className="block text-gray-700 text-lg font-bold mb-2" htmlFor="visibility">
             Visibilidad
           </label>
           <select
@@ -361,7 +445,7 @@ export const PublicationForm = () => {
 
         <div className="flex justify-center">
           <button
-            className="bg-gray-700 text-white font-bold py-2 px-4 rounded-md hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-600 focus:ring-opacity-50"
+            className="bg-blue-500 text-white font-bold py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-4 focus:ring-blue-300"
             type="submit"
           >
             Crear Publicación
