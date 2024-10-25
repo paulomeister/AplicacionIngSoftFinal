@@ -1,64 +1,23 @@
-import { useEffect, useState, useRef, useCallback, memo } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { customAlphabet } from "nanoid";
 
-export const useAuthor = (
-  onAuthorSubmit,
-  USER = {},
-  update = false,
-  documentId = ""
-) => {
+export const useAuthor = (onAuthorsChange, initialAuthors = [], USER = {}, update = false, documentId = "") => {
   const [authors, setAuthors] = useState([]);
   const [provAuthors, setProvAuthors] = useState([]);
-  const [selectedAuthors, setSelectedAuthors] = useState([]);
+  const [selectedAuthors, setSelectedAuthors] = useState(initialAuthors);
   const [currentPage, setCurrentPage] = useState(1);
   const authorsPerPage = 5;
   const [addUnregistered, setAddUnregistered] = useState(false);
-  const [isAPrincipalAuthor, setIsAPrincipalAuthor] = useState(false);
   const unregisteredName = useRef("");
   const unregisteredUsername = useRef("");
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        //! Si voy a actualizar entonces se cambia el endpoint
-        const res = await fetch(
-          "http://localhost:8080/api/Usuarios/getAllUsers"
-        );
+        const res = await fetch("http://localhost:8080/api/Usuarios/getAllUsers");
         const data = await res.json();
-
         setAuthors(data);
         setProvAuthors(data);
-
-        const URI = update
-          ? `http://localhost:8080/api/Documentos/id/${documentId}`
-          : "http://localhost:8080/api/Usuarios/getAllUsers";
-        const response = await fetch(URI);
-        const authorsInDoc = await response.json(); // recoge los autores que ya estén en el documento que recoge de la API
-
-        if (update) {
-          const theAuthors = authorsInDoc.autores;
-          const theAuthorsShown = [];
-
-          theAuthors.forEach((auth) => {
-            if (!auth.estaRegistrado) {
-              theAuthorsShown.push({
-                _id: auth.usuarioId,
-                username: auth.username,
-                perfil: {
-                  fotoPerfil:
-                    "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/Unknown_person.jpg/434px-Unknown_person.jpg",
-                  nombre: auth.nombre,
-                  apellido: "",
-                },
-              });
-            }
-          });
-
-          setAddUnregistered(false);
-          setSelectedAuthors([...selectedAuthors, ...theAuthors]);
-          setProvAuthors([...theAuthorsShown, ...data]);
-          setAuthors([...theAuthorsShown, ...data]);
-        }
       } catch (e) {
         console.error(e.message);
       }
@@ -70,11 +29,11 @@ export const useAuthor = (
   // Hook modificado para incluir el autor adicional por defecto
   useEffect(() => {
     const defaultAuthor = {
-      usuarioId: "671aa9d3977f359d06bd523a",
+      usuarioId: USER.id || "671aa9d3977f359d06bd523a", // ID predeterminado o el ID del usuario autenticado
       estaRegistrado: true,
-      rol: "principal",
-      nombre: "Pepito",
-      username: "probador",
+      rol: "principal", // El rol predeterminado es "principal"
+      nombre: USER.perfil?.nombre || "Pepito",
+      username: USER.username || "probador",
     };
 
     // Incluimos el autor por defecto si no está ya seleccionado
@@ -82,25 +41,20 @@ export const useAuthor = (
       (author) => author.usuarioId === defaultAuthor.usuarioId
     )
       ? selectedAuthors
-      : [defaultAuthor, ...selectedAuthors ];
+      : [defaultAuthor, ...selectedAuthors];
 
-    onAuthorSubmit(updatedAuthors); // Enviamos los autores con el predeterminado al componente padre
-  }, [selectedAuthors]);
+    setSelectedAuthors(updatedAuthors);
+    onAuthorsChange(updatedAuthors); // Enviamos los autores con el predeterminado al componente padre
+  }, [selectedAuthors, USER, onAuthorsChange]);
 
   const handleChange = useCallback(
     (e) => {
       const newAuthor = e.target.value;
       const filteredAutores = authors.filter(
         (author) =>
-          author?.perfil?.nombre
-            .toLowerCase()
-            .includes(newAuthor.toLowerCase()) ||
-          author?.perfil?.apellido
-            .toLowerCase()
-            .includes(newAuthor.toLowerCase()) ||
-          author?.username
-            .toLowerCase()
-            .includes(newAuthor.toLowerCase().replace("@", ""))
+          author?.perfil?.nombre.toLowerCase().includes(newAuthor.toLowerCase()) ||
+          author?.perfil?.apellido.toLowerCase().includes(newAuthor.toLowerCase()) ||
+          author?.username.toLowerCase().includes(newAuthor.toLowerCase().replace("@", ""))
       );
 
       setProvAuthors(filteredAutores);
@@ -109,14 +63,10 @@ export const useAuthor = (
   );
 
   const handleCoAutorButton = (author) => {
-    const isSelected = selectedAuthors.some(
-      (a) => a.username === author.username
-    );
+    const isSelected = selectedAuthors.some((a) => a.username === author.username);
 
     if (isSelected) {
-      setSelectedAuthors(
-        selectedAuthors.filter((au) => au.username !== author.username)
-      );
+      setSelectedAuthors(selectedAuthors.filter((au) => au.username !== author.username));
     } else {
       const theAuthor = {
         usuarioId: author._id,
@@ -139,9 +89,7 @@ export const useAuthor = (
       return;
     }
 
-    const isDuplicate = selectedAuthors.some(
-      (author) => author.username === newUsername
-    );
+    const isDuplicate = selectedAuthors.some((author) => author.username === newUsername);
 
     if (isDuplicate) {
       alert("Este autor ya ha sido agregado.");
@@ -164,8 +112,7 @@ export const useAuthor = (
       {
         username: newUsername,
         perfil: {
-          fotoPerfil:
-            "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/Unknown_person.jpg/434px-Unknown_person.jpg",
+          fotoPerfil: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/Unknown_person.jpg/434px-Unknown_person.jpg",
           nombre: newAuthorName,
         },
       },
@@ -181,10 +128,7 @@ export const useAuthor = (
 
   const indexOfLastAuthor = currentPage * authorsPerPage;
   const indexOfFirstAuthor = indexOfLastAuthor - authorsPerPage;
-  const currentAuthors = provAuthors.slice(
-    indexOfFirstAuthor,
-    indexOfLastAuthor
-  );
+  const currentAuthors = provAuthors.slice(indexOfFirstAuthor, indexOfLastAuthor);
   const totalPages = Math.ceil(provAuthors.length / authorsPerPage);
 
   return {
@@ -202,7 +146,6 @@ export const useAuthor = (
     handleCoAutorButton,
     addUnregisteredAuthor,
     setCurrentPage,
-    isAPrincipalAuthor,
   };
 };
 

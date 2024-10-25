@@ -50,7 +50,7 @@ export const PublicationForm = () => {
   }, [loading]);
 
 
-  const onAuthorSubmit = (selectedAuthors) => {
+  const onAuthorsChange = (selectedAuthors) => {
     setSelectedAuthors(selectedAuthors); // actualiza el SelectedAuthors de este componente
   };
 
@@ -241,6 +241,7 @@ export const PublicationForm = () => {
       <h1 id="publication-form-heading" className="text-4xl font-bold mb-4">
         Crear Publicación
       </h1>
+
       <form onSubmit={formHandler}>
         <p id="form-description" className="text-xl text-gray-600 mb-4">
           Por favor completa el formulario a continuación para crear una nueva
@@ -324,9 +325,6 @@ export const PublicationForm = () => {
           ></textarea>
           <span className="text-gray-500 text-sm">Máximo 800 caracteres</span>
         </div>
-
-        <AuthorForm onAuthorSubmit={onAuthorSubmit} />
-
         {/* Categoría */}
         <div className="mb-4">
           <label className="block text-gray-700 text-lg font-bold mb-2" htmlFor="category">
@@ -405,6 +403,8 @@ export const PublicationForm = () => {
             )}
           </div>
         )}
+
+        <AuthorForm onAuthorsChange={onAuthorsChange} />
 
 
 

@@ -44,6 +44,7 @@ export function Author({
         ) : isSelected ? (
           <button
             onClick={handleCoAutorButton}
+            type="button"
             className=" text-red-500 font-semibold text-[17px] "
           >
             Quitar
@@ -51,6 +52,7 @@ export function Author({
         ) : (
           <button
             onClick={handleCoAutorButton}
+            type="button"
             className="text-blue-400 font-semibold text-[17px]"
           >
             Seleccionar
