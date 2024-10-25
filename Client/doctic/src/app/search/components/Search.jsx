@@ -20,7 +20,6 @@ const Search = () => {
 
   //-------- Función para mostrar los filtros ------------ 
   const handleToggleFiltros = () => {
-    console.log(filtros);
     setMostrarFiltros((prevState) => !prevState);
   };
 
@@ -76,6 +75,7 @@ const Search = () => {
   const handleSearchClick = () => {
     handleMapearFiltros();
     setMostrarResultados(true); 
+    console.log(busqueda);
   };
 
   // ------------ Función para actualizar el criterio de ordenamiento ------------- 

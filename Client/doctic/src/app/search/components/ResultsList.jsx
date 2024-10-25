@@ -1,10 +1,11 @@
 'use client';
 import React, { useState, useEffect } from "react";
 import ResultItem from "./ResultItem";
-import conection from "./conection";
-import { AlertPop } from './AlertPopup';
+import conection from "../utils/conectionDocuments";
+import { AlertPop } from '../utils/AlertPopup';
 import SortMenu from './SortMenu';
 import "./ResultList.css";
+import conectionDocuments from "../utils/conectionDocuments";
 
 const ResultsList = ({ busqueda, sortCriteria, onSortChange }) => {
   const [results, setResults] = useState([]);
@@ -18,7 +19,7 @@ const ResultsList = ({ busqueda, sortCriteria, onSortChange }) => {
   const getResults = async () => {
     setLoading(true);
     try {
-      const response = await conection(busqueda);
+      const response = await conectionDocuments(busqueda);
       setResults(response);
       setLoading(false);
     } catch (error) {
