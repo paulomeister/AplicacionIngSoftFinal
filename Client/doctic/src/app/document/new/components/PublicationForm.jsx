@@ -18,6 +18,7 @@ export const PublicationForm = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [fileError, setFileError] = useState(null);
+  const [dragging, setDragging] = useState(false);
   const [categorias, setCategorias] = useState([]);
   const [selectedAuthors, setSelectedAuthors] = useState([]);
   const [selectedSubcategoriesWithId, setSelectedSubcategoriesWithId] = useState([]);
@@ -50,7 +51,7 @@ export const PublicationForm = () => {
   }, [loading]);
 
 
-  const onAuthorSubmit = (selectedAuthors) => {
+  const onAuthorsChange = (selectedAuthors) => {
     setSelectedAuthors(selectedAuthors); // actualiza el SelectedAuthors de este componente
   };
 
@@ -144,6 +145,22 @@ export const PublicationForm = () => {
         setTitle(fileNameWithoutExtension); // Actualiza el título con el nombre del archivo
       }
     }
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    setDragging(true);
+  };
+
+  const handleDragLeave = () => {
+    setDragging(false);
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    setDragging(false);
+    const file = e.dataTransfer.files[0];
+    handleFileInputChange({ target: { files: [file] } });
   };
 
   const formHandler = (event) => {
@@ -241,6 +258,7 @@ export const PublicationForm = () => {
       <h1 id="publication-form-heading" className="text-4xl font-bold mb-4">
         Crear Publicación
       </h1>
+
       <form onSubmit={formHandler}>
         <p id="form-description" className="text-xl text-gray-600 mb-4">
           Por favor completa el formulario a continuación para crear una nueva
@@ -253,8 +271,11 @@ export const PublicationForm = () => {
             Sube un archivo (PDF)
           </label>
           <div
-            className={`w-full p-6 border-2 ${selectedFile ? 'border-green-500 bg-green-50' : 'border-dashed border-gray-300 hover:border-blue-500 hover:bg-blue-50'} rounded-md flex flex-col items-center justify-center cursor-pointer`}
+            className={`w-full p-6 border-2 ${dragging ? 'border-blue-600 bg-blue-100' : selectedFile ? 'border-green-500 bg-green-50' : 'border-dashed border-gray-300 hover:border-blue-500 hover:bg-blue-50'} rounded-md flex flex-col items-center justify-center cursor-pointer`}
             onClick={() => fileInputRef.current.click()}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
           >
             <input
               className="hidden"
@@ -277,14 +298,13 @@ export const PublicationForm = () => {
             ) : (
               <>
                 <FaFileUpload size={32} className="text-blue-500 mb-2" />
-                <span className="text-lg font-medium text-teal-600">Selecciona Documentos Para Subir</span>
-                <span className="text-gray-500 text-sm">o arrastra acá</span>
+                <span className="text-lg font-medium text-teal-600">Selecciona o arrastra un documento PDF aquí</span>
+                <span className="text-gray-500 text-sm">Tamaño máximo 2MB</span>
               </>
             )}
           </div>
 
           {fileError && <span className="text-red-500 text-sm ml-2">{fileError}</span>}
-          <span className="text-gray-500 text-sm">Tamaño máximo de 2MB</span>
         </div>
 
         {/* Titulo */}
@@ -324,9 +344,6 @@ export const PublicationForm = () => {
           ></textarea>
           <span className="text-gray-500 text-sm">Máximo 800 caracteres</span>
         </div>
-
-        <AuthorForm onAuthorSubmit={onAuthorSubmit} />
-
         {/* Categoría */}
         <div className="mb-4">
           <label className="block text-gray-700 text-lg font-bold mb-2" htmlFor="category">
@@ -405,6 +422,8 @@ export const PublicationForm = () => {
             )}
           </div>
         )}
+
+        <AuthorForm onAuthorsChange={onAuthorsChange} />
 
 
 
