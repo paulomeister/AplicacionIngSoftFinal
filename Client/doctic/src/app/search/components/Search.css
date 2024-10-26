@@ -29,37 +29,33 @@
     width: 92vw;
   }
 
+  .search-icon{
+    width: 90vw;
+  }
+
   .search-input {
     border: 1px solid #ccc;
     color: rgb(0, 0, 0);
     padding: 10px;
-    border-radius: 100px;
+    border-radius: 10px;
     margin: 10px;
-    width: 90vw;
+    margin-left: 0;
+    width: 100%;
   }
 
-  .sugerencias {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    border: 1px solid #ccc;
-    background-color: white;
-    position: absolute;
-    width: 100%;
-    max-height: 150px;
-    overflow-y: auto;
-    z-index: 1000;
+  .sugerencias :hover{
+    background-color: #e0e0e0;
+  }
+
+  .sugerencia-item{
+    padding: 5px 0;
+    border-radius: 5px;
+  }
+
+  .sugerencia-item.selected {
+    background-color: #e0e0e0; /* O el color de tu preferencia */
   }
   
-  .sugerencias-item {
-    padding: 8px;
-    cursor: pointer;
-    border-bottom: 1px solid #ccc;
-  }
-  
-  .sugerencias-item :hover {
-    background-color: #f0f0f0;
-  }
 
   .search-btn {
     display: block;
@@ -67,12 +63,11 @@
     color: white;
     border: none;
     cursor: pointer;
-    min-width: 80px;
-    max-width: 80px;
-    min-height: 50px;
-    max-height: 50px;
+    width: 80px;
+    height: 45px;
     border-radius: 12px;
     margin-top: 10px;
+    margin-left: 10px;
   }
 
   .search-btn:hover {

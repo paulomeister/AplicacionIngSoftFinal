@@ -14,54 +14,69 @@ const Search = () => {
   const [titulo, setTitulo] = useState("");
   const [sortCriteria, setSortCriteria] = useState("");
   const [titulosSugeridos, setTitulosSugeridos] = useState([]);
-
-  //-------- Funcion para setear títulos sugeridos desde la API ------------
-  const handleSetTitulosSugeridos = async () => {
-    try {
-      if (titulo.trim() === "") {
-        setTitulosSugeridos([]); // Limpia sugerencias si el título está vacío
-        return;
-      }
-      
-      const documentos = await conectionDocuments({ titulo, tieneFiltros: false });
-      const titulos = documentos.map(doc => doc.titulo); // Extrae solo los títulos
-      setTitulosSugeridos(titulos);
-    } catch (error) {
-      console.error("Error al obtener títulos sugeridos:", error);
-    }
-  };
-  // -----------------------------------------------------------------------
-
-  // En el renderizado, asegurarse de mostrar los títulos
-  <div className="suggestions">
-    {titulosSugeridos.map((titulo, index) => (
-      <div key={index} className="suggestion-item">
-        {titulo}
-      </div>
-    ))}
-  </div>
-
-
-  // -------- Llamado a la función de sugerencia de títulos cada vez que cambia el input ------------
-  useEffect(() => {
-    if (titulo) {
-      handleSetTitulosSugeridos();
-    } else {
-      setTitulosSugeridos([]); // Vaciar sugerencias si no hay título
-    }
-  }, [titulo]);
+  const [selectedIndex, setSelectedIndex] = useState(-1); 
 
   //-------- Función para actualizar el input de búsqueda y sugerencias ------------
   const handleInputChange = (event) => {
     setTitulo(event.target.value);
   };
 
+// ----------------------------------------------------- SUGERENCIAS ------------------------------------------------------------------------------
+  //-------- Funcion para setear títulos sugeridos desde la API ------------
+  const handleSetTitulosSugeridos = async () => {
+    try {
+      if (titulo.trim() === "") {
+        setTitulosSugeridos([]); 
+        return;
+      }
+      
+      const documentos = await conectionDocuments({ titulo, tieneFiltros: false });
+      const titulos = documentos.map(doc => doc.titulo); 
+      setTitulosSugeridos(titulos);
+      setSelectedIndex(-1); 
+    } 
+    catch (error) {
+      console.error("Error al obtener títulos sugeridos:", error);
+    }
+  };
+  // -----------------------------------------------------------------------
+
+  // -------- Llamado a la función de sugerencia de títulos cada vez que cambia el input ------------
+  useEffect(() => {
+    if (titulo) {
+      handleSetTitulosSugeridos();
+    } else {
+      setTitulosSugeridos([]); 
+    }
+  }, [titulo]);
+
   //-------- Función para seleccionar una sugerencia ------------
   const handleSelectSugerencia = (sugerencia) => {
     setTitulo(sugerencia);
-    setTitulosSugeridos([]); // Ocultar sugerencias una vez seleccionada
+    setTitulosSugeridos([]); 
   };
 
+  // -------- Función para manejar navegación de teclado en sugerencias -----------
+  const handleKeyDown = (event) => {
+    if (event.key === "ArrowDown") {
+      setSelectedIndex((prevIndex) => (prevIndex + 1) % titulosSugeridos.length);
+    } 
+    else if (event.key === "ArrowUp") {
+      setSelectedIndex((prevIndex) => (prevIndex - 1 + titulosSugeridos.length) % titulosSugeridos.length);
+    }
+    else if (event.key === "Enter") {
+      if (selectedIndex >= 0 && titulosSugeridos[selectedIndex]) {
+        handleSelectSugerencia(titulosSugeridos[selectedIndex]);
+        setTitulosSugeridos([]);
+      } else {
+        handleSearchClick();
+        setTitulosSugeridos([]);
+      }
+    }
+  };
+  //---------------------------------------------------------------------------------------------------------------------------------------------------
+
+  //--------------------------------------------------------------- FILTROS ----------------------------------------------------------------------------
   //-------- Función para mostrar los filtros ------------ 
   const handleToggleFiltros = () => {
     setMostrarFiltros((prevState) => !prevState);
@@ -114,12 +129,13 @@ const Search = () => {
 
     setBusqueda({ titulo, tieneFiltros: filtros.length > 0, keywords, categorias, autores, idioma, desde, hasta });
   };
-
+  // ---------------------------------------------------------------------------------------------------------------------------------------------------
+  
   // --------- Función para mostrar los resultados y cambiar valor del titulo -------------- 
   const handleSearchClick = () => {
     handleMapearFiltros();
+    setTitulosSugeridos([]);
     setMostrarResultados(true); 
-    console.log(busqueda);
   };
 
   // ------------ Función para actualizar el criterio de ordenamiento ------------- 
@@ -132,21 +148,29 @@ const Search = () => {
       <div className="filter-container">
         <div className="filter-title">
           <div className="search-bar">
-            <input
-              type="text"
-              placeholder="Buscar"
-              className="search-input"
-              value={titulo}
-              onChange={handleInputChange}
-            />
+            <div className="search-icon">
+              <input
+                type="text"
+                placeholder="Buscar"
+                className="search-input"
+                value={titulo}
+                onChange={handleInputChange}
+                onKeyDown={handleKeyDown} 
+              />
 
               {/* Lista de sugerencias */}
               <div className="sugerencias">
               {titulo && titulosSugeridos.map((titulo, index) => (
-                <div key={index} className="sugerencia-item">
+                <div
+                  key={index}
+                  className={`sugerencia-item ${selectedIndex === index ? "selected" : ""}`}
+                  onClick={() => handleSelectSugerencia(titulo)} 
+                >
                   {titulo}
                 </div>
               ))}
+              </div>
+
             </div>
 
             <button className="search-btn" onClick={handleSearchClick}>

@@ -6,8 +6,11 @@ const nextConfig = {
         source: '/',
         destination: '/home',
         permanent: true,
-      }
-    ]
+      },
+    ];
+  },
+  images: {
+    domains: ['xsgames.co'], // Agrega aquí otros dominios si es necesario
   },
 };
 

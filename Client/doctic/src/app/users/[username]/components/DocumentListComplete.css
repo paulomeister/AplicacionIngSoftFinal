@@ -1,5 +1,5 @@
-.document-list{
-  background-color: aliceblue;
+.document-list-complete{
+  background-color: antiquewhite;
   display: flex;
   flex-direction: column;
 }
