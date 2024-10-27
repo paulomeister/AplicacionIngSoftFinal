@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { FaCog, FaEdit } from 'react-icons/fa';
 import './AuthorInfo.css';
+import Link from 'next/link';
 
 const AuthorInfo = ({ autor }) => {
   const [avatar, setAvatar] = useState('');
+  const [propietario, setPropietario] = useState(true);
 
   const obtenerAvatar = () => {
     if (autor && autor.perfil?.fotoPerfil) {
@@ -24,7 +27,7 @@ const AuthorInfo = ({ autor }) => {
         <img src={avatar} alt="Avatar del Autor" className="author-avatar" />
         <div className="author-name-container">
           <h2 className="names">
-            {`${autor.perfil?.nombre || ''} ${autor.perfil?.apellido || ''}`}
+            {`${autor.perfil?.nombre} ${autor.perfil?.apellido}`}
           </h2>
           <h2 className="username">@{autor.username}</h2>
           <h4 className="date">
@@ -32,6 +35,13 @@ const AuthorInfo = ({ autor }) => {
           </h4>
         </div>
       </div>
+
+      {propietario &&
+        <div className="icons-container">
+            <Link className="config-icon" href='/users'><FaCog/><p>Configuraciones</p></Link>
+            <Link className="edit-icon" href='/users'><FaEdit/><p>Editar Perfil</p></Link>
+        </div>
+      }
     </div>
   );
 };

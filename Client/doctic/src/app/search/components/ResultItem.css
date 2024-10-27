@@ -3,7 +3,7 @@
     background-color: rgb(255, 255, 255);
     color: black;
     padding: 15px;
-    margin-top: 10px;
+    margin-top: 20px;
     border-radius: 8px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     min-width: 600px;
@@ -11,38 +11,92 @@
     width: auto;
   }
 
+  p{
+    font-size: 80%;
+    color: rgb(83, 83, 83);
+  }
+
   .result-item h3 {
     font-size: 120%;
     margin-bottom: 5px;
   }
 
-  .result-params {
+  .result-authors, .result-categories {
     display: flex;
     flex-direction: row;
   }
-  
-  .result-actions button {
-    margin-top: 15px;
-    padding: 5px;
-    padding-left: 15px;
-    padding-right: 15px;
-    font-size: 80%;
-    background-color: #0056ff;
-    color: white;
-    border: none;
-    border-radius: 7px;
-    cursor: pointer;
-  }
-  
-  .result-actions button:hover {
-    background-color: #003bb5;
-  }
-  
-  p{
-    font-size: 80%;
-    color: #686767;
+
+  .result-categories Strong, .result-authors Strong {
+    color: #4b4b4b;
+    font-size: medium;
   }
 
-  .result-author{
-    color: #000000;
+  .author{
+    color: black;
   }
+
+  .author:hover{
+    color: #0056ff;
+    cursor: pointer;
+  }
+
+  .result-params {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+    width: 98%;
+  }
+
+  .result-img{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 20%;
+  }
+
+  .result-date, .result-rating, .result-btns{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .result-date{
+    color: rgb(96, 180, 48);
+  }
+
+  .result-date p{
+    margin-left: 4px;
+    color: rgb(81, 153, 40);
+  }
+
+  .result-rating{
+    color: rgb(231, 199, 57);
+  }
+
+  .result-rating p{
+    margin-left: 4px;
+    color: rgb(202, 175, 52);
+  }
+
+  .result-btns {
+    cursor: pointer;
+    color: #0056ff;
+  }
+
+  .result-btns p{
+    margin-left: 4px;
+    color: #0056ff;
+  }
+  
+  .result-btns:hover {
+    color: #5c92ff;
+  }
+
+  .result-btns:hover p{
+    color: #5c92ff;
+  }
+  

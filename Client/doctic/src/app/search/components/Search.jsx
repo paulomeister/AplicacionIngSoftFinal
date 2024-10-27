@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import ResultsList from "./ResultsList";
 import Filter from "./Filter";
 import conectionDocuments from "../utils/conectionDocuments";
+import {FaSearch} from "react-icons/fa";
 import "./Search.css";
 
 const Search = () => {
@@ -147,8 +148,8 @@ const Search = () => {
     <div className="search-container">
       <div className="filter-container">
         <div className="filter-title">
-          <div className="search-bar">
-            <div className="search-icon">
+          <div className="search-icon">
+            <div className="search-bar">
               <input
                 type="text"
                 placeholder="Buscar"
@@ -157,26 +158,24 @@ const Search = () => {
                 onChange={handleInputChange}
                 onKeyDown={handleKeyDown} 
               />
+              <FaSearch className="search-btn" onClick={handleSearchClick}/>
+            </div>
 
-              {/* Lista de sugerencias */}
-              <div className="sugerencias">
+            {/* Lista de sugerencias */}
+            <div className="sugerencias">
               {titulo && titulosSugeridos.map((titulo, index) => (
                 <div
                   key={index}
                   className={`sugerencia-item ${selectedIndex === index ? "selected" : ""}`}
                   onClick={() => handleSelectSugerencia(titulo)} 
                 >
-                  {titulo}
+                  <div className="sugerencia-icon">
+                    <FaSearch/>
+                    <p>{titulo}</p>
+                  </div>
                 </div>
               ))}
-              </div>
-
             </div>
-
-            <button className="search-btn" onClick={handleSearchClick}>
-              Buscar
-            </button>
-            
           </div>
           <hr />
 

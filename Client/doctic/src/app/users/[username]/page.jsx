@@ -34,7 +34,7 @@ function App({ params }) {
   const handleVerTodos = () => {
     setVerTodos(true); 
   };
-
+  
   return (
     <div id="back">
       {!verTodos && (
@@ -47,6 +47,7 @@ function App({ params }) {
       {verTodos && <DocumentListComplete autor={autor} />}
     </div>
   );
+  
 }
 
 export default App; 
