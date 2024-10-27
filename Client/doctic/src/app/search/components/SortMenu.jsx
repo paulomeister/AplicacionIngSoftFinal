@@ -1,10 +1,14 @@
 'use client';
-import React from 'react';
-import { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './SortMenu.css';
 
 const SortMenu = ({ onSortChange }) => {
-  const [selectedOption, setSelectedOption] = useState('');
+  const [selectedOption, setSelectedOption] = useState('alfabetico'); // Inicializado con "alfabetico"
+
+  // Aplica el criterio de orden "alfabetico" por defecto al cargar el componente
+  useEffect(() => {
+    onSortChange(selectedOption); // Llama a la función de ordenamiento con el valor inicial
+  }, [selectedOption, onSortChange]);
 
   const handleSort = (sortOption) => {
     setSelectedOption(sortOption);

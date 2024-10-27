@@ -17,8 +17,8 @@ export const NavbarComp = () => {
   return (
     <Navbar position="sticky" isBordered maxWidth="2xl">
       <NavbarBrand>
-        <Image src="/logo.png" alt="Logo" width={50} height={50} />
-        <p className="font-bold  text-inherit">DocTIC</p>
+        <Link href="/home"><Image src="/logo.png" alt="Logo" width={50} height={50}/></Link>
+        <Link className="font-bold  text-inherit" href="/home">DocTIC</Link>
       </NavbarBrand>
       <NavbarContent className="sm:flex gap-4" justify="center">
         <NavbarItem>

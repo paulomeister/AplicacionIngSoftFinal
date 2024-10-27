@@ -12,9 +12,11 @@ const ResultItem = ({ results }) => {
 
           {/* Renderizar autores */}
           <div className="result-params">
-          <p><strong className="result-author">Subido por: </strong> 
+          <p><strong className="result-author">Autores: </strong> 
             {result.autores?.map((autor, i) => (
-              <Link href={`/users/${autor.username}`} className="result-author"><span key={i}>{autor.nombre}, </span></Link>
+              <Link href={`/users/${autor.username}`} className="result-author" key={i}> 
+              <span>{autor.nombre}{i < result.autores.length - 1 ? ", " : ""} </span> 
+              </Link>
             ))}
           </p>
           </div>
@@ -23,7 +25,7 @@ const ResultItem = ({ results }) => {
           <div className="result-params">
           <p><strong>Categorías: </strong>
           {result.categoria?.map((cat, i) => (
-            <span key={i}>{cat.nombre}, </span>
+            <span key={i}>{cat.nombre}{i < result.categoria.length - 1 ? ", " : ""}</span>
           ))}</p>
           </div>
 

@@ -16,13 +16,11 @@
     flex-direction: row;
     align-items: space-between;
     width: 100vw;
-    /* overflow: hidden; */
   }
 
   .results-items{
     min-width: none;
-    width: auto;
-    max-width: 75vw;
+    width: 100%;
   }
 
   .sort-container {
