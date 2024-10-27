@@ -1,12 +1,11 @@
-"use client";
-import React, { useState, useEffect } from "react";
-import conectionDocuments from "../utils/conectionDocuments";
-import DocumentItem from "./DocumentItem";
-import { AlertPop } from "../utils/AlertPopup";
-import "./DocumentList.css";
+'use client';
+import React, { useState, useEffect } from 'react';
+import conectionDocuments from '../utils/conectionDocuments';
+import DocumentItem from './DocumentItem';
+import { AlertPop } from '../utils/AlertPopup';
+import './DocumentListComplete.css';
 
-const DocumentList = ({ autor, onVerTodos }) => {
-
+const DocumentListComplete = ({autor}) => {
   const [titulosDocumentos, setTitulosDocumentos] = useState([]);
   const [infDocumentos, setInfDocumentos] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -49,30 +48,22 @@ const DocumentList = ({ autor, onVerTodos }) => {
       fetchDocumentDetails();
     }
   }, [titulosDocumentos]);
-
-  // ----- Manejo de warning pop-ups ------
-  if (loading || infDocumentos.length === 0) {
-    return (
-      <div className="results-error">
-        <AlertPop loading={loading} infDocumentos={infDocumentos} />
-      </div>
-    );
+  
+  if (loading) {
+    return(
+        <AlertPop loading={loading}/>
+    )
   }
-  // ------ Renderizado de Documentos ------
-  else {
+  else{
     return (
-      <div className="document-list-container">
-        <h2 className="written-by-text"> Documentos escritos por <span className="written-by">{autor.username}</span></h2>
-        <hr />
-        <div className="document-list">
-          <DocumentItem results={infDocumentos} />
+      <div className="document-list-complete">
+        <div className="document-list-title">
+          <h1>Documentos Escritos por {autor.username}</h1>
         </div>
-        <button className="ver-todos-btn" onClick={onVerTodos}>
-          Ver todos
-        </button>
+        <DocumentItem results={infDocumentos} />
       </div>
     );
   }
 };
 
-export default DocumentList;
+export default DocumentListComplete;
