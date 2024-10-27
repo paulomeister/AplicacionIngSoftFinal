@@ -1,10 +1,11 @@
 'use client';
 import React, { useState, useEffect } from "react";
 import ResultItem from "./ResultItem";
-import conection from "./conection";
-import { AlertPop } from './AlertPopup';
+import conection from "../utils/conectionDocuments";
+import { AlertPop } from '../utils/AlertPopup';
 import SortMenu from './SortMenu';
 import "./ResultList.css";
+import conectionDocuments from "../utils/conectionDocuments";
 
 const ResultsList = ({ busqueda, sortCriteria, onSortChange }) => {
   const [results, setResults] = useState([]);
@@ -18,7 +19,7 @@ const ResultsList = ({ busqueda, sortCriteria, onSortChange }) => {
   const getResults = async () => {
     setLoading(true);
     try {
-      const response = await conection(busqueda);
+      const response = await conectionDocuments(busqueda);
       setResults(response);
       setLoading(false);
     } catch (error) {
@@ -34,28 +35,19 @@ const ResultsList = ({ busqueda, sortCriteria, onSortChange }) => {
     }
   }, [busqueda]);
 
-  // ------- Filtrar los resultados según los filtros en 'busqueda' -------
-  const applyFilters = (results) => {
-    return results.filter((result) => {
-      const matchCategoria = busqueda.categorias.length === 0 || busqueda.categorias.some(cat => result.categoria.some(rc => rc.nombre === cat));
-      const matchAutor = busqueda.autores.length === 0 || busqueda.autores.some(autor => result.autores.some(ra => ra.nombre === autor));
-      const matchIdioma = !busqueda.idioma || result.idioma === busqueda.idioma;
-      const matchDesde = !busqueda.desde || new Date(result.fechaSubida) >= new Date(busqueda.desde);
-      const matchHasta = !busqueda.hasta || new Date(result.fechaSubida) <= new Date(busqueda.hasta);
-
-      return matchCategoria && matchAutor && matchIdioma && matchDesde && matchHasta;
-    });
-  };
-
   // ----------------------- Ordenar los resultados filtrados según el criterio de orden -------------------------
   const applySort = (results) => {
     return [...results].sort((a, b) => {
       const calcularPromedioValoracion = (valoraciones) => {
-        if (valoraciones.length === 0) {
+        if (valoraciones?.length === 0) {
+<<<<<<< HEAD
           return 2.5;
+=======
+          return 0;
+>>>>>>> d2484c7deec82f3f95e74b116a7ee95118b4f3dd
         } else {
-          const suma = valoraciones.reduce((total, valoracion) => total + valoracion.puntuacion, 0);
-          return suma / valoraciones.length;
+          const suma = valoraciones?.reduce((total, valoracion) => total + valoracion.puntuacion, 0);
+          return suma / valoraciones?.length;
         }
       };
 
@@ -79,8 +71,7 @@ const ResultsList = ({ busqueda, sortCriteria, onSortChange }) => {
   };
 
   const getFilteredAndSortedResults = () => {
-    let filteredResults = applyFilters(results);
-    return applySort(filteredResults);
+    return applySort(results);
   };
 
   const finalResults = getFilteredAndSortedResults();
