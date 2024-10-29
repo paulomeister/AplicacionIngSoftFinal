@@ -1,38 +1,39 @@
 'use client';
-import React from "react";
-import { useState } from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
-import { FaCalendarAlt, FaStar, FaEye, FaEdit, FaTrash} from "react-icons/fa";
+import { FaCalendarAlt, FaStar, FaEye, FaEdit, FaTrash } from "react-icons/fa";
 import "./DocumentItem.css";
 
-const DocumentItem = ({ results, propietario }) =>{
+const DocumentItem = ({ results, propietario }) => {
   const [show, setShow] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false); // Nuevo estado para el pop-up de éxito
+  const [idToDelete, setIdToDelete] = useState(null);
 
   const handleClose = () => {
     setShow(false);
   };
-  const handleShow = () => {
+
+  const handleShow = (id) => {
+    setIdToDelete(id);
     setShow(true);
   };
 
-  const handleDelete = (id) => {
-    async function fetchToDelete() {
-      const data = await fetch(
-        `http://localhost:8080/api/Documentos/delete/${id}`,
-        { method: "DELETE" }
-      );
-      const response = await data.json();
+  const handleDelete = async (id) => {
+    try {
+      const response = await fetch(`http://localhost:8080/api/Documentos/delete/${id}`, {
+        method: "DELETE"
+      });
 
-      if (response.status === 200) {
-        fetchDocuments();
+      if (response.ok) {
+        setShowSuccess(true); // Mostrar el pop-up de éxito
       } else {
-        return;
+        console.error("Error al eliminar el documento.");
       }
+    } catch (error) {
+      console.error("Error en la solicitud:", error);
     }
-
-    fetchToDelete();
   };
 
   const calcularPromedioValoracion = (valoraciones) => {
@@ -55,7 +56,7 @@ const DocumentItem = ({ results, propietario }) =>{
             <p><strong className="result-author">Autores: </strong> 
               {result.autores?.map((autor, i) => (
                 <Link href={`/users/${autor.username}`} className="author" key={i}> 
-                <span>{autor.nombre}{i < result.autores.length - 1 ? ", " : ""} </span> 
+                  <span>{autor.nombre}{i < result.autores.length - 1 ? ", " : ""}</span> 
                 </Link>
               ))}
             </p>
@@ -64,9 +65,10 @@ const DocumentItem = ({ results, propietario }) =>{
           {/* Renderizar categoría */}
           <div className="result-categories">
             <p><strong>Categorías: </strong>
-            {result.categoria?.map((cat, i) => (
-              <span key={i}>{cat.nombre}{i < result.categoria.length - 1 ? ", " : ""}</span>
-            ))}</p>
+              {result.categoria?.map((cat, i) => (
+                <span key={i}>{cat.nombre}{i < result.categoria.length - 1 ? ", " : ""}</span>
+              ))}
+            </p>
           </div>
 
           {/* Renderizar fecha y valoración */}
@@ -80,53 +82,68 @@ const DocumentItem = ({ results, propietario }) =>{
               </div>
             </div>
             <div className="btns-container">
-            <Link className="view-btn" href={`/document/${result._id}`}><FaEye /><p>Ver</p></Link>
+              <Link className="view-btn" href={`/document/${result._id}`}><FaEye /><p>Ver</p></Link>
 
               {/* Renderizar botón de eliminar y editar */}
               {propietario &&
               <div className="propietario">
-                <button className="delete-btn" onClick={handleShow}><FaTrash /><p>Eliminar</p></button>
+                <button className="delete-btn" onClick={() => handleShow(result._id)}><FaTrash /><p>Eliminar</p></button>
                 <Link className="edit-btn" href={`/document/edit/${result._id}`}><FaEdit /><p>Editar</p></Link>
               </div>
               }
             </div>
           </div>
+          
+          {/* Modal para confirmar eliminación de documento */}
+          <Modal show={show} onHide={handleClose}>
+            <Modal.Header closeButton>
+              <Modal.Title>Eliminar Documento</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              ¿Estás seguro que quieres{" "}
+              <span className="text-red-600 underline">eliminar</span> este
+              documento?
+            </Modal.Body>
+            <Modal.Footer>
+              <Button
+                variant="secondary"
+                onClick={handleClose}
+                className="flex items-center gap-2 text-white bg-gray-700 hover:underline"
+              >
+                Cerrar
+              </Button>
+              <Button
+                variant="primary"
+                onClick={() => {
+                  handleDelete(idToDelete);
+                  handleClose();
+                }}
+                className="flex items-center gap-2 text-white bg-red-600 hover:underline hover:bg-red-950"
+              >
+                <FaTrash /> Confirmar
+              </Button>
+            </Modal.Footer>
+          </Modal>
+
+          {/* Modal para mostrar éxito en la eliminación */}
+          <Modal show={showSuccess} onHide={() => setShowSuccess(false)}>
+            <Modal.Header closeButton>
+              <Modal.Title>Documento Eliminado</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>El documento ha sido eliminado exitosamente.</Modal.Body>
+            <Modal.Footer>
+              <Button
+                variant="primary"
+                onClick={() => setShowSuccess(false)}
+              >
+                Aceptar
+              </Button>
+            </Modal.Footer>
+          </Modal>
         </div>
       ))}
-
-      {/* Modal para confirmar eliminación de documento */}
-      <Modal show={show} onHide={handleClose}>
-        <Modal.Header closeButton>
-          <Modal.Title>Eliminar Documento</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          ¿Estás seguro que quieres{" "}
-          <span className="text-red-600 underline">eliminar</span> este
-          documento?
-        </Modal.Body>
-        <Modal.Footer>
-          <Button
-            variant="secondary"
-            onClick={handleClose}
-            className="flex items-center gap-2 text-white bg-gray-700 hover:underline"
-          >
-            Cerrar
-          </Button>
-          <Button
-            variant="primary"
-            onClick={() => {
-              handleDelete(doc._id);
-              handleClose();
-            }}
-            className="flex items-center gap-2 text-white bg-red-600 hover:underline hover:bg-red-950"
-          >
-            <FaTrash /> Confirmar
-          </Button>
-        </Modal.Footer>
-      </Modal>
     </div>
   );
 };
-
 
 export default DocumentItem;
