@@ -12,6 +12,8 @@ export default function PerfilDocuments({ params }) {
   const [filterDates, setFilterDates] = useState({ from: "", to: "" }); // Filtra las fechas (desde, hasta)
   const [authorNameFromList, setAuthorNameFromList] = useState("");  // Nuevo estado para el autor
 
+  const [propietario, setPropietario] = useState(true);  // Nuevo estado para el propietario
+
   return (
     <div className="container text-black flex flex-col w-screen">
       {/* Contenedor para el título */}
@@ -42,6 +44,7 @@ export default function PerfilDocuments({ params }) {
           filterIdioma={filterIdioma} 
           filterDates={filterDates} 
           setAuthorNameFromList={setAuthorNameFromList}  
+          propietario={propietario}
         />
       </section>
   

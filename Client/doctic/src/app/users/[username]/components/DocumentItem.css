@@ -6,8 +6,6 @@
   margin-top: 10px;
   border-radius: 8px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  min-width: 600px;
-  max-width: 70vw;
   width: auto;
 }
 
@@ -41,6 +39,7 @@ p{
 }
 
 .result-params {
+  background-color: #4b4b4b;
   display: flex;
   flex-direction: row;
   justify-content: space-between;

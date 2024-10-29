@@ -4,9 +4,9 @@ import Link from "next/link";
 import { FaEdit, FaEye, FaTrash, FaCalendarAlt } from "react-icons/fa";
 import { useState } from "react";
 
-export function DocumentListItem({ doc, handleEdit, handleDelete }) {
+export function DocumentListItem({ doc, handleEdit, handleDelete, propietario }) {
   const [show, setShow] = useState(false);
-
+console.log(doc)
   const handleClose = () => {
     setShow(false);
   };
@@ -16,10 +16,10 @@ export function DocumentListItem({ doc, handleEdit, handleDelete }) {
 
   return (
     <li key={doc._id} className="p-6 bg-white rounded shadow-md border">
-      <h2 className="text-2xl font-semibold mb-2">{doc.titulo}</h2>
+      <Link href={`/document/${doc._id}`} className="hover:underline hover:text-blue-600"><h2 className="text-2xl font-semibold mb-2">{doc.titulo}</h2></Link>
       <p className="text-lg text-gray-700 mb-1">
-        <span className="font-semibold">Subido por:</span>{" "}
-        {doc.autores[0]?.nombre}
+        <span className="font-semibold">Autores:</span>{" "}
+        <Link href={`/users/${doc.autores[0]?.username}`} className="hover:underline hover:text-blue-600">{doc.autores[0]?.username}</Link>
       </p>
       <p className="text-base text-gray-600 mb-2 font-semibold">
         {doc.categoria.map((cat) => cat.nombre).join(", ")}

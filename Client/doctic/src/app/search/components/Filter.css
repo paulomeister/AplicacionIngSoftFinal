@@ -2,36 +2,54 @@
     border: 1px solid #ccc;
     color: rgb(0, 0, 0);
     border-radius: 10px;
-    margin: 10px;
-    margin-right: 10px;
-    margin-bottom: 10px;
+    margin: 10px 20px;
     padding: 10px;
   }
 
-.filter-select {
-  margin-right: 40px;
-}
-
 .filter-input {
+  margin-left: 50px;
   width: 20vw;
   min-width: 250px;
 }
 
-.filter-btn{
+.filter-buttons{
+  margin-top: 20px;
+}
+
+.delete-button{
   background-color: #f3f0ff;  
-  color: rgb(0, 0, 0);
+  color: rgb(241, 17, 17);
   border: none;
   cursor: pointer;
   padding: 9px;
   border-radius: 10px;
   font-size: 85%;
   margin-left: 10px;
+  font-size: large;
 }
     
-.filter-btn:hover {
-  background-color: #ffffff;
+.delete-button:hover {
+  background-color: #ff0000;
+  color: white;
 }
 
+.add-button{
+  background-color: #f3f0ff;  
+  color: rgb(71, 190, 24);
+  border: none;
+  cursor: pointer;
+  padding: 7px;
+  border-radius: 10px;
+  font-size: 85%;
+  margin-left: 20px;
+  margin-right: 40px;
+  font-size: large;
+}
+    
+.add-button:hover {
+  background-color: rgb(71, 190, 24);
+  color: white;
+}
 .hidden {
   display: none;
 }

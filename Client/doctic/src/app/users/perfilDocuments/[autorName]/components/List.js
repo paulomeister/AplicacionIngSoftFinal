@@ -17,6 +17,7 @@ export default function List({
   filterIdioma,
   filterDates,
   setAuthorNameFromList,
+  propietario
 }) {
   const [documents, setDocuments] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -118,6 +119,7 @@ export default function List({
             doc={doc}
             handleDelete={handleDelete}
             handleEdit={handleEdit}
+            propietario={propietario}
           ></DocumentListItem>
         ))}
       </ul>

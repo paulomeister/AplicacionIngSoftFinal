@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from 'react';
 import AuthorInfo from './components/AuthorInfo';
 import DocumentList from './components/DocumentList';
-import DocumentListComplete from './components/DocumentListComplete';
 import conectionUser from './utils/conectionUser';
 import './page.css';
 
@@ -44,8 +43,6 @@ function App({ params }) {
           {<DocumentList autor={autor} onVerTodos={handleVerTodos} propietario={propietario}/>}
         </div>
       )}
-
-      {verTodos && <DocumentListComplete autor={autor} />}
     </div>
   );
   

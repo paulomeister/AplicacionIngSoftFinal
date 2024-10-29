@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import conectionDocuments from "../utils/conectionDocuments";
 import DocumentItem from "./DocumentItem";
 import { AlertPop } from "../utils/AlertPopup";
+import Link from "next/link";
 import "./DocumentList.css";
 
 const DocumentList = ({ autor, onVerTodos, propietario }) => {
@@ -67,9 +68,10 @@ const DocumentList = ({ autor, onVerTodos, propietario }) => {
         <div className="document-list">
           <DocumentItem results={infDocumentos} propietario={propietario}/>
         </div>
-        <button className="ver-todos-btn" onClick={onVerTodos}>
+
+        <Link className="ver-todos-btn" href={`/users/perfilDocuments/${autor.username}`}>
           Ver todos
-        </button>
+        </Link>
       </div>
     );
   }
