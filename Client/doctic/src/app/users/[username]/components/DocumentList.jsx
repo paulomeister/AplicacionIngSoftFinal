@@ -5,7 +5,7 @@ import DocumentItem from "./DocumentItem";
 import { AlertPop } from "../utils/AlertPopup";
 import "./DocumentList.css";
 
-const DocumentList = ({ autor, onVerTodos }) => {
+const DocumentList = ({ autor, onVerTodos, propietario }) => {
 
   const [titulosDocumentos, setTitulosDocumentos] = useState([]);
   const [infDocumentos, setInfDocumentos] = useState([]);
@@ -65,7 +65,7 @@ const DocumentList = ({ autor, onVerTodos }) => {
         <h2 className="written-by-text"> Documentos escritos por <span className="written-by">{autor.username}</span></h2>
         <hr />
         <div className="document-list">
-          <DocumentItem results={infDocumentos} />
+          <DocumentItem results={infDocumentos} propietario={propietario}/>
         </div>
         <button className="ver-todos-btn" onClick={onVerTodos}>
           Ver todos

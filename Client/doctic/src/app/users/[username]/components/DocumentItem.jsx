@@ -1,17 +1,46 @@
 'use client';
 import React from "react";
+import { useState } from "react";
 import Link from "next/link";
-import { FaCalendarAlt, FaStar, FaEye} from "react-icons/fa";
+import Modal from "react-bootstrap/Modal";
+import Button from "react-bootstrap/Button";
+import { FaCalendarAlt, FaStar, FaEye, FaEdit, FaTrash} from "react-icons/fa";
 import "./DocumentItem.css";
 
-const DocumentItem = ({ results }) =>{
+const DocumentItem = ({ results, propietario }) =>{
+  const [show, setShow] = useState(false);
+
+  const handleClose = () => {
+    setShow(false);
+  };
+  const handleShow = () => {
+    setShow(true);
+  };
+
+  const handleDelete = (id) => {
+    async function fetchToDelete() {
+      const data = await fetch(
+        `http://localhost:8080/api/Documentos/delete/${id}`,
+        { method: "DELETE" }
+      );
+      const response = await data.json();
+
+      if (response.status === 200) {
+        fetchDocuments();
+      } else {
+        return;
+      }
+    }
+
+    fetchToDelete();
+  };
 
   const calcularPromedioValoracion = (valoraciones) => {
     if (!valoraciones || valoraciones.length === 0) {
       return 0;
     } else {
       const suma = valoraciones.reduce((total, valoracion) => total + valoracion.puntuacion, 0);
-      return (suma / valoraciones.length).toFixed(1); // Redondeamos a un decimal
+      return (suma / valoraciones.length).toFixed(1);
     }
   };
 
@@ -50,10 +79,51 @@ const DocumentItem = ({ results }) =>{
                 <FaStar /> <p>{calcularPromedioValoracion(result.valoraciones)}</p>
               </div>
             </div>
-            <Link className="result-btns" href={`/document/${result._id}`}><FaEye /><p>Ver</p></Link>
+            <div className="btns-container">
+            <Link className="view-btn" href={`/document/${result._id}`}><FaEye /><p>Ver</p></Link>
+
+              {/* Renderizar botón de eliminar y editar */}
+              {propietario &&
+              <div className="propietario">
+                <button className="delete-btn" onClick={handleShow}><FaTrash /><p>Eliminar</p></button>
+                <Link className="edit-btn" href={`/document/edit/${result._id}`}><FaEdit /><p>Editar</p></Link>
+              </div>
+              }
+            </div>
           </div>
         </div>
       ))}
+
+      {/* Modal para confirmar eliminación de documento */}
+      <Modal show={show} onHide={handleClose}>
+        <Modal.Header closeButton>
+          <Modal.Title>Eliminar Documento</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          ¿Estás seguro que quieres{" "}
+          <span className="text-red-600 underline">eliminar</span> este
+          documento?
+        </Modal.Body>
+        <Modal.Footer>
+          <Button
+            variant="secondary"
+            onClick={handleClose}
+            className="flex items-center gap-2 text-white bg-gray-700 hover:underline"
+          >
+            Cerrar
+          </Button>
+          <Button
+            variant="primary"
+            onClick={() => {
+              handleDelete(doc._id);
+              handleClose();
+            }}
+            className="flex items-center gap-2 text-white bg-red-600 hover:underline hover:bg-red-950"
+          >
+            <FaTrash /> Confirmar
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 };
