@@ -3,9 +3,8 @@ import { FaCog, FaEdit } from 'react-icons/fa';
 import './AuthorInfo.css';
 import Link from 'next/link';
 
-const AuthorInfo = ({ autor }) => {
+const AuthorInfo = ({ autor, propietario }) => {
   const [avatar, setAvatar] = useState('');
-  const [propietario, setPropietario] = useState(true);
 
   const obtenerAvatar = () => {
     if (autor && autor.perfil?.fotoPerfil) {

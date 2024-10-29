@@ -10,6 +10,7 @@ function App({ params }) {
   const [autor, setAutor] = useState({});
   const [username, setUsername] = useState('');
   const [verTodos, setVerTodos] = useState(false);
+  const [propietario, setPropietario] = useState(true);
 
   // ------- Llamada a la API para obtener la información del autor -----------
   const getAuthorInfo = async () => {
@@ -39,8 +40,8 @@ function App({ params }) {
     <div id="back">
       {!verTodos && (
         <div className="app">
-          <AuthorInfo autor={autor} />
-          {<DocumentList autor={autor} onVerTodos={handleVerTodos} />}
+          <AuthorInfo autor={autor} propietario={propietario}/>
+          {<DocumentList autor={autor} onVerTodos={handleVerTodos} propietario={propietario}/>}
         </div>
       )}
 
