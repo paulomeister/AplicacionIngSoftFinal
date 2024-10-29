@@ -40,7 +40,9 @@ const ResultsList = ({ busqueda, sortCriteria, onSortChange }) => {
 
       const calcularPromedioValoracion = (valoraciones) => {
         if (valoraciones?.length === 0) {
+
           return 0;
+
         } else {
           const suma = valoraciones?.reduce((total, valoracion) => total + valoracion.puntuacion, 0);
           return suma / valoraciones?.length;

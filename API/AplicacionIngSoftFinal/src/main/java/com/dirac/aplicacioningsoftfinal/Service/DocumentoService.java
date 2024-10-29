@@ -5,6 +5,7 @@ import com.dirac.aplicacioningsoftfinal.DTO.OrdenDTO;
 import com.dirac.aplicacioningsoftfinal.DTO.Res;
 import com.dirac.aplicacioningsoftfinal.DTO.BusquedaOrdenarFiltrarDTO;
 import com.dirac.aplicacioningsoftfinal.DTO.DocDescargadosDTO;
+import com.dirac.aplicacioningsoftfinal.DTO.DocSubidosDTO;
 import com.dirac.aplicacioningsoftfinal.DTO.ArchivoDTO;
 import com.dirac.aplicacioningsoftfinal.DTO.HistorialDocumentosDTO;
 import com.dirac.aplicacioningsoftfinal.DTO.UrlDTO;
@@ -16,7 +17,9 @@ import com.dirac.aplicacioningsoftfinal.Exception.NoSuchDocumentFoundException;
 import com.dirac.aplicacioningsoftfinal.Exception.UpdateException;
 import com.dirac.aplicacioningsoftfinal.Exception.UsuarioNotFoundException;
 import com.dirac.aplicacioningsoftfinal.Model.DocumentoModel;
+import com.dirac.aplicacioningsoftfinal.Model.DocumentoModel.Autores;
 import com.dirac.aplicacioningsoftfinal.Model.DocumentoModel.DatosComputados;
+import com.dirac.aplicacioningsoftfinal.Model.UsuarioModel.DocsSubidos;
 import com.dirac.aplicacioningsoftfinal.Model.UsuarioModel;
 import com.dirac.aplicacioningsoftfinal.Repository.IDocumentoRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -438,33 +441,33 @@ public class DocumentoService implements IDocumentoService {
             byte[] fileBytes = downloadFile(fileId);
             com.google.api.services.drive.model.File file = getFileById(fileId);
 
-            // if(fileBytes.length != 0){ // Verifica que si se haya obtenido un archivo
+             if(fileBytes.length != 0){ // Verifica que si se haya obtenido un archivo
 
-            // // Se obtiene el documento el cuál se está descargando para verificar si
-            // existe.
-            // DocumentoModel documentoDownloading = getDocumentById(documentId);
+           // Se obtiene el documento el cuál se está descargando para verificar si
+        //    existe.
+           DocumentoModel documentoDownloading = getDocumentById(documentId);
 
-            // // obtenemos el usuario que está descargando:
-            // UsuarioModel usuarioDownloading =
-            // usuarioService.getUserById(userId).orElseThrow(
-            // () -> new UsuarioNotFoundException("el usuario con el id, no fue encontrado"
-            // + userId));
+           // obtenemos el usuario que está descargando:
+           UsuarioModel usuarioDownloading =
+           usuarioService.getUserById(userId).orElseThrow(
+           () -> new UsuarioNotFoundException("el usuario con el id, no fue encontrado"
+           + userId));
 
-            // // Actualizaremos el campo del "historial" en el documento
-            // UsuarioModel.Historial nuevoDoc = new UsuarioModel.Historial();
+           // Actualizaremos el campo del "historial" en el documento
+           UsuarioModel.Historial nuevoDoc = new UsuarioModel.Historial();
 
-            // nuevoDoc.setDocumentoId(documentoDownloading.get_id());
-            // nuevoDoc.setFechaHora(LocalDate.now());
+           nuevoDoc.setDocumentoId(documentoDownloading.get_id());
+           nuevoDoc.setFechaHora(LocalDate.now());
 
-            // List<UsuarioModel.Historial> historialDocumentos =
-            // usuarioDownloading.getHistorialDocumentos();
-            // historialDocumentos.add(nuevoDoc); // se añade ese nuevo documento
-            // usuarioDownloading.setHistorialDocumentos(historialDocumentos); // se lo
-            // setea
+           List<UsuarioModel.Historial> historialDocumentos =
+           usuarioDownloading.getHistorialDocumentos();
+           historialDocumentos.add(nuevoDoc); // se añade ese nuevo documento
+           usuarioDownloading.setHistorialDocumentos(historialDocumentos); // se losetea
 
-            // // ACTUALIZAR en la base de datos
-            // usuarioService.insertUser(usuarioDownloading);
-            // }
+
+           // ACTUALIZAR en la base de datos
+           usuarioService.insertUser(usuarioDownloading);
+           }
 
             return new ArchivoDTO(file, fileBytes);
 
@@ -511,7 +514,6 @@ public class DocumentoService implements IDocumentoService {
 
 
              List<UsuarioModel.Descargados> docsActualizados = usuarioDownloading.getDocDescargados();
-             System.out.println(docsActualizados);
              docsActualizados.add(nuevoDoc); // Se añade un nuevo Documento
              usuarioDownloading.setDocDescargados(docsActualizados); // Se actualizan los nuevos documentos
 
@@ -544,6 +546,28 @@ public class DocumentoService implements IDocumentoService {
             documento.setUrlArchivo(documentURL); // Se modifica la nueva url del documento, el cuál es el ID del
                                                   // documento!
             documentoRepository.save(documento);
+
+            List<Autores> autores = documento.getAutores();
+            
+
+            // Esta es la funcionalidad para añadir el documento subido por el usuario.
+            for(Autores autor: autores){
+
+                if ("principal".equals(autor.getRol().trim())){
+
+                    String id = autor.getUsuarioIdAsString();
+
+                    UsuarioModel usuario = usuarioService.getUserById(id).
+                                        orElseThrow( () -> new UsuarioNotFoundException("Autor principal no se encontró en la base de datos"));
+                        
+                    DocsSubidos nuevoDocSubido = new DocsSubidos(documento.get_id(),documento.getTitulo());
+                    
+                    List<DocsSubidos> nuevosDOCSSubidos = usuario.getDocSubidos();                  
+                    nuevosDOCSSubidos.add(nuevoDocSubido);
+                    usuario.setDocSubidos(nuevosDOCSSubidos);
+                    usuarioService.insertUser(usuario); // actualizar en la base de datos
+                }
+            }
 
             Res respuesta = new Res();
 
@@ -676,16 +700,44 @@ public class DocumentoService implements IDocumentoService {
             String documentUrl = documentoRepository.findById(_id)
                     .orElseThrow(() -> new IdNotFoundException("Document id was not found")).getUrlArchivo();
 
-            // Se eliminan ambos
+            
+            DocumentoModel documento = getDocumentById(_id);
+
+            List<Autores> autores = documento.getAutores();
+            
+
+            // Esta es la funcionalidad para ELIMINAR el documento subido por el usuario.
+            for(Autores autor: autores){
+
+                if ("principal".equals(autor.getRol().trim())){
+
+                    String id = autor.getUsuarioIdAsString();
+
+                    UsuarioModel usuario = usuarioService.getUserById(id).
+                                        orElseThrow( () -> new UsuarioNotFoundException("Autor principal no se encontró en la base de datos"));
+
+                    DocsSubidos documentoAEliminar = new DocsSubidos(_id, documento.getTitulo());
+                    
+
+                    List<DocsSubidos> nuevosDOCSSubidos = usuario.getDocSubidos();                  
+                    nuevosDOCSSubidos.remove(documentoAEliminar); // ELIMINA EL DOCUMENTO de la lista.
+                    usuario.setDocSubidos(nuevosDOCSSubidos);
+                    usuarioService.insertUser(usuario); // se actualiza el usuario
+                }
+            }
+
+            // Se elimina el archivo y el documento
             deleteFileById(documentUrl);
             documentoRepository.deleteById(_id);
+
+
 
             respuesta.setMessage("El documento con _id " + _id + " fue eliminado con éxito.");
             respuesta.setStatus(200);
 
         } catch (Exception e) {
 
-            respuesta.setMessage("No se pudo eliminar ese Documento :(");
+            respuesta.setMessage("No se pudo eliminar ese Documento :( " + e.getMessage());
             respuesta.setStatus(500);
 
         }
@@ -702,6 +754,7 @@ public class DocumentoService implements IDocumentoService {
 
             // Elimina el archivo con el fileId proporcionado
             drive.files().delete(fileId).execute();
+            
 
             result = "El archivo con ID:" + fileId + "fue eliminado con éxito.";
 
