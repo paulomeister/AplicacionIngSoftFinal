@@ -1,0 +1,40 @@
+.error-container {
+    text-align: center;
+    background-color: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    width: 90%;
+    max-width: 400px;
+}
+
+.error-icon {
+    font-size: 50px;
+    margin-bottom: 20px;
+}
+
+h1 {
+    color: #333;
+    font-size: x-large;
+    margin: 10px 0;
+}
+
+p {
+    color: #666;
+    margin-bottom: 20px;
+}
+
+.back-button {
+    display: inline-block;
+    background-color: #4c63af;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    text-decoration: none;
+    transition: background-color 0.3s;
+}
+
+.back-button:hover {
+    background-color: #35578a;
+}

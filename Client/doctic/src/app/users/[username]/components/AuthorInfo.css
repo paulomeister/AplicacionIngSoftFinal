@@ -16,7 +16,7 @@
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  width: 80%;
+  width: 90%;
 }
 
 .author-avatar{
@@ -79,4 +79,35 @@
 
 .date{
   margin-top: 10px;
+}
+
+.icons-container{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+  font-size: xx-large;
+  width: 40%;
+}
+
+.config-icon, .edit-icon{
+  display: flex;
+  flex-direction: row;
+}
+
+.config-icon p, .edit-icon p{
+  color: black;
+  margin-left: 5px;
+  margin-top: 5px;
+  font-size: medium;
+}
+
+.config-icon:hover, .edit-icon:hover{
+  color: #696969;
+  cursor: pointer;
+}
+
+.config-icon:hover p, .edit-icon:hover p{
+  color: #696969;
+  cursor: pointer;
 }

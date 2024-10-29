@@ -16,15 +16,15 @@ const DocumentList = ({ autor, onVerTodos }) => {
     if (autor.docSubidos && Array.isArray(autor.docSubidos)) {
       const limitedTitles = autor.docSubidos.slice(0, 5);
       setTitulosDocumentos(limitedTitles);
+      if (limitedTitles.length === 0) {
+        setLoading(false);
+      }
     }
   };
 
   // ------- Función para obtener la información completa de los documentos usando los títulos --------
   const fetchDocumentDetails = async () => {
     let docs = [];
-
-    console.log(titulosDocumentos[0])
-
 
     for (let i = 0; i < titulosDocumentos.length; i++) {
       try {

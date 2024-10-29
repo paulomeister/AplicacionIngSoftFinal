@@ -1,7 +1,6 @@
 'use client';
 import React, { useState, useEffect } from "react";
 import ResultItem from "./ResultItem";
-import conection from "../utils/conectionDocuments";
 import { AlertPop } from '../utils/AlertPopup';
 import SortMenu from './SortMenu';
 import "./ResultList.css";
@@ -38,9 +37,12 @@ const ResultsList = ({ busqueda, sortCriteria, onSortChange }) => {
   // ----------------------- Ordenar los resultados filtrados según el criterio de orden -------------------------
   const applySort = (results) => {
     return [...results].sort((a, b) => {
+
       const calcularPromedioValoracion = (valoraciones) => {
         if (valoraciones?.length === 0) {
+
           return 0;
+
         } else {
           const suma = valoraciones?.reduce((total, valoracion) => total + valoracion.puntuacion, 0);
           return suma / valoraciones?.length;
