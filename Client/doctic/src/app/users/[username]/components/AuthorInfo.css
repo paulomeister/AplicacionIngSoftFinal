@@ -63,13 +63,23 @@
   font-size: small;
 }
 
-.config-icon:hover, .edit-icon:hover{
-  color: #696969;
+.config-icon:hover{
+  color: #ff0000;
   cursor: pointer;
 }
 
-.config-icon:hover p, .edit-icon:hover p{
-  color: #696969;
+.config-icon:hover p{
+  color: #ff0303;
+  cursor: pointer;
+}
+
+.edit-icon:hover{
+  color: #269e1c;
+  cursor: pointer;
+}
+
+.edit-icon:hover p{
+  color: #269e1c;
   cursor: pointer;
 }
 

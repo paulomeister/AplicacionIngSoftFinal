@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FaCog, FaEdit } from 'react-icons/fa';
+import { FaCog, FaEdit, FaTrash } from 'react-icons/fa';
 import './AuthorInfo.css';
 import Link from 'next/link';
 
@@ -10,7 +10,7 @@ const AuthorInfo = ({ autor, propietario }) => {
     if (autor && autor.perfil?.fotoPerfil) {
       setAvatar(autor.perfil.fotoPerfil);
     } else {
-      setAvatar('https://cdn-icons-png.flaticon.com/512/149/149071.png');
+      setAvatar('/usuario_anonimo.png');
     }
   };
 
@@ -23,13 +23,13 @@ const AuthorInfo = ({ autor, propietario }) => {
   return (
     <div className="author-info">
       <div className="author-avatar-container">
-        <img src={avatar} alt="Avatar del Autor" className="author-avatar" />
+        <img src={avatar} alt="Avatar del Autor" className="author-avatar"/>
         <div className="author-info-container">
           {propietario &&
           <div className="buttons-container">
             <div className="icons-container">
               <Link className="edit-icon" href='/users'><FaEdit/><p>Editar Perfil</p></Link>
-              <Link className="config-icon" href='/users'><FaCog/><p>Configuraciones</p></Link>
+              <Link className="config-icon" href='/users'><FaTrash/><p>Eliminar Cuenta</p></Link>
             </div>
           </div>
           }
