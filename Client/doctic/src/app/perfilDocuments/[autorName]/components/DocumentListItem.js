@@ -17,10 +17,23 @@ export function DocumentListItem({ doc, handleEdit, handleDelete }) {
   return (
     <li key={doc._id} className="p-6 bg-white rounded shadow-md border">
       <h2 className="text-2xl font-semibold mb-2">{doc.titulo}</h2>
+
+      {/* Autores con links */}
       <p className="text-lg text-gray-700 mb-1">
-        <span className="font-semibold">Subido por:</span>{" "}
-        {doc.autores[0]?.nombre}
+        <span className="font-semibold">Autores:</span>{" "}
+        {doc.autores.map((autor, index) => (
+          <Link
+            key={autor.username}
+            href={`/users/${autor.username}`}
+            className="text-blue-600 hover:underline"
+          >
+            {autor.nombre}
+            {index < doc.autores.length - 1 ? ", " : ""}
+          </Link>
+        ))}
       </p>
+
+      {/* Categorías */}
       <p className="text-base text-gray-600 mb-2 font-semibold">
         {doc.categoria.map((cat) => cat.nombre).join(", ")}
       </p>
@@ -46,16 +59,14 @@ export function DocumentListItem({ doc, handleEdit, handleDelete }) {
           >
             <FaEye /> Ver
           </Link>
-          {/* Botón para Editar */}
 
-                {/* Botón para Editar */}
-                <Link href={`/document/edit/${doc._id}`}
-                   className="flex items-center gap-2 text-green-500 hover:underline">
-                    <FaEdit /> Editar
-               
-                </Link>
+          <Link
+            href={`/document/edit/${doc._id}`}
+            className="flex items-center gap-2 text-green-500 hover:underline"
+          >
+            <FaEdit /> Editar
+          </Link>
 
-          
           <>
             <Button
               variant="red"
@@ -70,7 +81,7 @@ export function DocumentListItem({ doc, handleEdit, handleDelete }) {
 
       <Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>
-          <Modal.Title>Modal heading</Modal.Title>
+          <Modal.Title>Eliminar Documento</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           ¿Estás seguro que quieres{" "}
