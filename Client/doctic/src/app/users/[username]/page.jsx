@@ -28,19 +28,20 @@ function App({ params }) {
 
   // ------- buscar usuario cuando cambia el valor de username --------
   useEffect(() => {
-    getAuthorInfo(); 
+    getAuthorInfo();
   }, [username]);
 
   const handleVerTodos = () => {
     setVerTodos(true); 
   };
   
+
   return (
     <div id="back">
       {!verTodos && (
         <div className="app">
           <AuthorInfo autor={autor} propietario={propietario}/>
-          {<DocumentList autor={autor} onVerTodos={handleVerTodos} propietario={propietario}/>}
+          <DocumentList autor={autor} onVerTodos={handleVerTodos} propietario={propietario}/>
         </div>
       )}
     </div>

@@ -137,6 +137,7 @@ const Search = () => {
     handleMapearFiltros();
     setTitulosSugeridos([]);
     setMostrarResultados(true); 
+    console.log(titulo);
   };
 
   // ------------ Función para actualizar el criterio de ordenamiento ------------- 
