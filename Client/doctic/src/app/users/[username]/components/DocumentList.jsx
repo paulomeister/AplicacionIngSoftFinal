@@ -4,6 +4,7 @@ import conectionDocuments from "../utils/conectionDocuments";
 import DocumentItem from "./DocumentItem";
 import { AlertPop } from "../utils/AlertPopup";
 import "./DocumentList.css";
+import Link from "next/link";
 
 const DocumentList = ({ autor, onVerTodos }) => {
 
@@ -67,9 +68,11 @@ const DocumentList = ({ autor, onVerTodos }) => {
         <div className="document-list">
           <DocumentItem results={infDocumentos} />
         </div>
-        <button className="ver-todos-btn" onClick={onVerTodos}>
+        <Link href={`/perfilDocuments/${autor.username}`} passHref>
+        <button as={Link}  href="" className="ver-todos-btn" onClick={onVerTodos}>
           Ver todos
         </button>
+        </Link>
       </div>
     );
   }

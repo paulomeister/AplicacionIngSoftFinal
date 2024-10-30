@@ -301,7 +301,7 @@ export const UpdatePublicationForm = ({ documentData }) => {
         Actualizar Publicación
       </h1>
       <form onSubmit={isFileChangeRequested ? formHandler : formHandlerNoFile}>
-      <div className="mb-4">
+        <div className="mb-4">
           <label className="block text-gray-700 text-lg font-bold mb-2" htmlFor="file">
             Sube un archivo (PDF)
           </label>
@@ -499,7 +499,7 @@ export const UpdatePublicationForm = ({ documentData }) => {
           </div>
         )}
 
-<AuthorForm initialAuthors={selectedAuthors} onAuthorsChange={onAuthorsChange} />
+        <AuthorForm initialAuthors={selectedAuthors} onAuthorsChange={onAuthorsChange} />
 
 
 

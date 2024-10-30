@@ -7,8 +7,7 @@ import { DocumentListItem } from "./DocumentListItem";
 import Pagination from '@mui/material/Pagination';
 import Stack from '@mui/material/Stack';
 import Link from "next/link";
-
-
+import Image from 'react-bootstrap/Image'; // Importamos Image desde React Bootstrap
 
 export default function List({
   autorName,
@@ -26,29 +25,26 @@ export default function List({
   const [currentPage, setCurrentPage] = useState(1);
   const documentsPerPage = 5; // Documentos por página
 
-  // FUNCTION FOR MODAL:
-
   const fetchDocuments = async () => {
     setLoading(true);
     try {
       const response = await axios.post(
         "http://localhost:8080/api/Documentos/onSearch/filter/",
         {
-          titulo: searchTitle, // Aquí pasamos el título que viene del componente Search
+          titulo: searchTitle,
           tieneFiltros: true,
           categorias: filterCategory,
           autores: [autorName],
           idioma: filterIdioma,
-          desde: filterDates.from ? parseInt(filterDates.from) : "", // Convertir las fechas a enteros
+          desde: filterDates.from ? parseInt(filterDates.from) : "",
           hasta: filterDates.to ? parseInt(filterDates.to) : "",
         }
       );
       setDocuments(response.data);
 
-      // Si obtenemos documentos, actualizamos el nombre del autor
       if (response.data.length > 0) {
-        const firstAuthorName = response.data[0].autores[0]?.nombre; // Obtenemos el primer autor
-        setAuthorNameFromList(firstAuthorName); // Actualizamos el autor en PerfilDocuments
+        const firstAuthorName = response.data[0].autores[0]?.nombre;
+        setAuthorNameFromList(firstAuthorName);
       }
     } catch (err) {
       setError(err.message);
@@ -60,9 +56,9 @@ export default function List({
   useEffect(() => {
     if (autorName) {
       fetchDocuments();
-      setCurrentPage(1); // Reiniciar a la primera página cuando cambian los filtros
+      setCurrentPage(1);
     }
-  }, [autorName, searchTitle, filterCategory, filterIdioma, filterDates]); // Actualiza la lista cuando cambie cualquier filtro
+  }, [autorName, searchTitle, filterCategory, filterIdioma, filterDates]);
 
   const handleEdit = (id) => {
     return (
@@ -82,23 +78,17 @@ export default function List({
 
       if (response.status === 200) {
         fetchDocuments();
-      } else {
-        return;
       }
     }
 
     fetchToDelete();
   };
 
-  // Paginación - Cálculo de los índices
   const indexOfLastDocument = currentPage * documentsPerPage;
   const indexOfFirstDocument = indexOfLastDocument - documentsPerPage;
   const currentDocuments = documents.slice(indexOfFirstDocument, indexOfLastDocument);
-
-  // Total de páginas
   const totalPages = Math.ceil(documents.length / documentsPerPage);
 
-  // Manejo del cambio de página con Material UI Pagination
   const handlePageChange = (event, page) => {
     setCurrentPage(page);
   };
@@ -111,28 +101,42 @@ export default function List({
 
   return (
     <div className="container p-6 flex-grow">
-      <ul className="space-y-8">
-        {currentDocuments.map((doc) => (
-          <DocumentListItem
-            key={doc._id}
-            doc={doc}
-            handleDelete={handleDelete}
-            handleEdit={handleEdit}
-          ></DocumentListItem>
-        ))}
-      </ul>
-
-      {/* Paginación utilizando Material UI */}
-      <Stack spacing={2} direction="row" justifyContent="center" mt={4}>
-        <Pagination
-          count={totalPages}
-          page={currentPage}
-          onChange={handlePageChange}
-          color="primary"
+      {documents.length === 0 ? (
+        <div className="flex flex-col items-center justify-center mt-8">
+        <Image 
+          src="/No-Documents.jpg" 
+          alt="No Documents" 
+          fluid 
+          style={{ maxWidth: "600px", height: "auto" }} 
         />
-      </Stack>
+        <p className="text-lg text-gray-500 mt-4 text-center">No hay documentos publicados</p>
+      </div>
+      ) : (
+        <>
+          <ul className="space-y-8">
+            {currentDocuments.map((doc) => (
+              <DocumentListItem
+                key={doc._id}
+                doc={doc}
+                handleDelete={handleDelete}
+                handleEdit={handleEdit}
+              ></DocumentListItem>
+            ))}
+          </ul>
+          
+          <Stack spacing={2} direction="row" justifyContent="center" mt={4}>
+            <Pagination
+              count={totalPages}
+              page={currentPage}
+              onChange={handlePageChange}
+              color="primary"
+            />
+          </Stack>
+        </>
+      )}
     </div>
   );
 }
+
 
 
