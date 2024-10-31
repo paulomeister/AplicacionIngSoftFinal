@@ -104,7 +104,7 @@ export default function RegisterForm() {
       perfil: {
         nombre: firstName,
         apellido: lastName,
-        fotoPerfil:"default.jpg",
+        fotoPerfil:"",
       },
       password,
       preguntaSeguridad: { pregunta: securityQuestion, respuesta: securityAnswer },
