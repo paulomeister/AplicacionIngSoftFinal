@@ -17,12 +17,14 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className={`${font.className} antialiased d-flex flex-column h-vh`}>
+      <body className={`${font.className} antialiased min-h-screen`}>
         <NextUIProvider>
-            <Navbar /> 
-            <main className='container mx-auto flex justify-center p-4'>
+           <div className="relative flex flex-col h-screen">
+           <Navbar /> 
+            <main className='container mx-auto max-w-7xl pt-16 px-6 flex-grow justify-center'>
               {children}
             </main>
+           </div>
         </NextUIProvider>
       </body>
     </html>
