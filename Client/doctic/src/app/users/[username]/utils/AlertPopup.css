@@ -1,0 +1,13 @@
+.alert{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: rgb(0, 0, 0);
+    font-size: 150%;
+    padding: 10px;
+}
+
+.alert h1{
+    font-size: x-large;
+}

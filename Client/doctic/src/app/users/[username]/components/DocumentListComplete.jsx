@@ -1,13 +1,11 @@
-"use client";
-import React, { useState, useEffect } from "react";
-import conectionDocuments from "../utils/conectionDocuments";
-import DocumentItem from "./DocumentItem";
-import { AlertPop } from "../utils/AlertPopup";
-import "./DocumentList.css";
-import Link from "next/link";
+'use client';
+import React, { useState, useEffect } from 'react';
+import conectionDocuments from '../utils/conectionDocuments';
+import DocumentItem from './DocumentItem';
+import { AlertPop } from '../utils/AlertPopup';
+import './DocumentListComplete.css';
 
-const DocumentList = ({ autor, onVerTodos }) => {
-
+const DocumentListComplete = ({autor}) => {
   const [titulosDocumentos, setTitulosDocumentos] = useState([]);
   const [infDocumentos, setInfDocumentos] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -17,15 +15,15 @@ const DocumentList = ({ autor, onVerTodos }) => {
     if (autor.docSubidos && Array.isArray(autor.docSubidos)) {
       const limitedTitles = autor.docSubidos.slice(0, 5);
       setTitulosDocumentos(limitedTitles);
-      if (limitedTitles.length === 0) {
-        setLoading(false);
-      }
     }
   };
 
   // ------- Función para obtener la información completa de los documentos usando los títulos --------
   const fetchDocumentDetails = async () => {
     let docs = [];
+
+    console.log(titulosDocumentos[0])
+
 
     for (let i = 0; i < titulosDocumentos.length; i++) {
       try {
@@ -50,32 +48,22 @@ const DocumentList = ({ autor, onVerTodos }) => {
       fetchDocumentDetails();
     }
   }, [titulosDocumentos]);
-
-  // ----- Manejo de warning pop-ups ------
-  if (loading || infDocumentos.length === 0) {
-    return (
-      <div className="results-error">
-        <AlertPop loading={loading} infDocumentos={infDocumentos} />
-      </div>
-    );
+  
+  if (loading) {
+    return(
+        <AlertPop loading={loading}/>
+    )
   }
-  // ------ Renderizado de Documentos ------
-  else {
+  else{
     return (
-      <div className="document-list-container">
-        <h2 className="written-by-text"> Documentos escritos por <span className="written-by">{autor.username}</span></h2>
-        <hr />
-        <div className="document-list">
-          <DocumentItem results={infDocumentos} />
+      <div className="document-list-complete">
+        <div className="document-list-title">
+          <h1>Documentos Escritos por {autor.username}</h1>
         </div>
-        <Link href={`/perfilDocuments/${autor.username}`} passHref>
-        <button as={Link}  href="" className="ver-todos-btn" onClick={onVerTodos}>
-          Ver todos
-        </button>
-        </Link>
+        <DocumentItem results={infDocumentos} />
       </div>
     );
   }
 };
 
-export default DocumentList;
+export default DocumentListComplete;

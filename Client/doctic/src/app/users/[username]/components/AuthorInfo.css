@@ -1,48 +1,113 @@
-.author-info {
+.author-info{
+  background-color: rgba(249, 252, 255, 0.733);
   display: flex;
   flex-direction: column;
-  text-align: center;
-  margin: 50px;
-  margin-top: 30px;
-  border-radius: 8px;
-  background-color: white;
-  border: 1px solid #ddd;
-  color: black;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  margin-top: 15px;
+  padding: 20px;
+  border: 1px solid rgba(164, 176, 192, 0.295);
+  width: 80%;
 }
 
-.author-avatar-container {
+.author-avatar-container{
   display: flex;
   flex-direction: row;
-  margin-top: 30px;
-  width: 40%;
   align-items: center;
   justify-content: space-between;
-  margin-left: 10%;
+  width: 90%;
 }
 
-.author-avatar {
-  width: 40%;
+.author-avatar{
+  box-sizing: border-box;
   border-radius: 50%;
+  width:30%; 
+  height:30%;
 }
 
-h2 {
-  font-size: 215%;
+.author-name-container{
+  display: flex;
+  justify-content: center;
+  width: 100%;
 }
 
-.info-box {
+.author-name{
+  font-size: xx-large;
+  font-weight: bold;
+}
+
+.info-box{
+  background-color: rgb(255, 250, 253);
   display: flex;
   flex-direction: column;
-  background-color: aquamarine;
-  padding: 15px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  background-color: white;
-  margin: 20px 90px;
-  text-align: left;
+  justify-content: center;
+  width: 70%;
+  border: 1px solid rgba(164, 176, 192, 0.295);
+  border-radius: 10px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  padding: 20px;
 }
 
-.author-description {
-margin: 10px;
-margin-left: 20%;
+.info-box p{
+  margin-top: 10px;
+}
 
+.author-name-container{
+  display: flex;
+  justify-content: center;    
+  flex-direction: column;
+  margin-left: 20px;
+}
+
+.names{
+  font-size: 40px;
+  font-weight: bold;
+}
+
+.username{
+  font-size: small;
+  color:gray;
+  margin-top: -4px;
+}
+
+#span-doctic{
+  color:#0089af;
+  font-weight: bold;
+}
+
+.date{
+  margin-top: 10px;
+}
+
+.icons-container{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+  font-size: xx-large;
+  width: 40%;
+}
+
+.config-icon, .edit-icon{
+  display: flex;
+  flex-direction: row;
+}
+
+.config-icon p, .edit-icon p{
+  color: black;
+  margin-left: 5px;
+  margin-top: 5px;
+  font-size: medium;
+}
+
+.config-icon:hover, .edit-icon:hover{
+  color: #696969;
+  cursor: pointer;
+}
+
+.config-icon:hover p, .edit-icon:hover p{
+  color: #696969;
+  cursor: pointer;
 }

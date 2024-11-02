@@ -22,38 +22,66 @@
     color : rgb(0, 0, 0);
   }
   
+  .search-icon{
+    width: 95vw;
+    margin: 20px;
+  }
+
   .search-bar {
+    position: relative;
     display: flex;
     flex-direction: row;
-    margin: 0 20px;
-    width: 92vw;
+    margin-bottom: 0;
   }
 
   .search-input {
-    border: 1px solid #ccc;
+    border: 1px solid #bebebe;
     color: rgb(0, 0, 0);
     padding: 10px;
-    border-radius: 100px;
-    margin: 10px;
-    width: 90vw;
+    border-radius: 8px 0 0 8px;
+    width: 100%;
+    height: 45px;
   }
 
   .search-btn {
-    display: block;
-    background-color: #0056ff;
+    background-color: #2c71fa;
     color: white;
-    border: none;
     cursor: pointer;
-    min-width: 80px;
-    max-width: 80px;
-    min-height: 50px;
-    max-height: 50px;
-    border-radius: 12px;
-    margin-top: 10px;
+    width: 70px;
+    height: 45px;
+    padding : 8px;
+    border-radius: 0 8px 8px 0;
+    border: 1px solid #2c71fa;
   }
 
   .search-btn:hover {
-    background-color: #003bb5;
+    color: #003bb5;
+  }
+
+  .sugerencias :hover{
+    background-color: #e0e0e0;
+  }
+
+  .sugerencia-item{
+    padding: 5px 0;
+    border-radius: 5px;
+  }
+
+  .sugerencia-item.selected {
+    background-color: #e0e0e0; /* O el color de tu preferencia */
+  }
+
+  .sugerencia-icon{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-left: 3px;
+  }
+
+  .sugerencia-icon p{
+    color: black;
+    font-size: 90%;
+    margin-left: 10px;
   }
 
   hr{

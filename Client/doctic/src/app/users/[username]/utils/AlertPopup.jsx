@@ -1,6 +1,6 @@
 'use client'
-
 import { Alert } from 'react-bootstrap';
+import "./AlertPopup.css";
 
 export const AlertPop = ({ infDocumentos, loading}) => {
   //------- Manejo del estado de carga -------------
@@ -18,9 +18,7 @@ export const AlertPop = ({ infDocumentos, loading}) => {
   if (infDocumentos.length === 0) {
     return (
     <div className="alert">
-      <Alert variant="danger" className="h-auto">
-        <Alert.Heading>Ningún documento encontrado</Alert.Heading>
-      </Alert>
+      <h1>Ningún documento subido por este usuario</h1>
     </div>
     )
   }

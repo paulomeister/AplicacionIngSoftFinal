@@ -23,7 +23,6 @@ import static com.dirac.aplicacioningsoftfinal.DTO.NuevosCredencialesDTO.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-
 public class UsuarioModel {
     @Id
     private ObjectId _id;
@@ -41,22 +40,6 @@ public class UsuarioModel {
     private List<DocsSubidos> docSubidos;
     private List<Historial> historialDocumentos;
     private List<Descargados> docDescargados;
-
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @Data
-    public static class DocsSubidos {
-
-        @Id
-        private ObjectId documentoId;
-        private String titulo;
-
-        @JsonProperty("documentoId")
-        public String returnIdAsString() {
-            return documentoId != null ? documentoId.toHexString() : null;
-        }
-
-    }
 
     @NoArgsConstructor
     @AllArgsConstructor
@@ -89,5 +72,23 @@ public class UsuarioModel {
         }
 
     }
+
+    
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Data
+    public static class DocsSubidos {
+
+        private ObjectId documentoId;
+        private String titulo;
+
+        @JsonProperty("documentoId")
+        public String returnDocIdIdAsString() {
+            return documentoId != null ? documentoId.toHexString() : null;
+        }
+
+    }
+
+
 
 }

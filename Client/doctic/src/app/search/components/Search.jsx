@@ -1,7 +1,9 @@
 'use client';
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ResultsList from "./ResultsList";
 import Filter from "./Filter";
+import conectionDocuments from "../utils/conectionDocuments";
+import {FaSearch} from "react-icons/fa";
 import "./Search.css";
 
 const Search = () => {
@@ -11,13 +13,71 @@ const Search = () => {
   const [busqueda, setBusqueda] = useState({});
   const [filtros, setFiltros] = useState([]);
   const [titulo, setTitulo] = useState("");
-  const [sortCriteria, setSortCriteria] = useState("");  
+  const [sortCriteria, setSortCriteria] = useState("");
+  const [titulosSugeridos, setTitulosSugeridos] = useState([]);
+  const [selectedIndex, setSelectedIndex] = useState(-1); 
 
-  //-------- Funcion para cambiar el valor de input ------------ 
+  //-------- Función para actualizar el input de búsqueda y sugerencias ------------
   const handleInputChange = (event) => {
     setTitulo(event.target.value);
   };
 
+// ----------------------------------------------------- SUGERENCIAS ------------------------------------------------------------------------------
+  //-------- Funcion para setear títulos sugeridos desde la API ------------
+  const handleSetTitulosSugeridos = async () => {
+    try {
+      if (titulo.trim() === "") {
+        setTitulosSugeridos([]); 
+        return;
+      }
+      
+      const documentos = await conectionDocuments({ titulo, tieneFiltros: false });
+      const titulos = documentos.map(doc => doc.titulo); 
+      setTitulosSugeridos(titulos);
+      setSelectedIndex(-1); 
+    } 
+    catch (error) {
+      console.error("Error al obtener títulos sugeridos:", error);
+    }
+  };
+  // -----------------------------------------------------------------------
+
+  // -------- Llamado a la función de sugerencia de títulos cada vez que cambia el input ------------
+  useEffect(() => {
+    if (titulo) {
+      handleSetTitulosSugeridos();
+    } else {
+      setTitulosSugeridos([]); 
+    }
+  }, [titulo]);
+
+  //-------- Función para seleccionar una sugerencia ------------
+  const handleSelectSugerencia = (sugerencia) => {
+    setTitulo(sugerencia);
+    setTitulosSugeridos([]); 
+  };
+
+  // -------- Función para manejar navegación de teclado en sugerencias -----------
+  const handleKeyDown = (event) => {
+    if (event.key === "ArrowDown") {
+      setSelectedIndex((prevIndex) => (prevIndex + 1) % titulosSugeridos.length);
+    } 
+    else if (event.key === "ArrowUp") {
+      setSelectedIndex((prevIndex) => (prevIndex - 1 + titulosSugeridos.length) % titulosSugeridos.length);
+    }
+    else if (event.key === "Enter") {
+      if (selectedIndex >= 0 && titulosSugeridos[selectedIndex]) {
+        handleSelectSugerencia(titulosSugeridos[selectedIndex]);
+        setTitulosSugeridos([]);
+      } else {
+        handleSearchClick();
+        setTitulosSugeridos([]);
+      }
+    }
+  };
+  //---------------------------------------------------------------------------------------------------------------------------------------------------
+
+  //--------------------------------------------------------------- FILTROS ----------------------------------------------------------------------------
   //-------- Función para mostrar los filtros ------------ 
   const handleToggleFiltros = () => {
     setMostrarFiltros((prevState) => !prevState);
@@ -33,22 +93,34 @@ const Search = () => {
     const { categorias, autores, idioma, desde, hasta, keywords } = filtros.reduce((acc, element) => {
       switch (element.tipo) {
         case "CATEGORIA":
-          acc.categorias.push(element.valor);
+          if (element.valor) {
+            acc.categorias.push(element.valor);
+          }
           break;
         case "KEYWORDS":
-          acc.keywords.push(element.valor);
+          if (element.valor) {
+            acc.keywords.push(element.valor);
+          }
           break;
         case "AUTOR":
-          acc.autores.push(element.valor);
+          if (element.valor) {
+            acc.autores.push(element.valor);
+          }
           break;
         case "IDIOMA":
-          acc.idioma = element.valor;
+          if (element.valor) {
+            acc.idioma = element.valor;
+          }
           break;
         case "DESDE":
-          acc.desde = element.valor;
+          if (element.valor) {
+            acc.desde = element.valor;
+          }
           break;
         case "HASTA":
-          acc.hasta = element.valor;
+          if (element.valor) {
+            acc.hasta = element.valor;
+          }
           break;
         default:
           break;
@@ -58,10 +130,12 @@ const Search = () => {
 
     setBusqueda({ titulo, tieneFiltros: filtros.length > 0, keywords, categorias, autores, idioma, desde, hasta });
   };
-
+  // ---------------------------------------------------------------------------------------------------------------------------------------------------
+  
   // --------- Función para mostrar los resultados y cambiar valor del titulo -------------- 
   const handleSearchClick = () => {
     handleMapearFiltros();
+    setTitulosSugeridos([]);
     setMostrarResultados(true); 
   };
 
@@ -74,16 +148,34 @@ const Search = () => {
     <div className="search-container">
       <div className="filter-container">
         <div className="filter-title">
-          <div className="search-bar">
-            <input
-              type="text"
-              placeholder="Buscar"
-              className="search-input"
-              onChange={handleInputChange}
-            />
-            <button className="search-btn" onClick={handleSearchClick}>
-              Buscar
-            </button>
+          <div className="search-icon">
+            <div className="search-bar">
+              <input
+                type="text"
+                placeholder="Buscar"
+                className="search-input"
+                value={titulo}
+                onChange={handleInputChange}
+                onKeyDown={handleKeyDown} 
+              />
+              <FaSearch className="search-btn" onClick={handleSearchClick}/>
+            </div>
+
+            {/* Lista de sugerencias */}
+            <div className="sugerencias">
+              {titulo && titulosSugeridos.map((titulo, index) => (
+                <div
+                  key={index}
+                  className={`sugerencia-item ${selectedIndex === index ? "selected" : ""}`}
+                  onClick={() => handleSelectSugerencia(titulo)} 
+                >
+                  <div className="sugerencia-icon">
+                    <FaSearch/>
+                    <p>{titulo}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
           <hr />
 
