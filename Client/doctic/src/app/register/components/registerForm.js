@@ -12,6 +12,8 @@ import { Tooltip } from "@nextui-org/tooltip";
 import { Progress } from "@nextui-org/progress";
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useRouter } from "next/navigation";
+import axios from "axios";
 
 export default function RegisterForm() {
   const [username, setUsername] = useState("");
@@ -25,6 +27,7 @@ export default function RegisterForm() {
   const [profileImage, setProfileImage] = useState(null);
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
+  const router = useRouter();
 
   const securityQuestions = [
     "¿Cuál fue tu primera mascota?",
@@ -104,31 +107,28 @@ export default function RegisterForm() {
       perfil: {
         nombre: firstName,
         apellido: lastName,
-        fotoPerfil:"",
+        fotoPerfil: "",
       },
       password,
       preguntaSeguridad: { pregunta: securityQuestion, respuesta: securityAnswer },
     };
 
     try {
-        const response = await fetch("http://localhost:8080/registrarse", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(registrationData),
-        });
-    
-        if (response.ok) {
-          const resultMessage = await response.text();
-          toast.success(resultMessage || "¡Registro completado con éxito!");
-        } else {
-          const result = await response.json();
-          toast.error(result.message || "Error al registrar");
-        }
-      } catch (error) {
+      const response = await axios.post("http://localhost:8080/registrarse", registrationData, {
+        headers: { "Content-Type": "application/json" }
+      });
+
+      toast.success("¡Registro completado con éxito!");
+      setTimeout(() => router.push("/login"), 3000);
+    } catch (error) {
+      if (error.response) {
+        toast.error(error.response.data || "Error al registrar");
+      } else {
         toast.error("Error de conexión. Por favor intenta más tarde");
-        console.error("Error al enviar la solicitud:", error);
       }
-    };
+      console.error("Error al enviar la solicitud:", error);
+    }
+  };
 
   return (
     <section className="w-1/2 min-h-screen ml-auto">
@@ -141,8 +141,8 @@ export default function RegisterForm() {
               <p className="text-default-500 mb-4">
                 {isSecondStep ? "Configura tu seguridad" : "Información personal"}
               </p>
-              <Progress 
-                value={getProgressValue()} 
+              <Progress
+                value={getProgressValue()}
                 className="mb-4"
                 color="primary"
                 size="sm"
@@ -164,19 +164,21 @@ export default function RegisterForm() {
                   />
                 </Tooltip>
 
-                <Input
-                  placeholder="Correo Electrónico"
-                  label="Correo Electrónico"
-                  type="email"
-                  value={email}
-                  onChange={handleEmailChange}
-                  startContent={<FaEnvelope className="text-default-400 pointer-events-none flex-shrink-0" />}
-                  size="lg"
-                  variant="bordered"
-                  errorMessage={emailError}
-                  isInvalid={!!emailError}
-                  isRequired
-                />
+                <Tooltip content="Escribe una dirección de correo electronico valida" placement="left">
+                  <Input
+                    placeholder="Correo Electrónico"
+                    label="Correo Electrónico"
+                    type="email"
+                    value={email}
+                    onChange={handleEmailChange}
+                    startContent={<FaEnvelope className="text-default-400 pointer-events-none flex-shrink-0" />}
+                    size="lg"
+                    variant="bordered"
+                    errorMessage={emailError}
+                    isInvalid={!!emailError}
+                    isRequired
+                  />
+                </Tooltip>
 
                 <div className="flex gap-4">
                   <Input
@@ -189,6 +191,7 @@ export default function RegisterForm() {
                     variant="bordered"
                     isRequired
                   />
+
                   <Input
                     placeholder="Apellido"
                     label="Apellido"
@@ -217,10 +220,10 @@ export default function RegisterForm() {
                   />
                 </Tooltip>
 
-                <Button 
+                <Button
                   type="submit"
-                  color="primary" 
-                  size="lg" 
+                  color="primary"
+                  size="lg"
                   className="w-full"
                 >
                   Siguiente
@@ -230,15 +233,15 @@ export default function RegisterForm() {
               <form onSubmit={handleSubmit} className="space-y-6">
                 <Dropdown>
                   <DropdownTrigger>
-                    <Button 
-                      variant="bordered" 
+                    <Button
+                      variant="bordered"
                       className="w-full justify-start h-14"
                       startContent={<FaLock className="text-default-400" />}
                     >
                       {securityQuestion || "Selecciona una pregunta de seguridad"}
                     </Button>
                   </DropdownTrigger>
-                  <DropdownMenu 
+                  <DropdownMenu
                     aria-label="Preguntas de seguridad"
                     onAction={(key) => setSecurityQuestion(key)}
                   >
@@ -249,7 +252,7 @@ export default function RegisterForm() {
                     ))}
                   </DropdownMenu>
                 </Dropdown>
-                
+
                 <Input
                   placeholder="Respuesta de seguridad"
                   label="Respuesta"
@@ -259,7 +262,7 @@ export default function RegisterForm() {
                   variant="bordered"
                   isRequired
                 />
-                
+
                 <div className="space-y-2">
                   <label className="block text-lg font-semibold">Foto de Perfil</label>
                   <div className="flex items-center space-x-4">
@@ -280,8 +283,8 @@ export default function RegisterForm() {
                       className="hidden"
                       id="profile-image"
                     />
-                    <Button 
-                      as="label" 
+                    <Button
+                      as="label"
                       htmlFor="profile-image"
                       className="cursor-pointer"
                       startContent={<FaCamera />}
@@ -296,20 +299,20 @@ export default function RegisterForm() {
                     )}
                   </div>
                 </div>
-                
+
                 <div className="flex gap-4">
-                  <Button 
-                    onClick={() => setIsSecondStep(false)} 
+                  <Button
+                    onClick={() => setIsSecondStep(false)}
                     variant="bordered"
                     size="lg"
                     className="w-full"
                   >
                     Atrás
                   </Button>
-                  <Button 
-                    type="submit" 
-                    color="primary" 
-                    size="lg" 
+                  <Button
+                    type="submit"
+                    color="primary"
+                    size="lg"
                     className="w-full"
                   >
                     Registrarse
@@ -319,9 +322,9 @@ export default function RegisterForm() {
             )}
           </CardBody>
         </Card>
-          
+
         <Divider className="my-8" />
-        
+
         <p className="text-center text-default-500">
           ¿Ya tienes cuenta?{" "}
           <Link href="/login" className="font-medium">

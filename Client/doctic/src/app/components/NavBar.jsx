@@ -38,7 +38,7 @@ export const NavbarComp = () => {
         </NavbarItem>
         <NavbarItem>
           <Button as={Link} color="primary" href="/register" variant="flat">
-            Sign Up
+            Registrarse
           </Button>
         </NavbarItem>
       </NavbarContent>

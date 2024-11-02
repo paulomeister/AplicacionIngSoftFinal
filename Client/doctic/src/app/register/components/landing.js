@@ -2,7 +2,7 @@ import Image from "next/image";
 
 export default function Landing() {
   return (
-    <section className="w-1/2 h-screen fixed left-0 bg-gradient-to-br from-blue-900 to-blue-500">
+    <section className="w-1/2 h-screen fixed left-0 top-0 bg-gradient-to-br from-blue-900 to-blue-500">
       <div className="flex flex-col justify-center items-center h-full px-8 py-12 text-white">
         <div className="max-w-xl text-center">
           <h1 className="text-5xl font-bold mb-6">Únete a nuestra comunidad</h1>
