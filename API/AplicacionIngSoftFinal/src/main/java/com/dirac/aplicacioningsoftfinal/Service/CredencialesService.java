@@ -2,12 +2,20 @@ package com.dirac.aplicacioningsoftfinal.Service;
 
 import com.dirac.aplicacioningsoftfinal.DTO.CambiarPasswordDTO;
 import com.dirac.aplicacioningsoftfinal.DTO.NuevosCredencialesDTO;
+import com.dirac.aplicacioningsoftfinal.DTO.NuevosCredencialesDTO.Perfil;
 import com.dirac.aplicacioningsoftfinal.Exception.*;
 import com.dirac.aplicacioningsoftfinal.Model.CredencialesModel;
+import com.dirac.aplicacioningsoftfinal.Model.CredencialesModel.Credenciales;
 import com.dirac.aplicacioningsoftfinal.Model.UsuarioModel;
+import com.dirac.aplicacioningsoftfinal.Model.UsuarioModel.Descargados;
+import com.dirac.aplicacioningsoftfinal.Model.UsuarioModel.DocsSubidos;
+import com.dirac.aplicacioningsoftfinal.Model.UsuarioModel.Historial;
 import com.dirac.aplicacioningsoftfinal.Repository.ICredencialesRepository;
 import com.dirac.aplicacioningsoftfinal.Repository.IUsuarioRepository;
 import com.dirac.aplicacioningsoftfinal.Security.UsuarioAplicacion;
+import com.fasterxml.jackson.core.JsonGenerationException;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -17,6 +25,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -34,12 +43,14 @@ public class CredencialesService implements ICredencialesService {
     private final ICredencialesRepository credencialesRepository;
     private final IUsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
+    private final ImgurService imgurService;
 
     @Autowired
-    public CredencialesService(ICredencialesRepository credencialesRepository, IUsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder) {
+    public CredencialesService(ICredencialesRepository credencialesRepository, IUsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder, ImgurService imgurService) {
         this.credencialesRepository = credencialesRepository;
         this.usuarioRepository = usuarioRepository;
         this.passwordEncoder = passwordEncoder;
+        this.imgurService = imgurService;
     }
 
     @Override
@@ -90,9 +101,25 @@ public class CredencialesService implements ICredencialesService {
 
     }
 
-    @Transactional
-    public void crearNuevasCredenciales(NuevosCredencialesDTO usuarioEntrante) throws UserAlreadyExistsException {
 
+    public NuevosCredencialesDTO mapCredencialesToObject(String credencialesEnString) throws JsonProcessingException{
+       
+        // función para convertir de un json string a un objeto NuevoCredencialesDTO
+        ObjectMapper mapper = new ObjectMapper();
+        NuevosCredencialesDTO credencialesDTO = mapper.readValue(credencialesEnString, NuevosCredencialesDTO.class);
+
+        return credencialesDTO;
+   
+    }
+
+
+    @Transactional
+    public void crearNuevasCredenciales(String usuarioEntranteString) throws UserAlreadyExistsException, JsonProcessingException {
+
+            // SE MAPEA A UN OBJETO DE LA CLASE NUEVOSCREDENCIALES DTO PARA QUE DESDE EL FRONTEND SE PUEDA 
+            // ENVIAR UN JSON.STRING() Y NO DÉ PROBLEMAS (en caso de que se envíe una IMAGEN)
+            NuevosCredencialesDTO usuarioEntrante = mapCredencialesToObject(usuarioEntranteString);
+        
             String username = usuarioEntrante.getUsername();
 
             Optional<CredencialesModel> posibleUsuario = credencialesRepository.findCredencialesByUsername(username);
@@ -136,7 +163,11 @@ public class CredencialesService implements ICredencialesService {
     }
 
     @Transactional
-    public void crearNuevoUsuario(NuevosCredencialesDTO usuarioEntrante) throws UserAlreadyExistsException {
+    public NuevosCredencialesDTO crearNuevoUsuario(String usuarioEntranteString) throws UserAlreadyExistsException, JsonProcessingException{
+
+        // SE MAPEA A UN OBJETO DE LA CLASE NUEVOSCREDENCIALES DTO PARA QUE DESDE EL FRONTEND SE PUEDA 
+        // ENVIAR UN JSON.STRING() Y NO DÉ PROBLEMAS (en caso de que se envíe una IMAGEN)
+        NuevosCredencialesDTO usuarioEntrante = mapCredencialesToObject(usuarioEntranteString);
 
         String username = usuarioEntrante.getUsername();
 
@@ -148,6 +179,7 @@ public class CredencialesService implements ICredencialesService {
             List<DocsSubidos> docsSubidos = List.of();
             List<Historial> historial = List.of();
             List<Descargados> descargados = List.of();
+
 
             UsuarioModel nuevoUsuario = new UsuarioModel(
 
@@ -164,7 +196,7 @@ public class CredencialesService implements ICredencialesService {
             );
 
             usuarioRepository.save(nuevoUsuario);
-
+            return usuarioEntrante;
         }
         else {
 
@@ -173,6 +205,62 @@ public class CredencialesService implements ICredencialesService {
         }
 
     }
+
+
+    @Transactional
+    public NuevosCredencialesDTO crearNuevoUsuarioConImagen(String usuarioEntranteString, MultipartFile image) throws UserAlreadyExistsException, JsonProcessingException {
+
+        // SE MAPEA A UN OBJETO DE LA CLASE NUEVOSCREDENCIALES DTO PARA QUE DESDE EL FRONTEND SE PUEDA 
+        // ENVIAR UN JSON.STRING() Y NO DÉ PROBLEMAS (en caso de que se envíe una IMAGEN)
+        NuevosCredencialesDTO usuarioEntrante = mapCredencialesToObject(usuarioEntranteString);
+
+        String username = usuarioEntrante.getUsername();
+
+        Optional<UsuarioModel> posibleUsuario = usuarioRepository.findUsuarioByUsername(username);
+
+
+        if(posibleUsuario.isEmpty()) {
+
+            List<DocsSubidos> docsSubidos = List.of();
+            List<Historial> historial = List.of();
+            List<Descargados> descargados = List.of();
+
+            // ACTUALIZAR PERFIL
+            String imagenUrl = imgurService.uploadImage(image);
+            String nombre = usuarioEntrante.getPerfil().getNombre();
+            String apellido = usuarioEntrante.getPerfil().getApellido();
+
+            Perfil perfilActualizado = new Perfil(nombre, apellido, imagenUrl); // Creamos un nuevo obj perfil para poderlo setear más adelante.
+
+            usuarioEntrante.setPerfil(perfilActualizado); // Se actualiza el perfil.
+            // ---
+
+            UsuarioModel nuevoUsuario = new UsuarioModel(
+
+                    null,
+                    usuarioEntrante.getUsername(),
+                    usuarioEntrante.getEmail(),
+                    usuarioEntrante.getPerfil(),
+                    false,
+                    LocalDate.now(),
+                    docsSubidos,
+                    historial,
+                    descargados
+
+            );
+
+            usuarioRepository.save(nuevoUsuario);
+            return usuarioEntrante;
+        }
+        else {
+
+            throw new UserAlreadyExistsException(format("El usuario \"%s\" ya se encuentra registrado en la aplicación!", username));
+
+        }
+
+    }
+
+
 
     @Transactional
     public String cambiarPassword(CambiarPasswordDTO nuevosCredenciales) throws InvalidPasswordSettingsException,

@@ -10,10 +10,12 @@ import org.apache.http.entity.mime.content.ByteArrayBody;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
+import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
+@Service
 public class ImgurService {
 
     private static RequestConfig requestConfig = RequestConfig.custom().build();
