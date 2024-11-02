@@ -34,7 +34,9 @@ export const NavbarComp = () => {
       </NavbarContent>
       <NavbarContent justify="end">
         <NavbarItem className="lg:flex">
-          <Link href="#">Login</Link>
+          <Button as={Link} color="primary" href="/login" variant="bordered">
+              Iniciar Sesión
+          </Button>
         </NavbarItem>
         <NavbarItem>
           <Button as={Link} color="primary" href="#" variant="flat">
