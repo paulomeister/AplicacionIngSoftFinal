@@ -444,12 +444,9 @@ export const PublicationForm = () => {
         </div>
 
         <div className="flex justify-center">
-          <button
-            className="bg-blue-500 text-white font-bold py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-4 focus:ring-blue-300"
-            type="submit"
-          >
+          <Button color="primary" auto size="lg" type="submit">
             Crear Publicación
-          </button>
+          </Button>
         </div>
       </form>
     </section>
