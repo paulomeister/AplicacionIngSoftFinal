@@ -114,9 +114,35 @@ export default function RegisterForm() {
     };
 
     try {
-      const response = await axios.post("http://localhost:8080/registrarse", registrationData, {
-        headers: { "Content-Type": "application/json" }
-      });
+      const formData = new FormData();
+      formData.append('credentials', JSON.stringify(registrationData));
+
+      let response;
+
+      if (profileImage) {
+        // Caso con imagen
+        formData.append('image', profileImage);
+        response = await axios.post(
+          "http://localhost:8080/registrarseConImagen",
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data"
+            }
+          }
+        );
+      } else {
+        // Caso sin imagen
+        response = await axios.post(
+          "http://localhost:8080/registrarse",
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data"
+            }
+          }
+        );
+      }
 
       toast.success("¡Registro completado con éxito!");
       setTimeout(() => router.push("/login"), 3000);
@@ -128,7 +154,10 @@ export default function RegisterForm() {
       }
       console.error("Error al enviar la solicitud:", error);
     }
-  };
+
+
+
+  }
 
   return (
     <section className="w-1/2 min-h-screen ml-auto">
