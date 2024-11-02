@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Button } from "@nextui-org/react";
 import { FaUserAlt, FaLock, FaEnvelope, FaCamera } from "react-icons/fa";
+import { FaRegEye, FaRegEyeSlash  } from "react-icons/fa";
 import { Input } from "@nextui-org/input";
 import { Link } from "@nextui-org/link";
 import { Divider } from "@nextui-org/divider";
@@ -27,6 +28,7 @@ export default function RegisterForm() {
   const [profileImage, setProfileImage] = useState(null);
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
+  const [isVisible, setIsVisible] = useState(false);
   const router = useRouter();
 
   const securityQuestions = [
@@ -71,6 +73,8 @@ export default function RegisterForm() {
       setPasswordError("");
     }
   };
+
+  const toggleVisibility = () => setIsVisible(!isVisible);
 
   const handleNextStep = (e) => {
     e.preventDefault();
@@ -177,11 +181,15 @@ export default function RegisterForm() {
                 size="sm"
               />
             </div>
+            
 
             {!isSecondStep ? (
+              
               <form onSubmit={handleNextStep} className="space-y-6">
+                {/* Username */}
                 <Tooltip content="Elige un nombre de usuario único" placement="left">
                   <Input
+                    
                     placeholder="Nombre de Usuario"
                     label="Nombre de Usuario"
                     value={username}
@@ -192,9 +200,12 @@ export default function RegisterForm() {
                     isRequired
                   />
                 </Tooltip>
-
+                
+                {/* Correo */}
                 <Tooltip content="Escribe una dirección de correo electronico valida" placement="left">
+                  
                   <Input
+                  
                     placeholder="Correo Electrónico"
                     label="Correo Electrónico"
                     type="email"
@@ -208,7 +219,7 @@ export default function RegisterForm() {
                     isRequired
                   />
                 </Tooltip>
-
+                {/* Nombre */}
                 <div className="flex gap-4">
                   <Input
                     placeholder="Nombre"
@@ -220,7 +231,7 @@ export default function RegisterForm() {
                     variant="bordered"
                     isRequired
                   />
-
+                  {/* Apellido */}
                   <Input
                     placeholder="Apellido"
                     label="Apellido"
@@ -232,15 +243,23 @@ export default function RegisterForm() {
                     isRequired
                   />
                 </div>
-
+                {/* Contraseña */}
                 <Tooltip content="Mínimo 8 caracteres, una mayúscula y un número" placement="left">
                   <Input
-                    type="password"
+                    type={isVisible ? "text" : "password"}
                     placeholder="Contraseña"
                     label="Contraseña"
                     value={password}
                     onChange={handlePasswordChange}
                     startContent={<FaLock className="text-default-400 pointer-events-none flex-shrink-0" />}
+                    endContent={
+                    <button className="focus:outline-none" type="button" onClick={toggleVisibility} aria-label="toggle password visibility">
+                    {isVisible ? (
+                      <FaRegEyeSlash className="text-2xl text-default-400 pointer-events-none" />
+                    ) : (
+                      <FaRegEye className="text-2xl text-default-400 pointer-events-none" />
+                    )}
+                  </button>}
                     size="lg"
                     variant="bordered"
                     errorMessage={passwordError}
@@ -260,6 +279,7 @@ export default function RegisterForm() {
               </form>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-6">
+                {/* Pregunta Seguridad */}
                 <Dropdown>
                   <DropdownTrigger>
                     <Button
@@ -291,7 +311,7 @@ export default function RegisterForm() {
                   variant="bordered"
                   isRequired
                 />
-
+                {/* Foto Perfil */}
                 <div className="space-y-2">
                   <label className="block text-lg font-semibold">Foto de Perfil</label>
                   <div className="flex items-center space-x-4">

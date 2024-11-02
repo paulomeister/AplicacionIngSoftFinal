@@ -1,24 +1,36 @@
-"use client";
+'use client';
 
-// import Link from 'next/link';
-import Image from 'next/image';
+
 import { useState } from 'react';
-
-import {Navbar, NavbarBrand, NavbarContent, NavbarItem, Link, Button} from "@nextui-org/react";
+import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+import { LuSearch } from "react-icons/lu";
+import { Navbar, NavbarBrand, NavbarContent, NavbarItem, Link, Button, Input } from "@nextui-org/react";
 
 export const NavbarComp = () => {
+  const router = useRouter();
+  const [searchText, setSearchText] = useState('');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
-  const toggleMenu = () => {
-    setMenuOpen(!menuOpen);
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchText.trim()) {
+      router.push(`/search?titulo=${encodeURIComponent(searchText)}`);
+    }
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      handleSearch(e);
+    }
   };
 
   return (
     <Navbar position="sticky" isBordered maxWidth="2xl">
       <NavbarBrand>
-        <Link href="/home"><Image src="/logo.png" alt="Logo" width={50} height={50}/></Link>
-        <Link className="font-bold  text-inherit" href="/home">DocTIC</Link>
+        <Link href="/home"><Image src="/logo.png" alt="Logo" width={50} height={50} /></Link>
+        <Link className="font-bold text-inherit" href="/home">DocTIC</Link>
       </NavbarBrand>
       <NavbarContent className="sm:flex gap-4" justify="center">
         <NavbarItem>
@@ -27,9 +39,22 @@ export const NavbarComp = () => {
           </Link>
         </NavbarItem>
         <NavbarItem>
-          <Link color="foreground" href="/search">
-            Buscar
-          </Link>
+          <Input
+            isClearable
+            type='text'
+            label="Buscar"
+            placeholder="Busca tu documento..."
+            className="w-80"
+            size="sm"
+            variant="bordered"
+            radius='full'
+            value={searchText}
+            onChange={(e) => setSearchText(e.target.value)}
+            onKeyPress={handleKeyPress}
+            startContent={
+              <LuSearch className="cursor-pointer" onClick={handleSearch} />
+            }
+          />
         </NavbarItem>
       </NavbarContent>
       <NavbarContent justify="end">
@@ -47,7 +72,7 @@ export const NavbarComp = () => {
 
   return (
     <nav style={{ backgroundColor: '#001E58', padding: '10px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-   
+
       <div style={{ display: 'flex', alignItems: 'center' }}>
         <Link href="/" style={{ display: 'flex', alignItems: 'center' }}>
           <Image src="/logo.png" alt="Logo" width={50} height={50} />
@@ -65,13 +90,13 @@ export const NavbarComp = () => {
       </div>
 
       <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'right' }}>
-        <Image 
-          src={isLoggedIn ? "/user.png" : "/guest.svg"} 
-          alt={isLoggedIn ? "User" : "Guest"} 
-          width={40} 
-          height={40} 
-          onClick={toggleMenu} 
-          style={{ cursor: 'pointer' }} 
+        <Image
+          src={isLoggedIn ? "/user.png" : "/guest.svg"}
+          alt={isLoggedIn ? "User" : "Guest"}
+          width={40}
+          height={40}
+          onClick={toggleMenu}
+          style={{ cursor: 'pointer' }}
         />
 
         {menuOpen && (

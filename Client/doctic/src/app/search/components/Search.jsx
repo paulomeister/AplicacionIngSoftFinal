@@ -1,5 +1,6 @@
 'use client';
 import React, { useState, useEffect } from "react";
+import { useSearchParams } from 'next/navigation';
 import ResultsList from "./ResultsList";
 import Filter from "./Filter";
 import conectionDocuments from "../utils/conectionDocuments";
@@ -7,15 +8,26 @@ import {FaSearch} from "react-icons/fa";
 import "./Search.css";
 
 const Search = () => {
+  const searchParams = useSearchParams();
+  const urlTitle = searchParams.get('titulo');
+
   const [mostrarResultados, setMostrarResultados] = useState(false); 
   const [mostrarFiltros, setMostrarFiltros] = useState(false); 
-
   const [busqueda, setBusqueda] = useState({});
   const [filtros, setFiltros] = useState([]);
-  const [titulo, setTitulo] = useState("");
+  const [titulo, setTitulo] = useState(urlTitle || "");
   const [sortCriteria, setSortCriteria] = useState("");
   const [titulosSugeridos, setTitulosSugeridos] = useState([]);
   const [selectedIndex, setSelectedIndex] = useState(-1); 
+
+  // Efecto para manejar el título de la URL
+  useEffect(() => {
+    if (urlTitle) {
+      setTitulo(urlTitle);
+      handleMapearFiltros();
+      setMostrarResultados(true);
+    }
+  }, [urlTitle]);
 
   //-------- Función para actualizar el input de búsqueda y sugerencias ------------
   const handleInputChange = (event) => {
@@ -128,7 +140,16 @@ const Search = () => {
       return acc;
     }, { categorias: [], keywords: [], autores: [], idioma: "", desde: "", hasta: "" });
 
-    setBusqueda({ titulo, tieneFiltros: filtros.length > 0, keywords, categorias, autores, idioma, desde, hasta });
+    setBusqueda({ 
+      titulo: titulo.trim(),
+      tieneFiltros: filtros.length > 0, 
+      keywords, 
+      categorias, 
+      autores, 
+      idioma, 
+      desde, 
+      hasta 
+    });
   };
   // ---------------------------------------------------------------------------------------------------------------------------------------------------
   
@@ -199,3 +220,4 @@ const Search = () => {
 };
 
 export default Search;
+
