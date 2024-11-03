@@ -33,6 +33,7 @@ public class CredencialesModel {
     public String returnIdAsString() { return _id != null ? _id.toHexString() : null; }
 
     @AllArgsConstructor
+    @NoArgsConstructor
     @Data
     public static class PreguntaSeguridad {
 
