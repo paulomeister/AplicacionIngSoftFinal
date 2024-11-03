@@ -6,6 +6,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.dirac.aplicacioningsoftfinal.DTO.CambiarPasswordDTO;
 import com.dirac.aplicacioningsoftfinal.DTO.NuevosCredencialesDTO;
+import com.dirac.aplicacioningsoftfinal.DTO.OlvidoPasswordDTO;
 import com.dirac.aplicacioningsoftfinal.Exception.UserAlreadyExistsException;
 import com.dirac.aplicacioningsoftfinal.Model.CredencialesModel;
 import com.dirac.aplicacioningsoftfinal.Model.CredencialesModel.PreguntaSeguridad;
@@ -20,6 +21,9 @@ public interface ICredencialesService {
     NuevosCredencialesDTO crearNuevoUsuario(String usuarioEntranteString)  throws UserAlreadyExistsException, JsonProcessingException;
     NuevosCredencialesDTO crearNuevoUsuarioConImagen(String usuarioEntranteString, MultipartFile image) throws UserAlreadyExistsException, JsonProcessingException;
     String cambiarPassword(CambiarPasswordDTO cambiarPasswordDTO);
+    String obtenerPreguntaSeguridad(String username);
+    String olvidoPasswordRecuperar(OlvidoPasswordDTO olvidoPasswordDTO);
     String cambiarPreguntaDeSeguridad(String username, PreguntaSeguridad nuevaPreguntaSeguridad);
     String eliminarCredenciales(String credencialId);
+
 }
