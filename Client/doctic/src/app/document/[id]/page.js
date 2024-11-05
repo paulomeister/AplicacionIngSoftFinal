@@ -58,7 +58,7 @@ export default function Page({params}) {
         date={data.fechaSubida}
       />
       {/*Recordar que userId = '', documentId= '' estan parseados por default para pruebas*/}
-      <PdfViewer url={data.urlArchivo}/>
+      <PdfViewer url={data.urlArchivo} documentId={data._id}/>
       <DownloadButton url={data.urlArchivo} />
     </>
   )

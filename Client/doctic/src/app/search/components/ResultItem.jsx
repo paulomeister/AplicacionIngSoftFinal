@@ -19,7 +19,7 @@ const ResultItem = ({ results }) => {
     <div>
       {results.map((result, index) => (
         <div key={index} className="result-item">
-          <h3><strong>{result.titulo}</strong></h3>
+          <Link href={`/document/${result._id}`}><h3 className="documentTitle"><strong>{result.titulo}</strong></h3></Link>
 
           {/* Renderizar autores */}
           <div className="result-authors">
