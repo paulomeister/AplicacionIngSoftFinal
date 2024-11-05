@@ -21,6 +21,8 @@ console.log(doc)
         <span className="font-semibold">Autores:</span>{" "}
         <Link href={`/users/${doc.autores[0]?.username}`} className="hover:underline hover:text-blue-600">{doc.autores[0]?.username}</Link>
       </p>
+
+      {/* Categorías */}
       <p className="text-base text-gray-600 mb-2 font-semibold">
         {doc.categoria.map((cat) => cat.nombre).join(", ")}
       </p>
@@ -46,16 +48,14 @@ console.log(doc)
           >
             <FaEye /> Ver
           </Link>
-          {/* Botón para Editar */}
 
-                {/* Botón para Editar */}
-                <Link href={`/document/edit/${doc._id}`}
-                   className="flex items-center gap-2 text-green-500 hover:underline">
-                    <FaEdit /> Editar
-               
-                </Link>
+          <Link
+            href={`/document/edit/${doc._id}`}
+            className="flex items-center gap-2 text-green-500 hover:underline"
+          >
+            <FaEdit /> Editar
+          </Link>
 
-          
           <>
             <Button
               variant="red"
@@ -70,7 +70,7 @@ console.log(doc)
 
       <Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>
-          <Modal.Title>Modal heading</Modal.Title>
+          <Modal.Title>Eliminar Documento</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           ¿Estás seguro que quieres{" "}

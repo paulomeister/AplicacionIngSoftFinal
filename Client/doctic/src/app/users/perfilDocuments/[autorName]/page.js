@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Search from "./components/Search";
 import List from "./components/List";
+import axios from "axios";
 
 export default function PerfilDocuments({ params }) {
   const autorName = decodeURIComponent(params.autorName);  // Decodifica el nombre del autor desde la URL
@@ -10,7 +11,22 @@ export default function PerfilDocuments({ params }) {
   const [filterCategory, setFilterCategory] = useState([]); // Filtra Categorías como un array
   const [filterIdioma, setFilterIdioma] = useState(""); // Filtra Idiomas como string
   const [filterDates, setFilterDates] = useState({ from: "", to: "" }); // Filtra las fechas (desde, hasta)
-  const [authorNameFromList, setAuthorNameFromList] = useState("");  // Nuevo estado para el autor
+  const [authorNameFromList, setAuthorNameFromList] = useState("");  // Estado para el nombre completo del autor
+
+  useEffect(() => {
+    // Función para obtener el nombre completo del autor
+    const fetchAuthorName = async () => {
+      try {
+        const response = await axios.get(`http://localhost:8080/api/Usuarios/getByUsername/${autorName}`);
+        const { nombre, apellido } = response.data.perfil;  // Extraemos el nombre y apellido del perfil
+        setAuthorNameFromList(`${nombre} ${apellido}`);  // Combinamos nombre y apellido
+      } catch (error) {
+        console.error("Error al obtener el nombre del autor:", error);
+      }
+    };
+
+    fetchAuthorName();
+  }, [autorName]);
 
   const [propietario, setPropietario] = useState(true);  // Nuevo estado para el propietario
 
@@ -47,8 +63,6 @@ export default function PerfilDocuments({ params }) {
           propietario={propietario}
         />
       </section>
-  
-      
     </div>
   );
 }

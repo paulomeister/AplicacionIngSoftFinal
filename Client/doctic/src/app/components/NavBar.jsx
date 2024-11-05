@@ -37,8 +37,8 @@ export const NavbarComp = () => {
           <Link href="#">Login</Link>
         </NavbarItem>
         <NavbarItem>
-          <Button as={Link} color="primary" href="#" variant="flat">
-            Sign Up
+          <Button as={Link} color="primary" href="/register" variant="flat">
+            Registrarse
           </Button>
         </NavbarItem>
       </NavbarContent>

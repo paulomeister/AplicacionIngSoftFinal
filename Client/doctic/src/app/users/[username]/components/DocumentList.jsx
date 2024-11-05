@@ -5,6 +5,7 @@ import DocumentItem from "./DocumentItem";
 import { AlertPop } from "../utils/AlertPopup";
 import Link from "next/link";
 import "./DocumentList.css";
+import Link from "next/link";
 
 const DocumentList = ({ autor, onVerTodos, propietario }) => {
 

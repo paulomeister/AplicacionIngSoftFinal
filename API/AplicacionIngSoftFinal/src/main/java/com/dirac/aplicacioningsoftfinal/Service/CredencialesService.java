@@ -2,13 +2,23 @@ package com.dirac.aplicacioningsoftfinal.Service;
 
 import com.dirac.aplicacioningsoftfinal.DTO.CambiarPasswordDTO;
 import com.dirac.aplicacioningsoftfinal.DTO.NuevosCredencialesDTO;
+import com.dirac.aplicacioningsoftfinal.DTO.OlvidoPasswordDTO;
+import com.dirac.aplicacioningsoftfinal.DTO.NuevosCredencialesDTO.Perfil;
 import com.dirac.aplicacioningsoftfinal.Exception.*;
 import com.dirac.aplicacioningsoftfinal.Model.CredencialesModel;
+import com.dirac.aplicacioningsoftfinal.Model.CredencialesModel.Credenciales;
+import com.dirac.aplicacioningsoftfinal.Model.CredencialesModel.PreguntaSeguridad;
 import com.dirac.aplicacioningsoftfinal.Model.UsuarioModel;
+import com.dirac.aplicacioningsoftfinal.Model.UsuarioModel.Descargados;
+import com.dirac.aplicacioningsoftfinal.Model.UsuarioModel.DocsSubidos;
+import com.dirac.aplicacioningsoftfinal.Model.UsuarioModel.Historial;
 import com.dirac.aplicacioningsoftfinal.Repository.ICredencialesRepository;
 import com.dirac.aplicacioningsoftfinal.Repository.IUsuarioRepository;
 import com.dirac.aplicacioningsoftfinal.Security.UsuarioAplicacion;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -17,6 +27,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -34,19 +45,23 @@ public class CredencialesService implements ICredencialesService {
     private final ICredencialesRepository credencialesRepository;
     private final IUsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
+    private final ImgurService imgurService;
 
     @Autowired
-    public CredencialesService(ICredencialesRepository credencialesRepository, IUsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder) {
+    public CredencialesService(ICredencialesRepository credencialesRepository, IUsuarioRepository usuarioRepository,
+            PasswordEncoder passwordEncoder, ImgurService imgurService) {
         this.credencialesRepository = credencialesRepository;
         this.usuarioRepository = usuarioRepository;
         this.passwordEncoder = passwordEncoder;
+        this.imgurService = imgurService;
     }
 
     @Override
     public UsuarioAplicacion mapCredentialsFromDatabase(String username) throws NoRoleSpecifiedException {
 
-        CredencialesModel credenciales = credencialesRepository.findCredencialesByUsername(username).
-                orElseThrow(() -> new UsernameNotFoundException(format("El usuario \"%s\" no se encontró en la base de datos", username)));
+        CredencialesModel credenciales = credencialesRepository.findCredencialesByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException(
+                        format("El usuario \"%s\" no se encontró en la base de datos", username)));
 
         Set<SimpleGrantedAuthority> grantedAuthorities = getGrantedAuthorities(username, credenciales);
 
@@ -73,8 +88,7 @@ public class CredencialesService implements ICredencialesService {
 
             grantedAuthorities = USUARIO.getGrantedAuthorities();
 
-        }
-        else if (rolUsuario.equals("ADMIN")) {
+        } else if (rolUsuario.equals("ADMIN")) {
 
             grantedAuthorities = ADMIN.getGrantedAuthorities();
 
@@ -82,7 +96,8 @@ public class CredencialesService implements ICredencialesService {
 
         else {
 
-            throw new NoRoleSpecifiedException(format("El usuario \"%s\" no tiene un rol específico en la base de datos", username));
+            throw new NoRoleSpecifiedException(
+                    format("El usuario \"%s\" no tiene un rol específico en la base de datos", username));
 
         }
 
@@ -90,60 +105,93 @@ public class CredencialesService implements ICredencialesService {
 
     }
 
+    public Optional<CredencialesModel> getByUsername(String username) {
+        return credencialesRepository.findCredencialesByUsername(username);
+    }
+
+    public NuevosCredencialesDTO mapCredencialesToObject(String credencialesEnString) throws JsonProcessingException {
+
+        // función para convertir de un json string a un objeto NuevoCredencialesDTO
+        ObjectMapper mapper = new ObjectMapper();
+        NuevosCredencialesDTO credencialesDTO = mapper.readValue(credencialesEnString, NuevosCredencialesDTO.class);
+
+        return credencialesDTO;
+
+    }
+
+    @Override
+    public String eliminarCredenciales(String credencialId) {
+
+        credencialesRepository.deleteById(credencialId);
+
+        return "La credencial fue eliminada correctamente";
+    }
+
     @Transactional
-    public void crearNuevasCredenciales(NuevosCredencialesDTO usuarioEntrante) throws UserAlreadyExistsException {
+    public void crearNuevasCredenciales(String usuarioEntranteString)
+            throws UserAlreadyExistsException, JsonProcessingException {
 
-            String username = usuarioEntrante.getUsername();
+        // SE MAPEA A UN OBJETO DE LA CLASE NUEVOSCREDENCIALES DTO PARA QUE DESDE EL
+        // FRONTEND SE PUEDA
+        // ENVIAR UN JSON.STRING() Y NO DÉ PROBLEMAS (en caso de que se envíe una
+        // IMAGEN)
+        NuevosCredencialesDTO usuarioEntrante = mapCredencialesToObject(usuarioEntranteString);
 
-            Optional<CredencialesModel> posibleUsuario = credencialesRepository.findCredencialesByUsername(username);
+        String username = usuarioEntrante.getUsername();
 
-            if(posibleUsuario.isEmpty()) {
+        Optional<CredencialesModel> posibleUsuario = credencialesRepository.findCredencialesByUsername(username);
 
-                String hashedPassword = passwordEncoder.encode(usuarioEntrante.getPassword());
+        if (posibleUsuario.isEmpty()) {
 
+            String hashedPassword = passwordEncoder.encode(usuarioEntrante.getPassword());
 
-                Credenciales credenciales = new Credenciales(
-                        hashedPassword,
-                        true
-                );
+            Credenciales credenciales = new Credenciales(
+                    hashedPassword,
+                    true);
 
-                List<Credenciales> listaCredenciales = List.of(credenciales);
+            List<Credenciales> listaCredenciales = List.of(credenciales);
 
-                CredencialesModel nuevoUsuario = new CredencialesModel(
+            CredencialesModel nuevoUsuario = new CredencialesModel(
 
-                        null,
-                        username,
-                        hashedPassword,
-                        "USUARIO",
-                        true,
-                        true,
-                        true,
-                        true,
-                        usuarioEntrante.getPreguntaSeguridad(),
-                        listaCredenciales
+                    null,
+                    username,
+                    hashedPassword,
+                    "USUARIO",
+                    true,
+                    true,
+                    true,
+                    true,
+                    usuarioEntrante.getPreguntaSeguridad(),
+                    listaCredenciales
 
-                );
+            );
 
-                credencialesRepository.save(nuevoUsuario);
+            credencialesRepository.save(nuevoUsuario);
 
-            }
-            else {
+        } else {
 
-                throw new UserAlreadyExistsException(format("El usuario \"%s\" ya se encuentra registrado en la aplicación!", username));
+            throw new UserAlreadyExistsException(
+                    format("El usuario \"%s\" ya se encuentra registrado en la aplicación!", username));
 
-            }
+        }
 
     }
 
     @Transactional
-    public void crearNuevoUsuario(NuevosCredencialesDTO usuarioEntrante) throws UserAlreadyExistsException {
+    public NuevosCredencialesDTO crearNuevoUsuario(String usuarioEntranteString)
+            throws UserAlreadyExistsException, JsonProcessingException {
+
+        // SE MAPEA A UN OBJETO DE LA CLASE NUEVOSCREDENCIALES DTO PARA QUE DESDE EL
+        // FRONTEND SE PUEDA
+        // ENVIAR UN JSON.STRING() Y NO DÉ PROBLEMAS (en caso de que se envíe una
+        // IMAGEN)
+        NuevosCredencialesDTO usuarioEntrante = mapCredencialesToObject(usuarioEntranteString);
 
         String username = usuarioEntrante.getUsername();
 
         Optional<UsuarioModel> posibleUsuario = usuarioRepository.findUsuarioByUsername(username);
 
-
-        if(posibleUsuario.isEmpty()) {
+        if (posibleUsuario.isEmpty()) {
 
             List<DocsSubidos> docsSubidos = List.of();
             List<Historial> historial = List.of();
@@ -164,25 +212,103 @@ public class CredencialesService implements ICredencialesService {
             );
 
             usuarioRepository.save(nuevoUsuario);
+            return usuarioEntrante;
+        } else {
 
-        }
-        else {
-
-            throw new UserAlreadyExistsException(format("El usuario \"%s\" ya se encuentra registrado en la aplicación!", username));
+            throw new UserAlreadyExistsException(
+                    format("El usuario \"%s\" ya se encuentra registrado en la aplicación!", username));
 
         }
 
     }
 
     @Transactional
+    public NuevosCredencialesDTO crearNuevoUsuarioConImagen(String usuarioEntranteString, MultipartFile image)
+            throws UserAlreadyExistsException, JsonProcessingException {
+
+        // SE MAPEA A UN OBJETO DE LA CLASE NUEVOSCREDENCIALES DTO PARA QUE DESDE EL
+        // FRONTEND SE PUEDA
+        // ENVIAR UN JSON.STRING() Y NO DÉ PROBLEMAS (en caso de que se envíe una
+        // IMAGEN)
+        NuevosCredencialesDTO usuarioEntrante = mapCredencialesToObject(usuarioEntranteString);
+
+        String username = usuarioEntrante.getUsername();
+
+        Optional<UsuarioModel> posibleUsuario = usuarioRepository.findUsuarioByUsername(username);
+
+        if (posibleUsuario.isEmpty()) {
+
+            List<DocsSubidos> docsSubidos = List.of();
+            List<Historial> historial = List.of();
+            List<Descargados> descargados = List.of();
+
+            // ACTUALIZAR PERFIL
+            String imagenUrl = imgurService.uploadImage(image);
+            String nombre = usuarioEntrante.getPerfil().getNombre();
+            String apellido = usuarioEntrante.getPerfil().getApellido();
+
+            Perfil perfilActualizado = new Perfil(nombre, apellido, imagenUrl); // Creamos un nuevo obj perfil para
+                                                                                // poderlo setear más adelante.
+
+            usuarioEntrante.setPerfil(perfilActualizado); // Se actualiza el perfil.
+            // ---
+
+            UsuarioModel nuevoUsuario = new UsuarioModel(
+
+                    null,
+                    usuarioEntrante.getUsername(),
+                    usuarioEntrante.getEmail(),
+                    usuarioEntrante.getPerfil(),
+                    false,
+                    LocalDate.now(),
+                    docsSubidos,
+                    historial,
+                    descargados
+
+            );
+
+            usuarioRepository.save(nuevoUsuario);
+            return usuarioEntrante;
+        } else {
+
+            throw new UserAlreadyExistsException(
+                    format("El usuario \"%s\" ya se encuentra registrado en la aplicación!", username));
+
+        }
+
+    }
+
+    @Transactional
+    public String cambiarPreguntaDeSeguridad(String username, PreguntaSeguridad nuevaPreguntaSeguridad) {
+
+        // Expresión regular que permite solo letras y espacios
+        String regex = "^[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]+$";
+        String pregunta = nuevaPreguntaSeguridad.getPregunta();
+
+        // Validación de la pregunta de seguridad
+        if (!pregunta.matches(regex)) {
+            throw new IllegalArgumentException("La pregunta de seguridad solo puede contener letras y espacios.");
+        }
+
+        CredencialesModel credencialesACambiar = getByUsername(username).orElseThrow(
+                () -> new GetSomethingException("ERROR FATAL; El usuario no tiene credenciales en estos momentos"));
+
+        // Actualiza la pregunta de seguridad
+        credencialesACambiar.setPreguntaSeguridad(nuevaPreguntaSeguridad);
+
+        credencialesRepository.save(credencialesACambiar);
+
+        return "La pregunta de seguridad del usuario: " + username + " ha sido actualizada correctamente";
+    }
+
+    @Transactional
     public String cambiarPassword(CambiarPasswordDTO nuevosCredenciales) throws InvalidPasswordSettingsException,
-                                                                              UsuarioNotFoundException,
-                                                                              PasswordAlreadyUsedException,
-                                                                              ActivePasswordNotFoundException {
+            UsuarioNotFoundException,
+            PasswordAlreadyUsedException,
+            ActivePasswordNotFoundException {
 
         String passwordActual = nuevosCredenciales.getPasswordActual();
         String nuevoPassword = nuevosCredenciales.getPasswordNuevo();
-
 
         if (Strings.isNullOrEmpty(passwordActual) || Strings.isNullOrEmpty(nuevoPassword)) {
 
@@ -196,11 +322,11 @@ public class CredencialesService implements ICredencialesService {
 
         CredencialesModel usuario = credencialesRepository.
                 findCredencialesByUsername(username).
-                orElseThrow(() -> new UsuarioNotFoundException(String.format("El usuario \"%s\" no se encuentra en la base de datos! Error fatal", username)));
+                orElseThrow(() -> new UsuarioNotFoundException(format("El usuario \"%s\" no se encuentra en la base de datos! Error fatal", username)));
 
         String passwordAlmacenado = usuario.getPassword();
 
-        if(!passwordEncoder.matches(passwordActual, passwordAlmacenado)) {
+        if (!passwordEncoder.matches(passwordActual, passwordAlmacenado)) {
 
             throw new InvalidPasswordSettingsException("La contraseña actual no coincide con la contraseña registrada");
 
@@ -208,11 +334,11 @@ public class CredencialesService implements ICredencialesService {
 
         List<Credenciales> credenciales = usuario.getCredenciales();
 
-        for(Credenciales c : credenciales) {
+        for (Credenciales c : credenciales) {
 
             boolean coincidencia = passwordEncoder.matches(nuevoPassword, c.getPassword());
 
-            if(coincidencia) {
+            if (coincidencia) {
 
                 throw new PasswordAlreadyUsedException("La contraseña nueva ingresada ya ha sido usada anteriormente");
 
@@ -224,7 +350,9 @@ public class CredencialesService implements ICredencialesService {
                 .stream()
                 .filter((credencial) -> credencial.isEstado())
                 .findFirst()
-                .orElseThrow(() -> new ActivePasswordNotFoundException(String.format("El usuario \"%s\" no tiene contraseñas activas en sus credenciales. Error fatal", username)));
+                .orElseThrow(() -> new ActivePasswordNotFoundException(String.format(
+                        "El usuario \"%s\" no tiene contraseñas activas en sus credenciales. Error fatal", username)));
+
 
         credencialActivo.setEstado(false);
 
@@ -244,6 +372,91 @@ public class CredencialesService implements ICredencialesService {
         credencialesRepository.save(usuario);
 
         return "La contraseña fue cambiada satisfactoriamente!";
+
+    }
+
+    public String obtenerPreguntaSeguridad(String username) {
+
+        CredencialesModel objetoPregunta = credencialesRepository.
+                findCredencialesByUsername(username).
+                orElseThrow(() -> new UsuarioNotFoundException(format("El usuario \"%s\" no se encuentra en la base de datos", username)));
+
+        String pregunta = objetoPregunta.getPreguntaSeguridad().getPregunta();
+
+
+
+        return pregunta;
+
+    }
+
+    @Transactional
+    public String olvidoPasswordRecuperar(OlvidoPasswordDTO credencialesEntrantes) throws InvalidPasswordSettingsException,
+                                                                                          UsuarioNotFoundException,
+                                                                                          InvalidSecretException,
+                                                                                          PasswordAlreadyUsedException,
+                                                                                          ActivePasswordNotFoundException {
+
+        String passwordEntrante = credencialesEntrantes.getNuevoPassword();
+        String username = credencialesEntrantes.getUsername();
+        String respuestaEntrante = credencialesEntrantes.getRespuesta();
+
+        if(Strings.isNullOrEmpty(passwordEntrante) || Strings.isNullOrEmpty(username) || Strings.isNullOrEmpty(respuestaEntrante)) {
+
+            throw new InvalidPasswordSettingsException("Los valores enviados no deben ser nulos o vacíos");
+
+        }
+
+        CredencialesModel credenciales = credencialesRepository.
+                findCredencialesByUsername(username).
+                orElseThrow(() -> new UsuarioNotFoundException(format("El usuario \"%s\" no se encuentra en la base de datos!", username)));
+
+        String respuestaEnBase = credenciales.getPreguntaSeguridad().getRespuesta();
+
+        if(!respuestaEnBase.equalsIgnoreCase(respuestaEntrante)) {
+
+            throw new InvalidSecretException("Las respuestas a la pregunta de seguridad en base de datos y enviada no coinciden");
+
+        }
+
+
+        List<Credenciales> listaCredenciales = credenciales.getCredenciales();
+
+        for(Credenciales c : listaCredenciales) {
+
+            boolean coincidencia = passwordEncoder.matches(passwordEntrante, c.getPassword());
+
+            if(coincidencia) {
+
+                throw new PasswordAlreadyUsedException("La contraseña ingresada ya fue utilizada. Por favor ingrese una nueva!");
+
+            }
+
+        }
+
+        Credenciales passwordActivo = listaCredenciales.
+                stream().
+                filter((credencial) -> credencial.isEstado())
+                .findFirst()
+                .orElseThrow(() -> new ActivePasswordNotFoundException(format("El usuario \"%s\" no tiene credenciales activas. Error fatal.", username)));
+
+        passwordActivo.setEstado(false);
+
+        String hashedPassword = passwordEncoder.encode(passwordEntrante);
+
+        credenciales.setPassword(hashedPassword);
+
+        Credenciales nuevosCredenciales = new Credenciales(
+
+                hashedPassword,
+                true
+
+        );
+
+        listaCredenciales.add(nuevosCredenciales);
+
+        credencialesRepository.save(credenciales);
+
+        return "La contraseña fue recuperada con éxito!";
 
     }
 

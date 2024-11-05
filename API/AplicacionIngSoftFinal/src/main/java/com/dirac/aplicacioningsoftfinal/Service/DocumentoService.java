@@ -52,6 +52,7 @@ import java.util.Collections;
 
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -68,8 +69,11 @@ import java.util.List;
 @Service
 public class DocumentoService implements IDocumentoService {
 
+    @Autowired
     private final IDocumentoRepository documentoRepository;
     private final MongoTemplate mongoTemplate;
+
+    @Lazy
     @Autowired
     private IUsuarioService usuarioService;
 
@@ -441,33 +445,30 @@ public class DocumentoService implements IDocumentoService {
             byte[] fileBytes = downloadFile(fileId);
             com.google.api.services.drive.model.File file = getFileById(fileId);
 
-             if(fileBytes.length != 0){ // Verifica que si se haya obtenido un archivo
+            if (fileBytes.length != 0) { // Verifica que si se haya obtenido un archivo
 
-           // Se obtiene el documento el cuál se está descargando para verificar si
-        //    existe.
-           DocumentoModel documentoDownloading = getDocumentById(documentId);
+                // Se obtiene el documento el cuál se está descargando para verificar si
+                // existe.
+                DocumentoModel documentoDownloading = getDocumentById(documentId);
 
-           // obtenemos el usuario que está descargando:
-           UsuarioModel usuarioDownloading =
-           usuarioService.getUserById(userId).orElseThrow(
-           () -> new UsuarioNotFoundException("el usuario con el id, no fue encontrado"
-           + userId));
+                // obtenemos el usuario que está descargando:
+                UsuarioModel usuarioDownloading = usuarioService.getUserById(userId).orElseThrow(
+                        () -> new UsuarioNotFoundException("el usuario con el id, no fue encontrado"
+                                + userId));
 
-           // Actualizaremos el campo del "historial" en el documento
-           UsuarioModel.Historial nuevoDoc = new UsuarioModel.Historial();
+                // Actualizaremos el campo del "historial" en el documento
+                UsuarioModel.Historial nuevoDoc = new UsuarioModel.Historial();
 
-           nuevoDoc.setDocumentoId(documentoDownloading.get_id());
-           nuevoDoc.setFechaHora(LocalDate.now());
+                nuevoDoc.setDocumentoId(documentoDownloading.get_id());
+                nuevoDoc.setFechaHora(LocalDate.now());
 
-           List<UsuarioModel.Historial> historialDocumentos =
-           usuarioDownloading.getHistorialDocumentos();
-           historialDocumentos.add(nuevoDoc); // se añade ese nuevo documento
-           usuarioDownloading.setHistorialDocumentos(historialDocumentos); // se losetea
+                List<UsuarioModel.Historial> historialDocumentos = usuarioDownloading.getHistorialDocumentos();
+                historialDocumentos.add(nuevoDoc); // se añade ese nuevo documento
+                usuarioDownloading.setHistorialDocumentos(historialDocumentos); // se losetea
 
-
-           // ACTUALIZAR en la base de datos
-           usuarioService.insertUser(usuarioDownloading);
-           }
+                // ACTUALIZAR en la base de datos
+                usuarioService.insertUser(usuarioDownloading);
+            }
 
             return new ArchivoDTO(file, fileBytes);
 
@@ -485,43 +486,41 @@ public class DocumentoService implements IDocumentoService {
             com.google.api.services.drive.model.File file = getFileById(fileId);
 
             // // obtenemos el documento el cuál se está descargando
-             DocumentoModel documentoDownloading = getDocumentById(documentId);
+            DocumentoModel documentoDownloading = getDocumentById(documentId);
 
-             // // // se crea un nuevo DTO de DatosComputados
-             DatosComputados nuevosDatos = new DatosComputados();
+            // // // se crea un nuevo DTO de DatosComputados
+            DatosComputados nuevosDatos = new DatosComputados();
 
             // // // Se le añade uno a la descarga y lo demás queda igual
-             long descargasTotales = documentoDownloading.getDatosComputados().getDescargasTotales() + 1;
-             double valoracionPromedio = documentoDownloading.getDatosComputados().getValoracionPromedio();
-             long comentariosTotales = documentoDownloading.getDatosComputados().getComentariosTotales();
+            long descargasTotales = documentoDownloading.getDatosComputados().getDescargasTotales() + 1;
+            double valoracionPromedio = documentoDownloading.getDatosComputados().getValoracionPromedio();
+            long comentariosTotales = documentoDownloading.getDatosComputados().getComentariosTotales();
 
             // // // Se actualizan los datos
-             nuevosDatos.setDescargasTotales(descargasTotales);
-             nuevosDatos.setValoracionPromedio(valoracionPromedio);
-             nuevosDatos.setComentariosTotales(comentariosTotales);
+            nuevosDatos.setDescargasTotales(descargasTotales);
+            nuevosDatos.setValoracionPromedio(valoracionPromedio);
+            nuevosDatos.setComentariosTotales(comentariosTotales);
 
             // // // Se actualizan los datos computados en el documento
-             documentoDownloading.setDatosComputados(nuevosDatos);
+            documentoDownloading.setDatosComputados(nuevosDatos);
 
             // // // Obtenemos el usuario que está descargando:
-             UsuarioModel usuarioDownloading = usuarioService.getUserById(userId).orElseThrow(
-                     () -> new UsuarioNotFoundException("el usuario con el id, no fue encontrado" + userId));
-            
+            UsuarioModel usuarioDownloading = usuarioService.getUserById(userId).orElseThrow(
+                    () -> new UsuarioNotFoundException("el usuario con el id, no fue encontrado" + userId));
+
             // // //Se actualizará el campo de documentos descargados
-             UsuarioModel.Descargados nuevoDoc = new UsuarioModel.Descargados();
-             nuevoDoc.setDocumentoId(documentoDownloading.get_id());
-             nuevoDoc.setFechaHora(LocalDate.now());
+            UsuarioModel.Descargados nuevoDoc = new UsuarioModel.Descargados();
+            nuevoDoc.setDocumentoId(documentoDownloading.get_id());
+            nuevoDoc.setFechaHora(LocalDate.now());
 
-
-             List<UsuarioModel.Descargados> docsActualizados = usuarioDownloading.getDocDescargados();
-             docsActualizados.add(nuevoDoc); // Se añade un nuevo Documento
-             usuarioDownloading.setDocDescargados(docsActualizados); // Se actualizan los nuevos documentos
-
+            List<UsuarioModel.Descargados> docsActualizados = usuarioDownloading.getDocDescargados();
+            docsActualizados.add(nuevoDoc); // Se añade un nuevo Documento
+            usuarioDownloading.setDocDescargados(docsActualizados); // Se actualizan los nuevos documentos
 
             // // // Actualiza en la base de datos
-             usuarioService.insertUser(usuarioDownloading);
+            usuarioService.insertUser(usuarioDownloading);
 
-             documentoRepository.save(documentoDownloading);
+            documentoRepository.save(documentoDownloading);
 
             return new ArchivoDTO(file, fileBytes);
 
@@ -548,21 +547,20 @@ public class DocumentoService implements IDocumentoService {
             documentoRepository.save(documento);
 
             List<Autores> autores = documento.getAutores();
-            
 
             // Esta es la funcionalidad para añadir el documento subido por el usuario.
-            for(Autores autor: autores){
+            for (Autores autor : autores) {
 
-                if ("principal".equals(autor.getRol().trim())){
+                if ("principal".equals(autor.getRol().trim())) {
 
                     String id = autor.getUsuarioIdAsString();
 
-                    UsuarioModel usuario = usuarioService.getUserById(id).
-                                        orElseThrow( () -> new UsuarioNotFoundException("Autor principal no se encontró en la base de datos"));
-                        
-                    DocsSubidos nuevoDocSubido = new DocsSubidos(documento.get_id(),documento.getTitulo());
-                    
-                    List<DocsSubidos> nuevosDOCSSubidos = usuario.getDocSubidos();                  
+                    UsuarioModel usuario = usuarioService.getUserById(id).orElseThrow(
+                            () -> new UsuarioNotFoundException("Autor principal no se encontró en la base de datos"));
+
+                    DocsSubidos nuevoDocSubido = new DocsSubidos(documento.get_id(), documento.getTitulo());
+
+                    List<DocsSubidos> nuevosDOCSSubidos = usuario.getDocSubidos();
                     nuevosDOCSSubidos.add(nuevoDocSubido);
                     usuario.setDocSubidos(nuevosDOCSSubidos);
                     usuarioService.insertUser(usuario); // actualizar en la base de datos
@@ -700,26 +698,23 @@ public class DocumentoService implements IDocumentoService {
             String documentUrl = documentoRepository.findById(_id)
                     .orElseThrow(() -> new IdNotFoundException("Document id was not found")).getUrlArchivo();
 
-            
             DocumentoModel documento = getDocumentById(_id);
 
             List<Autores> autores = documento.getAutores();
-            
 
             // Esta es la funcionalidad para ELIMINAR el documento subido por el usuario.
-            for(Autores autor: autores){
+            for (Autores autor : autores) {
 
-                if ("principal".equals(autor.getRol().trim())){
+                if ("principal".equals(autor.getRol().trim())) {
 
                     String id = autor.getUsuarioIdAsString();
 
-                    UsuarioModel usuario = usuarioService.getUserById(id).
-                                        orElseThrow( () -> new UsuarioNotFoundException("Autor principal no se encontró en la base de datos"));
+                    UsuarioModel usuario = usuarioService.getUserById(id).orElseThrow(
+                            () -> new UsuarioNotFoundException("Autor principal no se encontró en la base de datos"));
 
                     DocsSubidos documentoAEliminar = new DocsSubidos(_id, documento.getTitulo());
-                    
 
-                    List<DocsSubidos> nuevosDOCSSubidos = usuario.getDocSubidos();                  
+                    List<DocsSubidos> nuevosDOCSSubidos = usuario.getDocSubidos();
                     nuevosDOCSSubidos.remove(documentoAEliminar); // ELIMINA EL DOCUMENTO de la lista.
                     usuario.setDocSubidos(nuevosDOCSSubidos);
                     usuarioService.insertUser(usuario); // se actualiza el usuario
@@ -729,8 +724,6 @@ public class DocumentoService implements IDocumentoService {
             // Se elimina el archivo y el documento
             deleteFileById(documentUrl);
             documentoRepository.deleteById(_id);
-
-
 
             respuesta.setMessage("El documento con _id " + _id + " fue eliminado con éxito.");
             respuesta.setStatus(200);
@@ -754,7 +747,6 @@ public class DocumentoService implements IDocumentoService {
 
             // Elimina el archivo con el fileId proporcionado
             drive.files().delete(fileId).execute();
-            
 
             result = "El archivo con ID:" + fileId + "fue eliminado con éxito.";
 
