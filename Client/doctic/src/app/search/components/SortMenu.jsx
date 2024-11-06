@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import './SortMenu.css';
 
 const SortMenu = ({ onSortChange }) => {
-  const [selectedOption, setSelectedOption] = useState('alfabetico'); // Inicializado con "alfabetico"
+  const [selectedOption, setSelectedOption] = useState(localStorage.getItem('sortCriteria') || 'alfabetico'); // Inicializado con "alfabetico"
 
   // Aplica el criterio de orden "alfabetico" por defecto al cargar el componente
   useEffect(() => {

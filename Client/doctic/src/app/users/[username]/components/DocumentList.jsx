@@ -1,8 +1,8 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import conectionDocuments from "../utils/conectionDocuments";
+import conectionDocuments from "../../utils/conectionDocuments";
 import DocumentItem from "./DocumentItem";
-import { AlertPop } from "../utils/AlertPopup";
+import { AlertPop } from "../../utils/AlertPopup";
 import Link from "next/link";
 import "./DocumentList.css";
 

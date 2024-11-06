@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import AuthorInfo from './components/AuthorInfo';
 import DocumentList from './components/DocumentList';
-import conectionUser from './utils/conectionUser';
+import conectionUser from '../utils/conectionUser';
 import './page.css';
 
 function App({ params }) {

@@ -13,7 +13,7 @@ const Search = () => {
   const [busqueda, setBusqueda] = useState({});
   const [filtros, setFiltros] = useState([]);
   const [titulo, setTitulo] = useState("");
-  const [sortCriteria, setSortCriteria] = useState("");
+  const [sortCriteria, setSortCriteria] = useState(localStorage.getItem('sortCriteria') || 'alfabetico');;
   const [titulosSugeridos, setTitulosSugeridos] = useState([]);
   const [selectedIndex, setSelectedIndex] = useState(-1); 
 
@@ -140,10 +140,23 @@ const Search = () => {
     console.log(titulo);
   };
 
+  // ---------------- función para actualizar busqueda al cambiar el filtros -------------------------
+  useEffect(() => {
+    if (filtros && filtros.length > 0) {
+      handleSearchClick();
+    }
+  }, [filtros]);
+
   // ------------ Función para actualizar el criterio de ordenamiento ------------- 
-  const handleSortChange = (newSortCriteria) => {
-    setSortCriteria(newSortCriteria);
-  };
+ // Guardar el criterio de ordenamiento en localStorage cada vez que cambie
+ useEffect(() => {
+  localStorage.setItem("sortCriteria", sortCriteria);
+}, [sortCriteria]);
+
+// Función para cambiar el criterio de ordenamiento
+const handleSortChange = (newSortCriteria) => {
+  setSortCriteria(newSortCriteria);
+};
 
   return (
     <div className="search-container">

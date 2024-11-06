@@ -28,7 +28,7 @@ const AuthorInfo = ({ autor, propietario }) => {
           {propietario &&
           <div className="buttons-container">
             <div className="icons-container">
-              <Link className="edit-icon" href='/users'><FaEdit/><p>Editar Perfil</p></Link>
+              <Link className="edit-icon" href={`/users/editProfile/${autor.username}`}><FaEdit/><p>Editar Perfil</p></Link>
               <Link className="config-icon" href='/users'><FaTrash/><p>Eliminar Cuenta</p></Link>
             </div>
           </div>

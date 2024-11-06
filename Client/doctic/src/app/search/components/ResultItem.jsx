@@ -18,7 +18,6 @@ const ResultItem = ({ results }) => {
   return (
     <div>
       {results.map((result, index) => (
-        console.log(result.titulo),
         <div key={index} className="result-item">
           <Link className="result-title hover:underline hover:text-blue-600" href={`/document/${result._id}`}><h3><strong>{result.titulo}</strong></h3></Link>
 
