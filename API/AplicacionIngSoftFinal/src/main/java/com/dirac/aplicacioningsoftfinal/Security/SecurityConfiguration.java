@@ -49,12 +49,47 @@ public class SecurityConfiguration {
                 .addFilterAfter(new JwtTokenVerifier(secretKey, jwtConfigurationVariables), CustomUsernameAndPasswordAuthenticationFilter.class)
                 .authorizeHttpRequests((authz) -> authz
 
-                        // TODO: check for excluded routes included in anyRequest(). Secure specific endpoints and exclude in general
-                        .requestMatchers("/","index.html", "/css/**","/js/**", "/registrarse")
-                        .permitAll()
+                        .requestMatchers(HttpMethod.POST,"/api/Documentos/downloadFile")
+                        .hasAnyRole(USUARIO.name(), ADMIN.name())
 
-                         .requestMatchers(HttpMethod.POST,"/api/Documentos/downloadFile")
-                         .hasAnyRole(USUARIO.name(), ADMIN.name())
+                        .requestMatchers(HttpMethod.PUT, "/preguntaSeguridad/change/*")
+                        .hasAnyRole(USUARIO.name(), ADMIN.name())
+
+                        .requestMatchers(HttpMethod.POST, "/password/change")
+                        .hasAnyRole(USUARIO.name(), ADMIN.name())
+
+                        .requestMatchers(HttpMethod.PUT, "/api/Documentos/updateDoc")
+                        .hasAnyRole(USUARIO.name(), ADMIN.name())
+
+                        .requestMatchers(HttpMethod.PUT, "/api/Documentos/updateDocWithFile")
+                        .hasAnyRole(USUARIO.name(), ADMIN.name())
+
+                        .requestMatchers(HttpMethod.POST, "/api/Documentos/insert")
+                        .hasAnyRole(USUARIO.name(), ADMIN.name())
+
+                        .requestMatchers(HttpMethod.DELETE, "/api/Documentos/delete/*")
+                        .hasAnyRole(USUARIO.name(), ADMIN.name())
+
+                        .requestMatchers(HttpMethod.POST, "/api/Documentos/uploadToDrive")
+                        .hasAnyRole(USUARIO.name(), ADMIN.name())
+
+                        .requestMatchers(HttpMethod.PUT, "/api/Usuarios/updateEmail/*/*")
+                        .hasAnyRole(USUARIO.name(), ADMIN.name())
+
+                        .requestMatchers(HttpMethod.PUT, "/api/Usuarios/updateUsername/*/*")
+                        .hasAnyRole(USUARIO.name(), ADMIN.name())
+
+                        .requestMatchers(HttpMethod.PUT, "/api/Usuarios/updateProfile/*")
+                        .hasAnyRole(USUARIO.name(), ADMIN.name())
+
+                        .requestMatchers(HttpMethod.PUT, "/api/Usuarios/updateProfile/*")
+                        .hasAnyRole(USUARIO.name(), ADMIN.name())
+
+                        .requestMatchers(HttpMethod.PUT, "/api/Usuarios/*/updateProfilePicture")
+                        .hasAnyRole(USUARIO.name(), ADMIN.name())
+
+                        .requestMatchers(HttpMethod.DELETE, "/api/Usuarios/deleteUser/*")
+                        .hasAnyRole(USUARIO.name(), ADMIN.name())
 
                         .anyRequest()
                         .permitAll()
