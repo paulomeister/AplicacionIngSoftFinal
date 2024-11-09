@@ -94,7 +94,7 @@ export default function Documentos() {
         <ul className="space-y-8">
           {documents.map((doc) => (
             <li key={doc._id} className="p-6 bg-white rounded shadow-md border">
-              <h2 className="text-2xl font-semibold mb-2">{doc.titulo}</h2>
+              <Link href={`/document/${doc._id}`} className="hover:text-blue-600 hover:underline"><h2 className="text-2xl font-semibold mb-2">{doc.titulo}</h2></Link>
               <p className="text-lg text-gray-700 mb-1">
                 <span className="font-semibold">Subido por:</span> 
                 <Link href={`/users/${doc.autores?.[0]?.username}`} className="text-blue-600 hover:underline"> {doc.autores?.[0]?.nombre}</Link>

@@ -16,6 +16,7 @@ export default function List({
   filterIdioma,
   filterDates,
   setAuthorNameFromList,
+  propietario
 }) {
   const [documents, setDocuments] = useState([]);
   const [loading, setLoading] = useState(true);
