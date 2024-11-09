@@ -10,6 +10,14 @@
     width: auto;
   }
 
+.documentTitle{
+  cursor:pointer
+}
+
+.documentTitle:hover{
+  color:gray
+}
+
   p{
     font-size: 80%;
     color: rgb(83, 83, 83);

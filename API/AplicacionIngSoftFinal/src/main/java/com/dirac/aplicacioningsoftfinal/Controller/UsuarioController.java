@@ -12,6 +12,7 @@ import com.dirac.aplicacioningsoftfinal.Service.ImgurService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
+@CrossOrigin("*")
 @RequestMapping("/api/Usuarios")
 public class UsuarioController {
 
@@ -85,7 +87,8 @@ public class UsuarioController {
         }
     }
 
-    // Actualizar el perfil del usuario
+    // Actualizar el nombre y / o apellido del usuario 
+    //! NO PUEDE ENVIARSE EL PERFIL VACÍO, DESDE EL FRONTEND ENVIAR EL PERFIL (Con los campos cambiados y sin cambiar)
     @PutMapping("/updateProfile/{username}")
     public ResponseEntity<String> updateProfile(@PathVariable String username, @RequestBody Perfil newProfile) {
         try {
@@ -95,6 +98,18 @@ public class UsuarioController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
+    @PutMapping("/{username}/updateProfilePicture")
+    public ResponseEntity<String> updateProfilePicture(@RequestParam("image") MultipartFile image, @PathVariable("username") String username) {
+        try {
+            String response = usuarioService.updateProfilePicture(username, image);
+            return ResponseEntity.ok(response);
+        } catch (GetSomethingException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+
 
     @DeleteMapping("/deleteUser/{username}")
     public ResponseEntity<?> deleteUser(@PathVariable("username") String username) {
