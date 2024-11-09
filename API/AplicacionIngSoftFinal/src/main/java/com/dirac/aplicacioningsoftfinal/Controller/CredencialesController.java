@@ -12,7 +12,6 @@ import com.dirac.aplicacioningsoftfinal.Service.ICredencialesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -78,7 +77,7 @@ public class CredencialesController {
     }
 
     // recibe un body con la nuevaPregunta y se le pone en la ruta, el username correspondiente;
-    @PutMapping("/preguntaSeguridad/change/{username}")
+    @PutMapping("preguntaSeguridad/change/{username}")
     public ResponseEntity<?> cambiarPreguntaDeSeguridad(@RequestBody PreguntaSeguridad nuevaPreguntaSeguridad,
             @PathVariable("userId") String username) {
 
@@ -100,7 +99,6 @@ public class CredencialesController {
     }
 
     @PostMapping("password/change")
-    @PreAuthorize("hasAnyRole('ROLE_USUARIO', 'ROL_ADMIN')")
     public ResponseEntity<?> cambiarPassword(@RequestBody CambiarPasswordDTO cambiarPasswordDTO) {
 
         try {
