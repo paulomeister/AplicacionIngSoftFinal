@@ -123,22 +123,22 @@ const Filter = ({ onUpdateFilters, filtros }) => {
           )}
 
           {/* Botón de eliminar filtro */}
-          <button className="filter-btn" onClick={() => handleEliminarFiltro(filtro.id)}>
-            <strong>Eliminar</strong>
+          <button className="delete-button" onClick={() => handleEliminarFiltro(filtro.id)}>
+            Eliminar
           </button>
         </div>
       ))}
 
       <div className="filter-buttons">
         {/* Botón para agregar un nuevo filtro */}
-        <button className="filter-btn" onClick={handleAgregarFiltro}>
-          <strong>Agregar nuevo filtro</strong>
+        <button className="add-button" onClick={handleAgregarFiltro}>
+          Agregar nuevo filtro
         </button>
 
         {/* Muestra el botón de eliminar todos si hay filtros */}
         {filtrosAdicionales.length > 0 && (
-          <button className="filter-btn" onClick={handleEliminarTodosFiltros}>
-            <strong>Eliminar todos los filtros</strong>
+          <button className="delete-button" onClick={handleEliminarTodosFiltros}>
+            Eliminar todos los filtros
           </button>
         )}
       </div>
