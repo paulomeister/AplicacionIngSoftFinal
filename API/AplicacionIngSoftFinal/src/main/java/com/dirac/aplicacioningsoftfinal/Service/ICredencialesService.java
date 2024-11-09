@@ -25,5 +25,6 @@ public interface ICredencialesService {
     String olvidoPasswordRecuperar(OlvidoPasswordDTO olvidoPasswordDTO);
     String cambiarPreguntaDeSeguridad(String username, PreguntaSeguridad nuevaPreguntaSeguridad);
     String eliminarCredenciales(String credencialId);
+    String saveCredenciales(CredencialesModel credencial);
 
 }

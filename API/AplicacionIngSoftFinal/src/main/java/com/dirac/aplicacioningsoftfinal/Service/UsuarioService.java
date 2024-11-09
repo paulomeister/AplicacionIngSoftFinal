@@ -3,6 +3,7 @@ package com.dirac.aplicacioningsoftfinal.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.dirac.aplicacioningsoftfinal.DTO.NuevosCredencialesDTO.Perfil;
 import com.dirac.aplicacioningsoftfinal.Exception.GetSomethingException;
@@ -23,6 +24,8 @@ public class UsuarioService implements IUsuarioService {
     private IDocumentoService documentoService;
     @Autowired
     private ICredencialesService credencialesService;
+    @Autowired
+    private ImgurService imgurService;
 
     @Override
     public Optional<UsuarioModel> getUserById(String id) {
@@ -72,15 +75,15 @@ public class UsuarioService implements IUsuarioService {
 
     @Override
     public String updateUserEmail(String username, String newEmail) {
-    
+
         // Expresión regular para validar el email
         String emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
-    
+
         // Validar el formato del email
         if (!newEmail.matches(emailRegex)) {
             throw new GetSomethingException("El formato del email no es válido.");
         }
-    
+
         // Verificar si el nuevo email ya existe
         Optional<UsuarioModel> userWithNewEmail = usuarioRepository.findByEmail(newEmail);
         if (userWithNewEmail.isPresent()) {
@@ -89,20 +92,20 @@ public class UsuarioService implements IUsuarioService {
             // Buscar el usuario por nombre de usuario
             UsuarioModel usuario = usuarioRepository.findUsuarioByUsername(username)
                     .orElseThrow(() -> new GetSomethingException("No se pudo encontrar el usuario " + username));
-    
+
             // Actualizar el email
             usuario.setEmail(newEmail);
             usuarioRepository.save(usuario); // Guarda el cambio
         }
-    
+
         return "El email ha sido actualizado correctamente.";
     }
-    
+
     @Override
     public String updateUsername(String username, String newUsername) {
 
         Optional<UsuarioModel> usuarioWithNewUsername = usuarioRepository.findUsuarioByUsername(newUsername); // verifica
-                                                                                                           // si
+                                                                                                              // si
         // alguien con
         // ese correo existe
         if (usuarioWithNewUsername.isPresent())
@@ -113,6 +116,14 @@ public class UsuarioService implements IUsuarioService {
                     .orElseThrow(() -> new GetSomethingException("No se pudo encontrar el usuario " + username));
 
             usuario.setUsername(newUsername);
+
+            CredencialesModel credencialDelusuario = credencialesService.getByUsername(username)
+                    .orElseThrow(() -> new GetSomethingException(
+                            "ERROR FATAL, no se pudieron encontrar las credenciales del usuario."));
+
+            credencialDelusuario.setUsername(newUsername);
+
+            credencialesService.saveCredenciales(credencialDelusuario);
 
             usuarioRepository.save(usuario); // actualiza el email
 
@@ -133,6 +144,25 @@ public class UsuarioService implements IUsuarioService {
         usuarioRepository.save(updatingUsuario); // actualizamos
 
         return " El perfil del usuario : " + username + " ha sido actualizado con éxito.";
+
+    }
+
+    @Override
+    public String updateProfilePicture(String username, MultipartFile image) {
+
+        UsuarioModel usuario = getUserByUsername(username)
+                .orElseThrow(() -> new GetSomethingException("No se pudo encontrar al usuario: " + username));
+
+        // obtenemos el Perfil que vamos a actualizar
+        Perfil perfil = usuario.getPerfil();
+        String message = imgurService.uploadImage(image); // subimos la imagen
+
+        perfil.setFotoPerfil(message); // actualizamos el perfil
+        usuario.setPerfil(perfil); // actualizamos el usuario
+
+        usuarioRepository.save(usuario); // actualizamos en la base de datos.
+
+        return "La foto de perfil de " + username + " fue actualizada correctamente";
 
     }
 
