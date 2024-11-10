@@ -28,6 +28,8 @@ export default function PerfilDocuments({ params }) {
     fetchAuthorName();
   }, [autorName]);
 
+  const [propietario, setPropietario] = useState(true);  // Nuevo estado para el propietario
+
   return (
     <div className="container text-black flex flex-col w-screen">
       {/* Contenedor para el título */}
@@ -58,6 +60,7 @@ export default function PerfilDocuments({ params }) {
           filterIdioma={filterIdioma} 
           filterDates={filterDates} 
           setAuthorNameFromList={setAuthorNameFromList}  
+          propietario={propietario}
         />
       </section>
     </div>

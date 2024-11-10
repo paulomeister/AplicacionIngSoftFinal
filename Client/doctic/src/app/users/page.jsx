@@ -1,6 +1,7 @@
 import './page.css';
 
 function searchPage() {
+    
     return (
         <div class="error-container">
             <div class="error-icon">🚫OPSS...</div>

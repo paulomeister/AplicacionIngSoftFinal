@@ -74,7 +74,6 @@ public class CustomUsernameAndPasswordAuthenticationFilter extends UsernamePassw
 
         response.addHeader(jwtConfigurationVariables.getAuthorizationHeader(), jwtConfigurationVariables.getTokenPrefix() + token);
 
-
     }
 
 

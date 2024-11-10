@@ -1,12 +1,12 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import conectionDocuments from "../utils/conectionDocuments";
+import conectionDocuments from "../../utils/conectionDocuments";
 import DocumentItem from "./DocumentItem";
-import { AlertPop } from "../utils/AlertPopup";
-import "./DocumentList.css";
+import { AlertPop } from "../../utils/AlertPopup";
 import Link from "next/link";
+import "./DocumentList.css";
 
-const DocumentList = ({ autor, onVerTodos }) => {
+const DocumentList = ({ autor, onVerTodos, propietario }) => {
 
   const [titulosDocumentos, setTitulosDocumentos] = useState([]);
   const [infDocumentos, setInfDocumentos] = useState([]);
@@ -66,12 +66,11 @@ const DocumentList = ({ autor, onVerTodos }) => {
         <h2 className="written-by-text"> Documentos escritos por <span className="written-by">{autor.username}</span></h2>
         <hr />
         <div className="document-list">
-          <DocumentItem results={infDocumentos} />
+          <DocumentItem results={infDocumentos} propietario={propietario}/>
         </div>
-        <Link href={`/perfilDocuments/${autor.username}`} passHref>
-        <button as={Link}  href="" className="ver-todos-btn" onClick={onVerTodos}>
+
+        <Link className="ver-todos-btn" href={`/users/perfilDocuments/${autor.username}`}>
           Ver todos
-        </button>
         </Link>
       </div>
     );
