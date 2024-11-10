@@ -1,15 +1,17 @@
-'use client';
-import React, { useState, useEffect } from 'react';
-import AuthorInfo from './components/AuthorInfo';
-import DocumentList from './components/DocumentList';
-import conectionUser from '../utils/conectionUser';
-import './page.css';
+"use client";
+import React, { useState, useEffect, useContext } from "react";
+import AuthorInfo from "./components/AuthorInfo";
+import DocumentList from "./components/DocumentList";
+import conectionUser from "../utils/conectionUser";
+import "./page.css";
+import { AuthContext } from "app/app/context/AuthContext";
 
 function App({ params }) {
+  const { user } = useContext(AuthContext);
   const [autor, setAutor] = useState({});
-  const [username, setUsername] = useState('');
+  const [username, setUsername] = useState("");
   const [verTodos, setVerTodos] = useState(false);
-  const [propietario, setPropietario] = useState(true);
+  const [esElPropietario, setEsElPropietario] = useState(false);
 
   // ------- Llamada a la API para obtener la información del autor -----------
   const getAuthorInfo = async () => {
@@ -31,22 +33,32 @@ function App({ params }) {
     getAuthorInfo();
   }, [username]);
 
+  useEffect(() => {
+    if (user.username === username) {
+      setEsElPropietario(true);
+    } else {
+      setEsElPropietario(false);
+    }
+  }, [user]);
+
   const handleVerTodos = () => {
-    setVerTodos(true); 
+    setVerTodos(true);
   };
-  
 
   return (
     <div id="back">
       {!verTodos && (
         <div className="app">
-          <AuthorInfo autor={autor} propietario={propietario}/>
-          <DocumentList autor={autor} onVerTodos={handleVerTodos} propietario={propietario}/>
+          <AuthorInfo autor={autor} propietario={esElPropietario} />
+          <DocumentList
+            autor={autor}
+            onVerTodos={handleVerTodos}
+            propietario={esElPropietario}
+          />
         </div>
       )}
     </div>
   );
-  
 }
 
-export default App; 
+export default App;
