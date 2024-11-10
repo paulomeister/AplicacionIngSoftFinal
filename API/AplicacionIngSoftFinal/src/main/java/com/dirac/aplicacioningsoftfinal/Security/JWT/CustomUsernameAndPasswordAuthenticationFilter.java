@@ -46,8 +46,6 @@ public class CustomUsernameAndPasswordAuthenticationFilter extends UsernamePassw
 
             );
             Authentication authenticate = authenticationManager.authenticate(authentication);
-            response.addHeader("Access-Control-Allow-Methods", "POST");
-            response.addHeader("Access-Control-Allow-Origin", "*");
 
             return authenticate;
 
@@ -75,8 +73,6 @@ public class CustomUsernameAndPasswordAuthenticationFilter extends UsernamePassw
                 .compact();
 
         response.addHeader(jwtConfigurationVariables.getAuthorizationHeader(), jwtConfigurationVariables.getTokenPrefix() + token);
-        response.addHeader("Access-Control-Allow-Methods", "POST");
-        response.addHeader("Access-Control-Allow-Origin", "*");
 
     }
 
