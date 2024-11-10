@@ -15,12 +15,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 
 import javax.crypto.SecretKey;
-
-import java.util.Arrays;
 
 import static com.dirac.aplicacioningsoftfinal.Security.PermisosDeUsuarioPorRol.ADMIN;
 import static com.dirac.aplicacioningsoftfinal.Security.PermisosDeUsuarioPorRol.USUARIO;
@@ -48,6 +44,7 @@ public class SecurityConfiguration {
         
         http
                 .csrf((csrf) -> csrf.disable())
+                .cors((cors) -> cors.disable())
                 .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilter(new CustomUsernameAndPasswordAuthenticationFilter(authenticationManager, jwtConfigurationVariables, secretKey))
                 .addFilterAfter(new JwtTokenVerifier(secretKey, jwtConfigurationVariables), CustomUsernameAndPasswordAuthenticationFilter.class)
@@ -113,21 +110,6 @@ public class SecurityConfiguration {
                 .passwordEncoder(passwordEncoder);
 
         return authenticationManagerBuilder.build();
-    }
-
-    @Bean
-    UrlBasedCorsConfigurationSource corsConfigurationSource() {
-
-        CorsConfiguration configuration = new CorsConfiguration();
-
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000"));
-        configuration.setAllowedMethods(Arrays.asList("GET","POST"));
-
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-
-        return source;
-
     }
 
 }
