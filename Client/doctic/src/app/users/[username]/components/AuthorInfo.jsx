@@ -1,13 +1,16 @@
 import React, { useState, useEffect, useContext } from "react";
-import { FaClosedCaptioning, FaCog, FaEdit, FaTrash } from "react-icons/fa";
+import {
+  FaClosedCaptioning,
+  FaEdit,
+  FaSignOutAlt,
+  FaTrash,
+} from "react-icons/fa";
 import "./AuthorInfo.css";
 import Link from "next/link";
 import { AuthContext } from "app/app/context/AuthContext";
-import { Button } from "react-bootstrap";
 
 const AuthorInfo = ({ autor, propietario }) => {
-  const { cerrarSesion } = useContext(AuthContext);
-
+  const { isLoading, cerrarSesion } = useContext(AuthContext);
   const [avatar, setAvatar] = useState("");
 
   const obtenerAvatar = () => {
@@ -25,46 +28,57 @@ const AuthorInfo = ({ autor, propietario }) => {
   }, [autor]);
 
   return (
-    <div className="author-info">
-      <div className="author-avatar-container">
-        <img src={avatar} alt="Avatar del Autor" className="author-avatar" />
-        <div className="author-info-container">
-          {propietario && (
-            <div className="buttons-container">
-              <div className="icons-container ">
-                <button class="btn btn-dangerr" onClick={cerrarSesion}>
-                  <FaClosedCaptioning className="p-0 m-0" />
-                  Cerrar Sesión
+    !isLoading && (
+      <div className="author-info">
+        <div className="author-avatar-container">
+          <img src={avatar} alt="Avatar del Autor" className="author-avatar" />
+          <div className="author-info-container">
+            {propietario && (
+              <div className="flex justify-center items-center gap-4 w-[600px] p-4">
+                <button
+                  className="btn btn-danger flex items-center space-x-2 w-[150px]"
+                  onClick={cerrarSesion}
+                >
+                  <span className="text-sm">
+                    <FaSignOutAlt />
+                    Cerrar Sesión
+                  </span>
                 </button>
-              </div>
-              <div className="icons-container">
+
                 <Link
-                  className="edit-icon"
+                  className=" flex items-center space-x-2 text-blue-700 hover:text-blue-900"
                   href={`/users/editProfile/${autor.username}`}
                 >
                   <FaEdit />
-                  <p>Editar Perfil</p>
+                  <span>Editar Perfil</span>
                 </Link>
-                <Link className="config-icon" href="/users">
+
+                <Link
+                  className="flex items-center space-x-2 text-red-700 hover:text-red-900"
+                  href="/users"
+                >
                   <FaTrash />
-                  <p>Eliminar Cuenta</p>
+                  <span>Eliminar Cuenta</span>
                 </Link>
               </div>
+            )}
+            <div className="author-name-container hover:cursor-default">
+              <h2 className="names">
+                {`${autor.perfil?.nombre} ${autor.perfil?.apellido}`}
+              </h2>
+              <h2 className="username">@{autor.username}</h2>
+              <h4 className="date hover:cursor-default">
+                Ingresó a{" "}
+                <span id="span-doctic" className="hover:cursor-default">
+                  DocTIC
+                </span>{" "}
+                en el {autor.fechaRegistro}
+              </h4>
             </div>
-          )}
-          <div className="author-name-container">
-            <h2 className="names">
-              {`${autor.perfil?.nombre} ${autor.perfil?.apellido}`}
-            </h2>
-            <h2 className="username">@{autor.username}</h2>
-            <h4 className="date">
-              Ingresó a <span id="span-doctic">DocTIC</span> en el{" "}
-              {autor.fechaRegistro}
-            </h4>
           </div>
         </div>
       </div>
-    </div>
+    )
   );
 };
 

@@ -1,19 +1,25 @@
 "use client";
 
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { Button } from "@nextui-org/react";
 import { FaUserAlt, FaLock, FaEnvelope, FaCamera } from "react-icons/fa";
 import { Input } from "@nextui-org/input";
 import { Link } from "@nextui-org/link";
 import { Divider } from "@nextui-org/divider";
-import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from "@nextui-org/dropdown";
+import {
+  Dropdown,
+  DropdownTrigger,
+  DropdownMenu,
+  DropdownItem,
+} from "@nextui-org/dropdown";
 import { Card, CardBody } from "@nextui-org/card";
 import { Tooltip } from "@nextui-org/tooltip";
 import { Progress } from "@nextui-org/progress";
-import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { useRouter } from "next/navigation";
 import axios from "axios";
+import { AuthContext } from "app/app/context/AuthContext";
 
 export default function RegisterForm() {
   const [username, setUsername] = useState("");
@@ -27,6 +33,8 @@ export default function RegisterForm() {
   const [profileImage, setProfileImage] = useState(null);
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
+  const { notificacionDeError, notificacionDeExito } = useContext(AuthContext);
+
   const router = useRouter();
 
   const securityQuestions = [
@@ -37,7 +45,7 @@ export default function RegisterForm() {
     "¿Cuál es tu libro favorito?",
     "¿Cuál es tu película favorita?",
     "¿Cuál es el nombre de tu madre?",
-    "¿Cómo se llamaba tu primer maestro?"
+    "¿Cómo se llamaba tu primer maestro?",
   ];
 
   const validateEmail = (email) => {
@@ -75,21 +83,21 @@ export default function RegisterForm() {
   const handleNextStep = (e) => {
     e.preventDefault();
     if (!username || !email || !password || !firstName || !lastName) {
-      toast.error("Por favor completa todos los campos requeridos");
+      notificacionDeError("Por favor completa todos los campos requeridos");
       return;
     }
     if (emailError || passwordError) {
-      toast.error("Por favor corrige los errores antes de continuar");
+      notificacionDeError("Por favor corrige los errores antes de continuar");
       return;
     }
     setIsSecondStep(true);
-    toast.success("¡Primer paso completado!");
+    notificacionDeExito("¡Primer paso completado!");
   };
 
   const getProgressValue = () => {
     let progress = 0;
     const fields = [username, email, password, firstName, lastName];
-    const fieldsCompleted = fields.filter(field => field).length;
+    const fieldsCompleted = fields.filter((field) => field).length;
     progress = (fieldsCompleted / fields.length) * 100;
     return progress;
   };
@@ -97,7 +105,9 @@ export default function RegisterForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!securityQuestion || !securityAnswer) {
-      toast.error("Por favor completa la pregunta y respuesta de seguridad");
+      notificacionDeError(
+        "Por favor completa la pregunta y respuesta de seguridad"
+      );
       return;
     }
 
@@ -110,25 +120,28 @@ export default function RegisterForm() {
         fotoPerfil: "",
       },
       password,
-      preguntaSeguridad: { pregunta: securityQuestion, respuesta: securityAnswer },
+      preguntaSeguridad: {
+        pregunta: securityQuestion,
+        respuesta: securityAnswer,
+      },
     };
 
     try {
       const formData = new FormData();
-      formData.append('credentials', JSON.stringify(registrationData));
+      formData.append("credentials", JSON.stringify(registrationData));
 
       let response;
 
       if (profileImage) {
         // Caso con imagen
-        formData.append('image', profileImage);
+        formData.append("image", profileImage);
         response = await axios.post(
           "http://localhost:8080/registrarseConImagen",
           formData,
           {
             headers: {
-              "Content-Type": "multipart/form-data"
-            }
+              "Content-Type": "multipart/form-data",
+            },
           }
         );
       } else {
@@ -138,37 +151,35 @@ export default function RegisterForm() {
           formData,
           {
             headers: {
-              "Content-Type": "multipart/form-data"
-            }
+              "Content-Type": "multipart/form-data",
+            },
           }
         );
       }
 
-      toast.success("¡Registro completado con éxito!");
+      notificacionDeExito("¡Registro completado con éxito!");
       setTimeout(() => router.push("/login"), 3000);
     } catch (error) {
       if (error.response) {
-        toast.error(error.response.data || "Error al registrar");
+        notificacionDeError(error.response.data || "Error al registrar");
       } else {
-        toast.error("Error de conexión. Por favor intenta más tarde");
+        notificacionDeError("Error de conexión. Por favor intenta más tarde");
       }
       console.error("Error al enviar la solicitud:", error);
     }
-
-
-
-  }
+  };
 
   return (
     <section className="w-1/2 min-h-screen ml-auto">
-      <ToastContainer position="top-right" theme="colored" />
       <div className="flex flex-col justify-center items-center h-full px-8 py-12">
         <Card className="w-full max-w-md">
           <CardBody className="gap-4">
             <div className="text-center">
               <h2 className="text-3xl font-bold mb-2">Crear una cuenta</h2>
               <p className="text-default-500 mb-4">
-                {isSecondStep ? "Configura tu seguridad" : "Información personal"}
+                {isSecondStep
+                  ? "Configura tu seguridad"
+                  : "Información personal"}
               </p>
               <Progress
                 value={getProgressValue()}
@@ -180,27 +191,37 @@ export default function RegisterForm() {
 
             {!isSecondStep ? (
               <form onSubmit={handleNextStep} className="space-y-6">
-                <Tooltip content="Elige un nombre de usuario único" placement="left">
+                <Tooltip
+                  content="Elige un nombre de usuario único"
+                  placement="left"
+                >
                   <Input
                     placeholder="Nombre de Usuario"
                     label="Nombre de Usuario"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
-                    startContent={<FaUserAlt className="text-default-400 pointer-events-none flex-shrink-0" />}
+                    startContent={
+                      <FaUserAlt className="text-default-400 pointer-events-none flex-shrink-0" />
+                    }
                     size="lg"
                     variant="bordered"
                     isRequired
                   />
                 </Tooltip>
 
-                <Tooltip content="Escribe una dirección de correo electronico valida" placement="left">
+                <Tooltip
+                  content="Escribe una dirección de correo electronico valida"
+                  placement="left"
+                >
                   <Input
                     placeholder="Correo Electrónico"
                     label="Correo Electrónico"
                     type="email"
                     value={email}
                     onChange={handleEmailChange}
-                    startContent={<FaEnvelope className="text-default-400 pointer-events-none flex-shrink-0" />}
+                    startContent={
+                      <FaEnvelope className="text-default-400 pointer-events-none flex-shrink-0" />
+                    }
                     size="lg"
                     variant="bordered"
                     errorMessage={emailError}
@@ -215,7 +236,9 @@ export default function RegisterForm() {
                     label="Nombre"
                     value={firstName}
                     onChange={(e) => setFirstName(e.target.value)}
-                    startContent={<FaUserAlt className="text-default-400 pointer-events-none flex-shrink-0" />}
+                    startContent={
+                      <FaUserAlt className="text-default-400 pointer-events-none flex-shrink-0" />
+                    }
                     size="lg"
                     variant="bordered"
                     isRequired
@@ -226,21 +249,28 @@ export default function RegisterForm() {
                     label="Apellido"
                     value={lastName}
                     onChange={(e) => setLastName(e.target.value)}
-                    startContent={<FaUserAlt className="text-default-400 pointer-events-none flex-shrink-0" />}
+                    startContent={
+                      <FaUserAlt className="text-default-400 pointer-events-none flex-shrink-0" />
+                    }
                     size="lg"
                     variant="bordered"
                     isRequired
                   />
                 </div>
 
-                <Tooltip content="Mínimo 8 caracteres, una mayúscula y un número" placement="left">
+                <Tooltip
+                  content="Mínimo 8 caracteres, una mayúscula y un número"
+                  placement="left"
+                >
                   <Input
                     type="password"
                     placeholder="Contraseña"
                     label="Contraseña"
                     value={password}
                     onChange={handlePasswordChange}
-                    startContent={<FaLock className="text-default-400 pointer-events-none flex-shrink-0" />}
+                    startContent={
+                      <FaLock className="text-default-400 pointer-events-none flex-shrink-0" />
+                    }
                     size="lg"
                     variant="bordered"
                     errorMessage={passwordError}
@@ -267,7 +297,8 @@ export default function RegisterForm() {
                       className="w-full justify-start h-14"
                       startContent={<FaLock className="text-default-400" />}
                     >
-                      {securityQuestion || "Selecciona una pregunta de seguridad"}
+                      {securityQuestion ||
+                        "Selecciona una pregunta de seguridad"}
                     </Button>
                   </DropdownTrigger>
                   <DropdownMenu
@@ -275,9 +306,7 @@ export default function RegisterForm() {
                     onAction={(key) => setSecurityQuestion(key)}
                   >
                     {securityQuestions.map((question) => (
-                      <DropdownItem key={question}>
-                        {question}
-                      </DropdownItem>
+                      <DropdownItem key={question}>{question}</DropdownItem>
                     ))}
                   </DropdownMenu>
                 </Dropdown>
@@ -293,7 +322,9 @@ export default function RegisterForm() {
                 />
 
                 <div className="space-y-2">
-                  <label className="block text-lg font-semibold">Foto de Perfil</label>
+                  <label className="block text-lg font-semibold">
+                    Foto de Perfil
+                  </label>
                   <div className="flex items-center space-x-4">
                     <input
                       type="file"
@@ -301,8 +332,11 @@ export default function RegisterForm() {
                       onChange={(e) => {
                         const file = e.target.files[0];
                         if (file) {
-                          if (file.size > 5242880) { // 5MB
-                            toast.error("La imagen no debe superar los 5MB");
+                          if (file.size > 5242880) {
+                            // 5MB
+                            notificacionDeError(
+                              "La imagen no debe superar los 5MB"
+                            );
                             return;
                           }
                           setProfileImage(file);

@@ -13,12 +13,10 @@ import {
   Button,
 } from "@nextui-org/react";
 import { AuthContext, AuthProvider } from "../context/AuthContext";
+import { ToastContainer } from "react-toastify";
 
 export const NavbarComp = () => {
-  const { isLoggedIn, user } = useContext(AuthContext);
-
-  console.log(user);
-
+  const { user, isLoggedIn, isLoading } = useContext(AuthContext);
   const [menuOpen, setMenuOpen] = useState(false);
 
   const toggleMenu = () => {
@@ -26,65 +24,70 @@ export const NavbarComp = () => {
   };
 
   return (
-    <AuthProvider>
-      <Navbar position="sticky" isBordered maxWidth="2xl">
-        <NavbarBrand>
-          <Link href="/home">
-            <Image src="/logo.png" alt="Logo" width={50} height={50} />
+    <Navbar position="sticky" isBordered maxWidth="2xl">
+      <NavbarBrand>
+        <Link href="/home">
+          <Image src="/logo.png" alt="Logo" width={50} height={50} />
+        </Link>
+        <Link className="font-bold  text-inherit" href="/home">
+          DocTIC
+        </Link>
+      </NavbarBrand>
+      <NavbarContent className="sm:flex gap-4" justify="center">
+        <NavbarItem>
+          <Link color="foreground" href="/home">
+            Inicio
           </Link>
-          <Link className="font-bold  text-inherit" href="/home">
-            DocTIC
+        </NavbarItem>
+        <NavbarItem>
+          <Link color="foreground" href="/search">
+            Buscar
           </Link>
-        </NavbarBrand>
-        <NavbarContent className="sm:flex gap-4" justify="center">
-          <NavbarItem>
-            <Link color="foreground" href="/home">
-              Inicio
+        </NavbarItem>
+        <NavbarItem>
+          <Link className=" font-bold " color="primary" href="/document/new">
+            Subir
+          </Link>
+        </NavbarItem>
+      </NavbarContent>
+      <NavbarContent justify="end">
+        {isLoading ? (
+          <></>
+        ) : isLoggedIn ? (
+          <NavbarItem className="lg:flex space-x-5 mt-2">
+            <img
+              src={user.perfil.fotoPerfil}
+              className="shadow-lg rounded-full h-[40px] w-[40px]"
+            />
+            <Link
+              className="italic "
+              color="foreground"
+              href={`/users/${user.username}`}
+            >
+              {user.perfil.nombre} {user.perfil.apellido}
             </Link>
           </NavbarItem>
-          <NavbarItem>
-            <Link color="foreground" href="/search">
-              Buscar
-            </Link>
-          </NavbarItem>
-        </NavbarContent>
-        <NavbarContent justify="end">
-          {isLoggedIn ? (
+        ) : (
+          <>
             <NavbarItem className="lg:flex">
-              <img src={user.perfil.fotoPerfil} height={40} width={40} />
-              {/* //TODO! arreglar los estilos */}
-              <Link color="foreground" href={`/users/${user.username}`}>
-              {/* //TODO! arreglar los estilos */}
-                {user.username}
-              </Link>
+              <Button
+                as={Link}
+                color="primary"
+                href="/login"
+                variant="bordered"
+              >
+                Iniciar Sesión
+              </Button>
             </NavbarItem>
-          ) : (
-            <>
-              <NavbarItem className="lg:flex">
-                <Button
-                  as={Link}
-                  color="primary"
-                  href="/login"
-                  variant="bordered"
-                >
-                  Iniciar Sesión
-                </Button>
-              </NavbarItem>
-              <NavbarItem>
-                <Button
-                  as={Link}
-                  color="primary"
-                  href="/register"
-                  variant="flat"
-                >
-                  Registrarse
-                </Button>
-              </NavbarItem>
-            </>
-          )}
-        </NavbarContent>
-      </Navbar>
-    </AuthProvider>
+            <NavbarItem>
+              <Button as={Link} color="primary" href="/register" variant="flat">
+                Registrarse
+              </Button>
+            </NavbarItem>
+          </>
+        )}
+      </NavbarContent>
+    </Navbar>
   );
 
   return (

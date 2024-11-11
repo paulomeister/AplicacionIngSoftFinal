@@ -56,12 +56,6 @@
   flex-direction: row;
 }
 
-.config-icon p, .edit-icon p{
-  color: black;
-  margin-left: 5px;
-  margin-top: 2px;
-  font-size: small;
-}
 
 .config-icon:hover{
   color: #ff0000;

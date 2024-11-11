@@ -5,9 +5,10 @@ import DocumentList from "./components/DocumentList";
 import conectionUser from "../utils/conectionUser";
 import "./page.css";
 import { AuthContext } from "app/app/context/AuthContext";
+import { SpinerComp } from "app/app/document/[id]/components/SpinnerComp";
 
 function App({ params }) {
-  const { user } = useContext(AuthContext);
+  const { user, isLoading } = useContext(AuthContext);
   const [autor, setAutor] = useState({});
   const [username, setUsername] = useState("");
   const [verTodos, setVerTodos] = useState(false);
@@ -45,7 +46,9 @@ function App({ params }) {
     setVerTodos(true);
   };
 
-  return (
+  return isLoading ? (
+    <SpinerComp />
+  ) : (
     <div id="back">
       {!verTodos && (
         <div className="app">

@@ -6,7 +6,6 @@ import { useState } from "react";
 
 export function DocumentListItem({ doc, handleEdit, handleDelete, propietario }) {
   const [show, setShow] = useState(false);
-console.log(doc)
   const handleClose = () => {
     setShow(false);
   };

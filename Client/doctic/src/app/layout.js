@@ -4,8 +4,10 @@ import { Roboto_Flex } from "next/font/google";
 import "./globals.css";
 import Navbar from "./components/NavBar";
 import "bootstrap/dist/css/bootstrap.min.css";
+import "react-toastify/dist/ReactToastify.css";
+
 import { NextUIProvider } from "@nextui-org/react";
-import { AuthProvider } from "./context/AuthContext"; // Asegúrate de que esta ruta sea correcta
+import { AuthProvider } from "./context/AuthContext";
 
 const font = Roboto_Flex({
   weight: ["300", "400", "500", "700"],

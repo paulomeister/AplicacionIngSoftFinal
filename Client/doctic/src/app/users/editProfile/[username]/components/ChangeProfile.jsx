@@ -1,37 +1,39 @@
-'use client';
-import { useEffect, useState } from "react";
+"use client";
+import { useContext, useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { AuthContext } from "app/app/context/AuthContext";
 
 export function EditProfile({ username }) {
-  /////////////
-  //! OBTENER LOS DATOS DEL USUARIO CAMBIARÁ CUANDO SE HAGA LO DE AUTENTICACIÓN!
-  const [user, setUser] = useState();
-
-  // CARGAR EL USUARIO
-  useEffect(() => {
-    async function fetchUserData() {
-      const response = await fetch(
-        `http://localhost:8080/api/Usuario/getByUsername/${username}`
-      );
-      const data = await response.json();
-      setUser(data); // Setea el user
-    }
-
-    fetchUserData();
-  }, []);
-
-
+  const {
+    notificacionDeError,
+    notificacionDeExito,
+    user,
+    isLoading,
+    clientKey,
+  } = useContext(AuthContext);
   ////////////////////////////////////////////////////////////////////////////////////////
 
   const [formData, setFormData] = useState({
     nombre: "",
     apellido: "",
-    fotoDePerfil: user?.fotoDePerfil || "", // ! OJO CON ESTO, ESTO ES PARA EL USUARIO A U T E N T I C A D O
+    fotoPerfil: "",
   });
   const [errors, setErrors] = useState({
     nombre: false,
     apellido: false,
   });
+
+  useEffect(() => {
+    if (user?.perfil?.fotoPerfil) {
+      const obj = {
+        nombre: formData.nombre,
+        apellido: formData.apellido,
+        fotoPerfil: user?.perfil?.fotoPerfil,
+      };
+
+      setFormData(obj);
+    }
+  }, [user]);
 
   const nameRegex = /^[a-zA-ZÀ-ÿ\s]+$/; // Solo letras y espacios, sin caracteres especiales
 
@@ -52,36 +54,45 @@ export function EditProfile({ username }) {
 
     // Verificar errores antes de enviar
     if (errors.nombre || errors.apellido) {
-      alert("Por favor, corrija los errores antes de enviar.");
+      notificacionDeError("Por favor, corrija los errores antes de enviar.");
       return;
     }
 
     const perfil = { ...formData };
+
+
+    console.log(perfil)
+
 
     try {
       const response = await fetch(
         `http://localhost:8080/api/Usuarios/updateProfile/${username}`,
         {
           method: "PUT",
-          body: perfil,
-          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(perfil),
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: clientKey,
+          },
         }
       );
       const data = await response.json();
 
       if (data.status === 200) {
-        alert(data.message); // mostrar el mensaje de que si se cumplió el cambio
+        notificacionDeExito(data.message + "Recarga la página para ver los cambios"); // mostrar el mensaje de que si se cumplió el cambio
       } else {
         throw new Error(data.message);
       }
     } catch (exc) {
-      alert(exc.message);
+
+      notificacionDeError(
+        "Ha habido un error mientras intentabas actualizar tus datos"
+      );
     }
-    console.log("Datos enviados:", formData);
-    alert("Datos enviados correctamente.");
   }
 
   return (
+    !isLoading && (
       <div className="card shadow p-4" style={{ width: "400px" }}>
         <h2 className="text-center mb-4">Editar Perfil de {username}</h2>
         <form onSubmit={handleSubmit}>
@@ -134,6 +145,7 @@ export function EditProfile({ username }) {
             Guardar Cambios
           </button>
         </form>
-    </div>
+      </div>
+    )
   );
 }

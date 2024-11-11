@@ -78,38 +78,41 @@ public class UsuarioController {
 
     // Actualizar el nombre de usuario
     @PutMapping("updateUsername/{username}/{newUsername}")
-    public ResponseEntity<String> updateUsername(@PathVariable String username, @PathVariable String newUsername) {
+    public ResponseEntity<?> updateUsername(@PathVariable String username, @PathVariable String newUsername) {
         try {
             String response = usuarioService.updateUsername(username, newUsername);
-            return ResponseEntity.ok(response);
+            return ResponseEntity.status(200).body(new Res(200, response));
         } catch (UpdateException | GetSomethingException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
-    // Actualizar el nombre y / o apellido del usuario 
-    //! NO PUEDE ENVIARSE EL PERFIL VACÍO, DESDE EL FRONTEND ENVIAR EL PERFIL (Con los campos cambiados y sin cambiar)
+    // Actualizar el nombre y / o apellido del usuario
+    // ! NO PUEDE ENVIARSE EL PERFIL VACÍO, DESDE EL FRONTEND ENVIAR EL PERFIL (Con
+    // los campos cambiados y sin cambiar)
     @PutMapping("/updateProfile/{username}")
-    public ResponseEntity<String> updateProfile(@PathVariable String username, @RequestBody Perfil newProfile) {
+    public ResponseEntity<?> updateProfile(@PathVariable String username, @RequestBody Perfil newProfile) {
         try {
-            String response = usuarioService.updateProfile(username, newProfile);
-            return ResponseEntity.ok(response);
+            Res res = new Res();
+
+            res.setMessage(usuarioService.updateProfile(username, newProfile));
+            res.setStatus(200);
+            return ResponseEntity.status(res.getStatus()).body(res);
         } catch (GetSomethingException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
     @PutMapping("/{username}/updateProfilePicture")
-    public ResponseEntity<String> updateProfilePicture(@RequestParam("image") MultipartFile image, @PathVariable("username") String username) {
+    public ResponseEntity<?> updateProfilePicture(@RequestParam("image") MultipartFile image,
+            @PathVariable("username") String username) {
         try {
             String response = usuarioService.updateProfilePicture(username, image);
-            return ResponseEntity.ok(response);
+            return ResponseEntity.status(200).body(new Res(200, response));
         } catch (GetSomethingException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-
-
 
     @DeleteMapping("/deleteUser/{username}")
     public ResponseEntity<?> deleteUser(@PathVariable("username") String username) {
