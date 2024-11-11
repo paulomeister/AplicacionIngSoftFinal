@@ -6,10 +6,17 @@
     margin-top: 20px;
     border-radius: 8px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    min-width: 600px;
     max-width: 70vw;
     width: auto;
   }
+
+.documentTitle{
+  cursor:pointer
+}
+
+.documentTitle:hover{
+  color:gray
+}
 
   p{
     font-size: 80%;

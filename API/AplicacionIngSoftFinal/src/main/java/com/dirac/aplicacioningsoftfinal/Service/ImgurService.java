@@ -39,7 +39,6 @@ public class ImgurService {
             res = imageUrl;
         } catch (Exception e) {
             res = e.getMessage();
-            System.out.println(res);
         }
     
         return res;

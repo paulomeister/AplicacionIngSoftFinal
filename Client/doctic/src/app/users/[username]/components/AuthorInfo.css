@@ -16,49 +16,84 @@
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  width: 90%;
+  width: 100%;
+  height: 100%;
 }
 
 .author-avatar{
   box-sizing: border-box;
   border-radius: 50%;
-  width:30%; 
-  height:30%;
+  width:40%; 
+  margin-right: 10%;
 }
 
-.author-name-container{
-  display: flex;
-  justify-content: center;
-  width: 100%;
-}
-
-.author-name{
-  font-size: xx-large;
-  font-weight: bold;
-}
-
-.info-box{
-  background-color: rgb(255, 250, 253);
+.author-info-container{
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  width: 70%;
-  border: 1px solid rgba(164, 176, 192, 0.295);
-  border-radius: 10px;
-  margin-top: 10px;
-  margin-bottom: 10px;
-  padding: 20px;
+  width: 90%;
+  margin-bottom: 10%;
 }
 
-.info-box p{
-  margin-top: 10px;
+.buttons-container{
+  display: flex;
+  justify-content: right;
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.icons-container{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+  font-size: x-large;
+  margin-bottom: 20px;
+  width: 60%;
+}
+
+.config-icon, .edit-icon{
+  display: flex;
+  flex-direction: row;
+}
+
+.config-icon p, .edit-icon p{
+  color: black;
+  margin-left: 5px;
+  margin-top: 2px;
+  font-size: small;
+}
+
+.config-icon:hover{
+  color: #ff0000;
+  cursor: pointer;
+}
+
+.config-icon:hover p{
+  color: #ff0303;
+  cursor: pointer;
+}
+
+.edit-icon:hover{
+  color: #269e1c;
+  cursor: pointer;
+}
+
+.edit-icon:hover p{
+  color: #269e1c;
+  cursor: pointer;
 }
 
 .author-name-container{
   display: flex;
   justify-content: center;    
   flex-direction: column;
-  margin-left: 20px;
+  align-items: left;
+  margin-top: 5%;
+}
+
+.author-name{
+  font-size: xx-large;
+  font-weight: bold;
 }
 
 .names{
@@ -81,33 +116,3 @@
   margin-top: 10px;
 }
 
-.icons-container{
-  display: flex;
-  flex-direction: row;
-  justify-content: space-around;
-  align-items: center;
-  font-size: xx-large;
-  width: 40%;
-}
-
-.config-icon, .edit-icon{
-  display: flex;
-  flex-direction: row;
-}
-
-.config-icon p, .edit-icon p{
-  color: black;
-  margin-left: 5px;
-  margin-top: 5px;
-  font-size: medium;
-}
-
-.config-icon:hover, .edit-icon:hover{
-  color: #696969;
-  cursor: pointer;
-}
-
-.config-icon:hover p, .edit-icon:hover p{
-  color: #696969;
-  cursor: pointer;
-}

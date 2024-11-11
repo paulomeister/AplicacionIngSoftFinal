@@ -21,13 +21,13 @@ export function Author({
         </h1>
         <div className="authors-name">
           <Link
-            href={`/perfilDocuments/${username}`}
+            href={`/users/${username}`}
             className="author-name hover:underline"
           >
             {nombre} {apellido}
           </Link>
 
-          <Link href={`/perfilDocuments/${username}`} className="flex text-sm">
+          <Link href={`/users/${username}`} className="flex text-sm">
             @{username}
           </Link>
         </div>

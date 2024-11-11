@@ -5,7 +5,7 @@
     align-items: center;
     justify-content: center;
     min-height: 70vh;
-    width: 60vw;
+    min-width: 70vw;
     border-radius: 20px;
     border: 1px solid rgba(177, 177, 177, 0.2);
 }

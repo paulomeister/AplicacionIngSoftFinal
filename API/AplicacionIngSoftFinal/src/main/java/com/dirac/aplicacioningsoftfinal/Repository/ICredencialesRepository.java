@@ -7,6 +7,8 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
+import static com.dirac.aplicacioningsoftfinal.Model.CredencialesModel.*;
+
 @Repository
 public interface ICredencialesRepository extends MongoRepository<CredencialesModel, String> {
 
