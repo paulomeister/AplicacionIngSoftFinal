@@ -60,7 +60,7 @@ export const NavbarComp = () => {
               className="shadow-lg rounded-full h-[40px] w-[40px]"
             />
             <Link
-              className="italic "
+
               color="foreground"
               href={`/users/${user.username}`}
             >

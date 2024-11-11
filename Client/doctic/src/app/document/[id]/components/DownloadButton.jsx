@@ -4,9 +4,10 @@ import { useContext, useState } from "react";
 import { Alert } from "react-bootstrap";
 import { Axios } from "axios";
 import { AuthContext } from "app/app/context/AuthContext";
+import { Ingrid_Darling } from "next/font/google";
 
 export const DownloadButton = ({ archivo }) => {
-  const { user, isLoggedIn, clientKey } = useContext(AuthContext);
+  const { user, isLoggedIn, clientKey, notificacionDeError,notificacionDeExito } = useContext(AuthContext);
 
   const userId = isLoggedIn ? user._id : null;
   const documentId = archivo._id;
@@ -21,10 +22,12 @@ export const DownloadButton = ({ archivo }) => {
     setError(null);
     setShowAlert(false); // Reset alert visibility
 
-    if (!userId) {
-      throw new Error(
+    if (!userId || !isLoggedIn) { // si no está logeado entonces que nunca haga la petición
+      notificacionDeError(
         "No puedes descargar un documento si no te has registrado"
       );
+      setLoading(false)
+      return
     }
 
     const form = new FormData();
@@ -71,9 +74,9 @@ export const DownloadButton = ({ archivo }) => {
       document.body.removeChild(link);
 
       // Muestra alerta tras la descarga
-      setShowAlert(true);
+      notificacionDeExito(true);
     } catch (e) {
-      setError(`Error: ${e.message}`);
+      notificacionDeError(`Error: ${e.message}`);
     } finally {
       setLoading(false);
     }

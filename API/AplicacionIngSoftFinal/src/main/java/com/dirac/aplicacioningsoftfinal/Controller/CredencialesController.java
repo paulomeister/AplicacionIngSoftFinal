@@ -48,7 +48,6 @@ public class CredencialesController {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
 
         } catch (Exception e) {
-            System.out.println(e.getMessage());
             return ResponseEntity.status(500).body("ERROR: " + e.getMessage());
         }
 

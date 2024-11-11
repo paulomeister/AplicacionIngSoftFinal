@@ -137,7 +137,6 @@ const Search = () => {
     handleMapearFiltros();
     setTitulosSugeridos([]);
     setMostrarResultados(true); 
-    console.log(titulo);
   };
 
   // ---------------- función para actualizar busqueda al cambiar el filtros -------------------------

@@ -1,17 +1,22 @@
 import React, { useState, useEffect, useContext } from "react";
-import {
-  FaClosedCaptioning,
-  FaEdit,
-  FaSignOutAlt,
-  FaTrash,
-} from "react-icons/fa";
+import axios from "axios";
+import { FaEdit, FaSignOutAlt, FaTrash } from "react-icons/fa";
 import "./AuthorInfo.css";
 import Link from "next/link";
 import { AuthContext } from "app/app/context/AuthContext";
 
 const AuthorInfo = ({ autor, propietario }) => {
-  const { isLoading, cerrarSesion } = useContext(AuthContext);
+  const {
+    notificacionDeExito,
+    notificacionDeError,
+    user,
+    isLoading,
+    clientKey,
+    cerrarSesion,
+  } = useContext(AuthContext);
   const [avatar, setAvatar] = useState("");
+  const [confirmUsername, setConfirmUsername] = useState(""); // Estado para el nombre de usuario de confirmación
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false); // Estado para mostrar el prompt de confirmación
 
   const obtenerAvatar = () => {
     if (autor && autor.perfil?.fotoPerfil) {
@@ -27,11 +32,43 @@ const AuthorInfo = ({ autor, propietario }) => {
     }
   }, [autor]);
 
+  const handleDeleteAccount = async () => {
+    if (confirmUsername === user.username) {
+      // Verifica que el nombre de usuario ingresado coincida
+      try {
+        await axios.delete(
+          `http://localhost:8080/api/Usuarios/deleteUser/${user.username}`,
+          {},
+          {
+            headers: {
+              Authorization: clientKey,
+            },
+          }
+        );
+        cerrarSesion(); // Cierra sesión después de eliminar la cuenta
+        notificacionDeExito("Cuenta eliminada con éxito.");
+
+        setTimeout(() => {
+          window.location.href = "/home";
+        }, 5000);
+      } catch (error) {
+        console.error("Error al eliminar la cuenta:", error);
+        notificacionDeError("Hubo un error al intentar eliminar la cuenta.");
+      }
+    } else {
+      notificacionDeError("El nombre de usuario ingresado no coincide.");
+    }
+  };
+
   return (
     !isLoading && (
       <div className="author-info">
         <div className="author-avatar-container">
-          <img src={avatar} alt="Avatar del Autor" className="author-avatar" />
+          <img
+            src={avatar}
+            alt="Avatar del Autor"
+            className=" object-contain h-[150px] w-[150px] rounded-full "
+          />
           <div className="author-info-container">
             {propietario && (
               <div className="flex justify-center items-center gap-4 w-[600px] p-4">
@@ -53,13 +90,13 @@ const AuthorInfo = ({ autor, propietario }) => {
                   <span>Editar Perfil</span>
                 </Link>
 
-                <Link
+                <button
                   className="flex items-center space-x-2 text-red-700 hover:text-red-900"
-                  href="/users"
+                  onClick={() => setShowDeleteConfirm(true)}
                 >
                   <FaTrash />
                   <span>Eliminar Cuenta</span>
-                </Link>
+                </button>
               </div>
             )}
             <div className="author-name-container hover:cursor-default">
@@ -77,6 +114,29 @@ const AuthorInfo = ({ autor, propietario }) => {
             </div>
           </div>
         </div>
+
+        {showDeleteConfirm && (
+          <div className="delete-confirmation">
+            <h3>Confirma la eliminación de tu cuenta</h3>
+            <p>Por favor, escribe tu nombre de usuario para confirmar:</p>
+            <input
+              type="text"
+              value={confirmUsername}
+              onChange={(e) => setConfirmUsername(e.target.value)}
+              placeholder="Nombre de usuario"
+              className="username-input"
+            />
+            <button onClick={handleDeleteAccount} className="btn btn-danger">
+              Confirmar eliminación
+            </button>
+            <button
+              onClick={() => setShowDeleteConfirm(false)}
+              className="btn btn-secondary"
+            >
+              Cancelar
+            </button>
+          </div>
+        )}
       </div>
     )
   );

@@ -28,8 +28,7 @@ export const AuthProvider = ({ children }) => {
       }
     }
 
-
-     setIsLoading(false)
+    setIsLoading(false);
   }, []);
 
   function notificacionDeExito(message) {
@@ -68,7 +67,6 @@ export const AuthProvider = ({ children }) => {
         setClientKey(storedClientKey);
         setIsLoading(false);
       } else {
-        console.log("Usuario no encontrado");
         setIsLoggedIn(false);
         setIsLoading(false);
       }
@@ -112,10 +110,10 @@ export const AuthProvider = ({ children }) => {
         setIsLoading(false);
       }
     } catch (error) {
+      if (error.status === 401)
+        notificacionDeError("Verifica tus credenciales");
+      else notificacionDeError(error.message);
 
-      if (error.status === 401) notificacionDeError("Verifica tus credenciales")
-      else notificacionDeError(error.message)
-      
       setIsLoggedIn(false);
       setIsLoading(false);
     }

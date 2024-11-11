@@ -15,14 +15,6 @@ export default function LoginPage() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-
-    console.log(username, password);
-
-    var payload = {
-      username: username,
-      password: password,
-    };
-
     try {
       obtenerAutorizacion(username, password);
     } catch (err) {
@@ -71,7 +63,8 @@ export default function LoginPage() {
             <a className="text-primary hover:underline" href="/forgotPassword">
               Recupérala.
             </a>
-          </div><div className="mt-2 text-center text-sm text-muted-foreground">
+          </div>
+          <div className="mt-2 text-center text-sm text-muted-foreground">
             ¿No tienes una cuenta?{" "}
             <a className="text-primary hover:underline" href="/register">
               Crear cuenta

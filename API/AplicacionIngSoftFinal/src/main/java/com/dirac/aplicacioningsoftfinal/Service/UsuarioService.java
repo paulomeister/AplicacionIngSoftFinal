@@ -136,9 +136,6 @@ public class UsuarioService implements IUsuarioService {
     @Override
     public String updateProfile(String username, Perfil newProfile) {
 
-
-        System.out.println("entró al servicio");
-
         UsuarioModel updatingUsuario = usuarioRepository.findUsuarioByUsername(username)
                 .orElseThrow(() -> new GetSomethingException("No se pudo encontrar al usuario: " + username));
 

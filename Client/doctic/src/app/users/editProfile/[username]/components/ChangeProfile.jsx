@@ -61,9 +61,6 @@ export function EditProfile({ username }) {
     const perfil = { ...formData };
 
 
-    console.log(perfil)
-
-
     try {
       const response = await fetch(
         `http://localhost:8080/api/Usuarios/updateProfile/${username}`,

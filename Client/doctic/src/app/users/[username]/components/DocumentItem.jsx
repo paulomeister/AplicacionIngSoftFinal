@@ -16,7 +16,7 @@ import { AuthContext } from "app/app/context/AuthContext";
 import axios from "axios";
 
 const DocumentItem = ({ results, propietario }) => {
-  const { clientKey } = useContext(AuthContext);
+  const { clientKey, user } = useContext(AuthContext);
 
   const [show, setShow] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
@@ -34,24 +34,21 @@ const DocumentItem = ({ results, propietario }) => {
   const handleDelete = async (id) => {
     try {
 
-      console.log("ID")
-      console.log(id)
-
       const response = await axios.delete(
         `http://localhost:8080/api/Documentos/delete/${id.toString().trim()}`,
         {},
         {
           headers: {
-            Authorization: "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJzYWhlcnJlcmEiLCJhdXRob3JpdGllcyI6W3siYXV0aG9yaXR5IjoiUk9MRV9VU1VBUklPIn1dLCJpYXQiOjE3MzEzNTQ5NjEsImV4cCI6MTczMTM4NzYwMH0.S1-bOh-ao_8ihYAXTxwsgO0kkZsdToiRlwsmuCxInxTG9G80oE3cHCUgnRAneSZni-h1FvcwVwmYTxfFWL6PjA",
+            Authorization: clientKey,
           },
         }
       );
 
-      if (response.ok) {
-        setShowSuccess(true);
-      } else {
-        console.error("Error al eliminar el documento.");
-      }
+      setShowSuccess(true);
+      setTimeout(
+        () => (window.location.href = `/users/${user.username}`),
+        5000
+      );
     } catch (error) {
       console.error("Error en la solicitud:", error);
     }
@@ -84,7 +81,7 @@ const DocumentItem = ({ results, propietario }) => {
                 <span
                   style={{
                     color: result.visibilidad === "privado" ? "red" : "green",
-                    fontSize:"15px"
+                    fontSize: "15px",
                   }}
                 >
                   {result.visibilidad}

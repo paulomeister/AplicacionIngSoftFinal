@@ -6,7 +6,7 @@ import { AuthContext } from "app/app/context/AuthContext";
 export function ChangeProfilePicture({ username }) {
   ////////////////////////////////////////////////////////////////////////////////////////
 
-  const { user, notificacionDeError, notificacionDeExito,clientKey } =
+  const { user, notificacionDeError, notificacionDeExito, clientKey } =
     useContext(AuthContext);
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -83,7 +83,7 @@ export function ChangeProfilePicture({ username }) {
           name="profileImage"
           className="form-control"
           onChange={handleFileChange}
-          accept=".png"
+          accept=".png, .jpeg, .jpg"
           ref={inputRef}
         />
         {confirmChange && (

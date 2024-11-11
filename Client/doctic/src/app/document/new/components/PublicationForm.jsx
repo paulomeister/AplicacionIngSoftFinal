@@ -17,9 +17,10 @@ import {
   useDisclosure,
 } from "@nextui-org/react";
 import { AuthContext } from "app/app/context/AuthContext";
+import { SpinerComp } from "../../[id]/components/SpinnerComp";
 
 export const PublicationForm = () => {
-  const { clientKey } = useContext(AuthContext);
+  const { clientKey, isLoggedIn, isLoading } = useContext(AuthContext);
 
   const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
   const [modalSuccedSubmit, setModalSuccedSubmit] = useState(false);
@@ -216,7 +217,6 @@ export const PublicationForm = () => {
         headers: { Authorization: clientKey },
       })
       .then((response) => {
-        console.log(response.data);
         setModalSuccedSubmit(true);
       })
       .catch((e) => {
@@ -231,7 +231,7 @@ export const PublicationForm = () => {
       });
   };
 
-  return (
+  return isLoggedIn ? (
     <section
       aria-labelledby="publication-form-heading"
       className="max-w-screen-md w-[768px]"
@@ -492,5 +492,7 @@ export const PublicationForm = () => {
         </div>
       </form>
     </section>
+  ) : (
+    () => (window.location.href = "/error404")
   );
 };
