@@ -65,13 +65,6 @@
   background-color: #f87171;
   color: white;
 }
-
-.categoriesContainer {
-  margin-top: 0.5rem;
-  display: flex;
-  gap: 0.5rem;
-}
-
 .categoryBadge {
   background-color: #e5e7eb;
   color: black;

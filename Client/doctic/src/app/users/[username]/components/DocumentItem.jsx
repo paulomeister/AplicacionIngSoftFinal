@@ -3,7 +3,14 @@ import React, { useContext, useState } from "react";
 import Link from "next/link";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
-import { FaCalendarAlt, FaStar, FaEye, FaEdit, FaTrash } from "react-icons/fa";
+import {
+  FaCalendarAlt,
+  FaStar,
+  FaEye,
+  FaEdit,
+  FaTrash,
+  FaHtml5,
+} from "react-icons/fa";
 import "./DocumentItem.css";
 import { AuthContext } from "app/app/context/AuthContext";
 import axios from "axios";
@@ -26,12 +33,16 @@ const DocumentItem = ({ results, propietario }) => {
 
   const handleDelete = async (id) => {
     try {
+
+      console.log("ID")
+      console.log(id)
+
       const response = await axios.delete(
-        `http://localhost:8080/api/Documentos/delete/${id}`,
+        `http://localhost:8080/api/Documentos/delete/${id.toString().trim()}`,
         {},
         {
           headers: {
-            Authorization: clientKey,
+            Authorization: "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJzYWhlcnJlcmEiLCJhdXRob3JpdGllcyI6W3siYXV0aG9yaXR5IjoiUk9MRV9VU1VBUklPIn1dLCJpYXQiOjE3MzEzNTQ5NjEsImV4cCI6MTczMTM4NzYwMH0.S1-bOh-ao_8ihYAXTxwsgO0kkZsdToiRlwsmuCxInxTG9G80oE3cHCUgnRAneSZni-h1FvcwVwmYTxfFWL6PjA",
           },
         }
       );
@@ -69,7 +80,15 @@ const DocumentItem = ({ results, propietario }) => {
               href={`/document/${result._id}`}
             >
               <h3>
-                <strong>{result.titulo}</strong>
+                <strong>{result.titulo}</strong>{" "}
+                <span
+                  style={{
+                    color: result.visibilidad === "privado" ? "red" : "green",
+                    fontSize:"15px"
+                  }}
+                >
+                  {result.visibilidad}
+                </span>
               </h3>
             </Link>
 

@@ -14,7 +14,7 @@ export const DocBasicInfo = ({ title, description, visibility, category, authors
       {authors
           ?.filter(aut => aut.nombre)
           .map((aut, index, array) => (
-            <Link href={`/perfilDocuments/${aut.username}`} className={styles.authorText} key={index}>
+            <Link href={`/users/${aut.username}`} className={styles.authorText} key={index}>
               <span
                 id={index}
                 key={index}

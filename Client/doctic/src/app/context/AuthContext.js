@@ -27,6 +27,9 @@ export const AuthProvider = ({ children }) => {
         setIsLoggedIn(false);
       }
     }
+
+
+     setIsLoading(false)
   }, []);
 
   function notificacionDeExito(message) {

@@ -13,17 +13,23 @@ export function ChangeEmail({ username }) {
   async function handleSubmit(e) {
     e.preventDefault();
 
-    try {
+     try {
       const response = await axios.put(
-        `http://localhost:8080/api/Usuarios/updateEmail/${username}/${DATA.newEmail}`,{},
+        `http://localhost:8080/api/Usuarios/updateEmail/${user.username.toString().trim()}/${DATA.newEmail.toString().trim()}`,{},
         {
           headers: {
-            Authorization: clientKey,
+            Authorization: "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJlc3RlbGEubnVuZXoiLCJhdXRob3JpdGllcyI6W3siYXV0aG9yaXR5IjoiUk9MRV9VU1VBUklPIn1dLCJpYXQiOjE3MzEzNDA5MjAsImV4cCI6MTczMTM4NzYwMH0.-P3mrQxQCAWeYacyNC5j5zoUeiCNzruZKzWNqvH2Pl3Sh_InTjC5jSPpCQYU2qS4YsquoxswKhcgB_W_nQl4GQ",
           },
         }
       );
 
       const message = response.data;
+      
+      notificacionDeExito(message)
+      setTimeout(()=>{
+        window.location.href=`/users/${user.username.toString().trim()}`
+      }, 5000)
+
 
       if (message.status === 400) {
         notificacionDeError("Ha habido un error");
