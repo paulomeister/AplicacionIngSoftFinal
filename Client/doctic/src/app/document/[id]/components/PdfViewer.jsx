@@ -38,7 +38,7 @@ export const PdfViewer = ({ url, userId = '66ebbc56e9670a5556f9781a', documentId
 
     return (
         <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.js">
-            <div  style={{ height: '750px' }}>
+            <div  style={{ height: '750px', width: '100%' }}>
                 <Viewer
                     fileUrl={`http://localhost:8080/api/Documentos/viewFile?userId=${userId}&documentId=${documentId}&fileId=${url}`}
                     defaultScale={1.5}

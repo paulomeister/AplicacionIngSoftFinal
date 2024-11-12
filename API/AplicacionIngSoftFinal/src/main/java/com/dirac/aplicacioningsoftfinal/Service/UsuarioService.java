@@ -143,7 +143,7 @@ public class UsuarioService implements IUsuarioService {
 
         usuarioRepository.save(updatingUsuario); // actualizamos
 
-        return " El perfil del usuario : " + username + " ha sido actualizado con éxito.";
+        return "El perfil del usuario : " + username + " ha sido actualizado con éxito.";
 
     }
 

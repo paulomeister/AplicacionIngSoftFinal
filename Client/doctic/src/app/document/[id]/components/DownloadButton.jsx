@@ -1,15 +1,18 @@
 "use client";
 import { instance } from "app/app/api/axios";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { Alert } from "react-bootstrap";
 import { Axios } from "axios";
+import { AuthContext } from "app/app/context/AuthContext";
+import { Ingrid_Darling } from "next/font/google";
 
-export const DownloadButton = ({
-  userId = "66ebbc56e9670a5556f9781a",
-  documentId = "66f5cb78c4cd20cadab20054",
-  fileId = "1h1moDyZaGABnwspsFgnJj_0OFDLeM9ZC",
-  // url,
-}) => {
+export const DownloadButton = ({ archivo }) => {
+  const { user, isLoggedIn, clientKey, notificacionDeError,notificacionDeExito } = useContext(AuthContext);
+
+  const userId = isLoggedIn ? user._id : null;
+  const documentId = archivo._id;
+  const fileId = archivo.urlArchivo;
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [showAlert, setShowAlert] = useState(false);
@@ -19,7 +22,16 @@ export const DownloadButton = ({
     setError(null);
     setShowAlert(false); // Reset alert visibility
 
+    if (!userId || !isLoggedIn) { // si no está logeado entonces que nunca haga la petición
+      notificacionDeError(
+        "No puedes descargar un documento si no te has registrado"
+      );
+      setLoading(false)
+      return
+    }
+
     const form = new FormData();
+
     form.append("fileId", fileId);
     form.append("userId", userId);
     form.append("documentId", documentId);
@@ -31,8 +43,7 @@ export const DownloadButton = ({
           method: "POST",
           body: form,
           headers: {
-            Authorization:
-              "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJlbnVuZXoiLCJhdXRob3JpdGllcyI6W3siYXV0aG9yaXR5IjoiUk9MRV9VU1VBUklPIn1dLCJpYXQiOjE3Mjk3Mjg0NTYsImV4cCI6MTcyOTc0NjAwMH0.HCBbGqwC1E1pd7d618gMfh3FPewM0OOGLflw-9ywmhcX7ZYGtqJQOv57zMYOfCwND9vXKxnPp1KclO-JX5iIeg",
+            Authorization: clientKey,
           },
         }
       );
@@ -63,9 +74,9 @@ export const DownloadButton = ({
       document.body.removeChild(link);
 
       // Muestra alerta tras la descarga
-      setShowAlert(true);
+      notificacionDeExito(true);
     } catch (e) {
-      setError(`Error: ${e.message}`);
+      notificacionDeError(`Error: ${e.message}`);
     } finally {
       setLoading(false);
     }

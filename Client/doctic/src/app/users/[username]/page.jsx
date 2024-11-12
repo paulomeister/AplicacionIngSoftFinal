@@ -1,15 +1,18 @@
-'use client';
-import React, { useState, useEffect } from 'react';
-import AuthorInfo from './components/AuthorInfo';
-import DocumentList from './components/DocumentList';
-import conectionUser from '../utils/conectionUser';
-import './page.css';
+"use client";
+import React, { useState, useEffect, useContext } from "react";
+import AuthorInfo from "./components/AuthorInfo";
+import DocumentList from "./components/DocumentList";
+import conectionUser from "../utils/conectionUser";
+import "./page.css";
+import { AuthContext } from "app/app/context/AuthContext";
+import { SpinerComp } from "app/app/document/[id]/components/SpinnerComp";
 
 function App({ params }) {
+  const { user, isLoading } = useContext(AuthContext);
   const [autor, setAutor] = useState({});
-  const [username, setUsername] = useState('');
+  const [username, setUsername] = useState("");
   const [verTodos, setVerTodos] = useState(false);
-  const [propietario, setPropietario] = useState(true);
+  const [esElPropietario, setEsElPropietario] = useState(false);
 
   // ------- Llamada a la API para obtener la información del autor -----------
   const getAuthorInfo = async () => {
@@ -31,22 +34,34 @@ function App({ params }) {
     getAuthorInfo();
   }, [username]);
 
-  const handleVerTodos = () => {
-    setVerTodos(true); 
-  };
-  
+  useEffect(() => {
+    if (user.username === username) {
+      setEsElPropietario(true);
+    } else {
+      setEsElPropietario(false);
+    }
+  }, [user]);
 
-  return (
+  const handleVerTodos = () => {
+    setVerTodos(true);
+  };
+
+  return isLoading ? (
+    <SpinerComp />
+  ) : (
     <div id="back">
       {!verTodos && (
         <div className="app">
-          <AuthorInfo autor={autor} propietario={propietario}/>
-          <DocumentList autor={autor} onVerTodos={handleVerTodos} propietario={propietario}/>
+          <AuthorInfo autor={autor} propietario={esElPropietario} />
+          <DocumentList
+            autor={autor}
+            onVerTodos={handleVerTodos}
+            propietario={esElPropietario}
+          />
         </div>
       )}
     </div>
   );
-  
 }
 
-export default App; 
+export default App;

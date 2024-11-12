@@ -1,4 +1,4 @@
-.author-info{
+.author-info {
   background-color: rgba(249, 252, 255, 0.733);
   display: flex;
   flex-direction: column;
@@ -11,37 +11,38 @@
   width: 80%;
 }
 
-.author-avatar-container{
+.author-avatar-container {
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: space-between;
+  justify-content: space-around;
   width: 100%;
   height: 100%;
+  gap: 50px;
 }
 
-.author-avatar{
+.author-avatar {
   box-sizing: border-box;
   border-radius: 50%;
-  width:40%; 
+  width: 40%;
   margin-right: 10%;
 }
 
-.author-info-container{
+.author-info-container {
   display: flex;
   flex-direction: column;
   width: 90%;
   margin-bottom: 10%;
 }
 
-.buttons-container{
+.buttons-container {
   display: flex;
   justify-content: right;
   width: 100%;
   margin-bottom: 10px;
 }
 
-.icons-container{
+.icons-container {
   display: flex;
   flex-direction: row;
   justify-content: space-around;
@@ -51,68 +52,61 @@
   width: 60%;
 }
 
-.config-icon, .edit-icon{
+.config-icon,
+.edit-icon {
   display: flex;
   flex-direction: row;
 }
 
-.config-icon p, .edit-icon p{
-  color: black;
-  margin-left: 5px;
-  margin-top: 2px;
-  font-size: small;
-}
-
-.config-icon:hover{
+.config-icon:hover {
   color: #ff0000;
   cursor: pointer;
 }
 
-.config-icon:hover p{
+.config-icon:hover p {
   color: #ff0303;
   cursor: pointer;
 }
 
-.edit-icon:hover{
+.edit-icon:hover {
   color: #269e1c;
   cursor: pointer;
 }
 
-.edit-icon:hover p{
+.edit-icon:hover p {
   color: #269e1c;
   cursor: pointer;
 }
 
-.author-name-container{
+.author-name-container {
   display: flex;
-  justify-content: center;    
+  justify-content: center;
   flex-direction: column;
   align-items: left;
   margin-top: 5%;
 }
 
-.author-name{
+.author-name {
   font-size: xx-large;
   font-weight: bold;
 }
 
-.names{
+.names {
   font-size: 40px;
   font-weight: bold;
 }
 
-.username{
+.username {
   font-size: small;
-  color:gray;
+  color: gray;
   margin-top: -4px;
 }
 
-#span-doctic{
-  color:#0089af;
+#span-doctic {
+  color: #0089af;
   font-weight: bold;
 }
 
-.date{
+.date {
   margin-top: 10px;
 }
-

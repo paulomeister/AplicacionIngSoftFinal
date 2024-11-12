@@ -1,16 +1,27 @@
 "use client";
 
 import { instance } from "app/app/api/axios";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useContext } from "react";
 // import { Modal, Spinner, Alert, Form, Badge } from "react-bootstrap";
 import { Spinner, Alert, Form, Badge } from "react-bootstrap";
 import axios from "axios";
 import { AuthorForm } from "./AuthorForm";
-import { FaFileUpload, FaCheckCircle } from 'react-icons/fa'; // Importamos el ícono de documento
-import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure } from "@nextui-org/react";
-
+import { FaFileUpload, FaCheckCircle } from "react-icons/fa"; // Importamos el ícono de documento
+import {
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Button,
+  useDisclosure,
+} from "@nextui-org/react";
+import { AuthContext } from "app/app/context/AuthContext";
+import { SpinerComp } from "../../[id]/components/SpinnerComp";
 
 export const PublicationForm = () => {
+  const { clientKey, isLoggedIn, isLoading } = useContext(AuthContext);
+
   const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
   const [modalSuccedSubmit, setModalSuccedSubmit] = useState(false);
   const fileInputRef = useRef(null);
@@ -21,7 +32,8 @@ export const PublicationForm = () => {
   const [dragging, setDragging] = useState(false);
   const [categorias, setCategorias] = useState([]);
   const [selectedAuthors, setSelectedAuthors] = useState([]);
-  const [selectedSubcategoriesWithId, setSelectedSubcategoriesWithId] = useState([]);
+  const [selectedSubcategoriesWithId, setSelectedSubcategoriesWithId] =
+    useState([]);
   const [title, setTitle] = useState(""); // Estado para el título
   const [subcategorias, setSubcategorias] = useState([]); // Estado para almacenar las subcategorías
   const [selectedCategory, setSelectedCategory] = useState(""); // Estado para manejar la categoría seleccionada
@@ -29,10 +41,9 @@ export const PublicationForm = () => {
   //const [selectedSubcategories, setSelectedSubcategories] = useState([]); // Almacenar múltiples subcategorías seleccionadas
   const [selectedCategoryWithId, setSelectedCategoryWithId] = useState({}); // Almacenar categoría seleccionada con ID
 
-
   const handleOpen = () => {
     onOpen();
-  }
+  };
 
   useEffect(() => {
     if (modalSuccedSubmit) {
@@ -42,14 +53,13 @@ export const PublicationForm = () => {
 
   const handleLoading = () => {
     onOpen();
-  }
+  };
 
   useEffect(() => {
     if (loading) {
       handleLoading();
     }
   }, [loading]);
-
 
   const onAuthorsChange = (selectedAuthors) => {
     setSelectedAuthors(selectedAuthors); // actualiza el SelectedAuthors de este componente
@@ -107,9 +117,12 @@ export const PublicationForm = () => {
       (subcat) => subcat.nombre === selectedSubcategory
     );
 
-    if (selectedSubcategoryObj && !selectedSubcategoriesWithId.some(
-      (subcat) => subcat.categoriaId === selectedSubcategoryObj._id
-    )) {
+    if (
+      selectedSubcategoryObj &&
+      !selectedSubcategoriesWithId.some(
+        (subcat) => subcat.categoriaId === selectedSubcategoryObj._id
+      )
+    ) {
       setSelectedSubcategoriesWithId([
         ...selectedSubcategoriesWithId,
         {
@@ -190,22 +203,21 @@ export const PublicationForm = () => {
       categoria: categoriasFinal,
       autores: selectedAuthors,
       fechaSubida: new Date(),
-      year: new Date().getFullYear()
+      year: new Date().getFullYear(),
     };
 
     const data = new FormData();
     data.append("file", inputPDF);
     data.append("document", JSON.stringify(document));
-
     setLoading(true);
     setError(null);
 
     instance
-      .post("/Documentos/insert", data)
+      .post("/Documentos/insert", data, {
+        headers: { Authorization: clientKey },
+      })
       .then((response) => {
-        console.log(response.data);
         setModalSuccedSubmit(true);
-
       })
       .catch((e) => {
         console.log(
@@ -219,7 +231,7 @@ export const PublicationForm = () => {
       });
   };
 
-  return (
+  return isLoggedIn ? (
     <section
       aria-labelledby="publication-form-heading"
       className="max-w-screen-md w-[768px]"
@@ -267,11 +279,20 @@ export const PublicationForm = () => {
 
         {/* Subir Archivo */}
         <div className="mb-4">
-          <label className="block text-gray-700 text-lg font-bold mb-2" htmlFor="file">
+          <label
+            className="block text-gray-700 text-lg font-bold mb-2"
+            htmlFor="file"
+          >
             Sube un archivo (PDF)
           </label>
           <div
-            className={`w-full p-6 border-2 ${dragging ? 'border-blue-600 bg-blue-100' : selectedFile ? 'border-green-500 bg-green-50' : 'border-dashed border-gray-300 hover:border-blue-500 hover:bg-blue-50'} rounded-md flex flex-col items-center justify-center cursor-pointer`}
+            className={`w-full p-6 border-2 ${
+              dragging
+                ? "border-blue-600 bg-blue-100"
+                : selectedFile
+                ? "border-green-500 bg-green-50"
+                : "border-dashed border-gray-300 hover:border-blue-500 hover:bg-blue-50"
+            } rounded-md flex flex-col items-center justify-center cursor-pointer`}
             onClick={() => fileInputRef.current.click()}
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
@@ -292,24 +313,35 @@ export const PublicationForm = () => {
             {selectedFile ? (
               <>
                 <FaCheckCircle size={32} className="text-green-500 mb-2" />
-                <span className="text-lg font-medium text-green-600">Archivo cargado:</span>
-                <span className="text-gray-700 text-sm">{selectedFile.name}</span>
+                <span className="text-lg font-medium text-green-600">
+                  Archivo cargado:
+                </span>
+                <span className="text-gray-700 text-sm">
+                  {selectedFile.name}
+                </span>
               </>
             ) : (
               <>
                 <FaFileUpload size={32} className="text-blue-500 mb-2" />
-                <span className="text-lg font-medium text-teal-600">Selecciona o arrastra un documento PDF aquí</span>
+                <span className="text-lg font-medium text-teal-600">
+                  Selecciona o arrastra un documento PDF aquí
+                </span>
                 <span className="text-gray-500 text-sm">Tamaño máximo 2MB</span>
               </>
             )}
           </div>
 
-          {fileError && <span className="text-red-500 text-sm ml-2">{fileError}</span>}
+          {fileError && (
+            <span className="text-red-500 text-sm ml-2">{fileError}</span>
+          )}
         </div>
 
         {/* Titulo */}
         <div className="mb-4">
-          <label className="block text-gray-700 text-lg font-bold mb-2" htmlFor="title">
+          <label
+            className="block text-gray-700 text-lg font-bold mb-2"
+            htmlFor="title"
+          >
             Título
           </label>
           <input
@@ -328,7 +360,10 @@ export const PublicationForm = () => {
         </div>
 
         <div className="mb-4">
-          <label className="block text-gray-700 text-lg font-bold mb-2" htmlFor="description">
+          <label
+            className="block text-gray-700 text-lg font-bold mb-2"
+            htmlFor="description"
+          >
             Descripción
           </label>
           <textarea
@@ -346,7 +381,10 @@ export const PublicationForm = () => {
         </div>
         {/* Categoría */}
         <div className="mb-4">
-          <label className="block text-gray-700 text-lg font-bold mb-2" htmlFor="category">
+          <label
+            className="block text-gray-700 text-lg font-bold mb-2"
+            htmlFor="category"
+          >
             Categoría
           </label>
           <select
@@ -370,7 +408,10 @@ export const PublicationForm = () => {
         {/* Subcategoría */}
         {subcategorias.length > 0 && (
           <div className="mb-4">
-            <p className="block text-gray-700 text-lg font-bold mb-2" htmlFor="subcategory">
+            <p
+              className="block text-gray-700 text-lg font-bold mb-2"
+              htmlFor="subcategory"
+            >
               Subcategoría
             </p>
             <div className="flex gap-2">
@@ -425,10 +466,11 @@ export const PublicationForm = () => {
 
         <AuthorForm onAuthorsChange={onAuthorsChange} />
 
-
-
         <div className="mb-4">
-          <label className="block text-gray-700 text-lg font-bold mb-2" htmlFor="visibility">
+          <label
+            className="block text-gray-700 text-lg font-bold mb-2"
+            htmlFor="visibility"
+          >
             Visibilidad
           </label>
           <select
@@ -450,5 +492,7 @@ export const PublicationForm = () => {
         </div>
       </form>
     </section>
+  ) : (
+    () => (window.location.href = "/error404")
   );
 };

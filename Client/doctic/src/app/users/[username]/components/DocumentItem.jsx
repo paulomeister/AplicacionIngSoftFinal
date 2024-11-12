@@ -1,12 +1,23 @@
-'use client';
-import React, { useState } from "react";
+"use client";
+import React, { useContext, useState } from "react";
 import Link from "next/link";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
-import { FaCalendarAlt, FaStar, FaEye, FaEdit, FaTrash } from "react-icons/fa";
+import {
+  FaCalendarAlt,
+  FaStar,
+  FaEye,
+  FaEdit,
+  FaTrash,
+  FaHtml5,
+} from "react-icons/fa";
 import "./DocumentItem.css";
+import { AuthContext } from "app/app/context/AuthContext";
+import axios from "axios";
 
 const DocumentItem = ({ results, propietario }) => {
+  const { clientKey, user } = useContext(AuthContext);
+
   const [show, setShow] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [idToDelete, setIdToDelete] = useState(null);
@@ -22,15 +33,22 @@ const DocumentItem = ({ results, propietario }) => {
 
   const handleDelete = async (id) => {
     try {
-      const response = await fetch(`http://localhost:8080/api/Documentos/delete/${id}`, {
-        method: "DELETE"
-      });
 
-      if (response.ok) {
-        setShowSuccess(true);
-      } else {
-        console.error("Error al eliminar el documento.");
-      }
+      const response = await axios.delete(
+        `http://localhost:8080/api/Documentos/delete/${id.toString().trim()}`,
+        {},
+        {
+          headers: {
+            Authorization: clientKey,
+          },
+        }
+      );
+
+      setShowSuccess(true);
+      setTimeout(
+        () => (window.location.href = `/users/${user.username}`),
+        5000
+      );
     } catch (error) {
       console.error("Error en la solicitud:", error);
     }
@@ -40,7 +58,10 @@ const DocumentItem = ({ results, propietario }) => {
     if (!valoraciones || valoraciones.length === 0) {
       return 0;
     } else {
-      const suma = valoraciones.reduce((total, valoracion) => total + valoracion.puntuacion, 0);
+      const suma = valoraciones.reduce(
+        (total, valoracion) => total + valoracion.puntuacion,
+        0
+      );
       return (suma / valoraciones.length).toFixed(1);
     }
   };
@@ -48,27 +69,52 @@ const DocumentItem = ({ results, propietario }) => {
   return (
     <div>
       {results
-        .filter(result => result.visibilidad !== 'privado' || propietario)
+        .filter((result) => result.visibilidad !== "privado" || propietario)
         .map((result, index) => (
           <div key={index} className="result-item">
-            <Link className="title hover:underline hover:text-blue-500" href={`/document/${result._id}`}>
-              <h3><strong>{result.titulo}</strong></h3>
+            <Link
+              className="title hover:underline hover:text-blue-500"
+              href={`/document/${result._id}`}
+            >
+              <h3>
+                <strong>{result.titulo}</strong>{" "}
+                <span
+                  style={{
+                    color: result.visibilidad === "privado" ? "red" : "green",
+                    fontSize: "15px",
+                  }}
+                >
+                  {result.visibilidad}
+                </span>
+              </h3>
             </Link>
 
             <div className="result-authors">
-              <p><strong className="result-author">Autores: </strong> 
+              <p>
+                <strong className="result-author">Autores: </strong>
                 {result.autores?.map((autor, i) => (
-                  <Link href={`/users/${autor.username}`} className="author hover:underline hover:text-blue-600" key={i}> 
-                    <span>{autor.nombre}{i < result.autores.length - 1 ? ", " : ""}</span> 
+                  <Link
+                    href={`/users/${autor.username}`}
+                    className="author hover:underline hover:text-blue-600"
+                    key={i}
+                  >
+                    <span>
+                      {autor.nombre}
+                      {i < result.autores.length - 1 ? ", " : ""}
+                    </span>
                   </Link>
                 ))}
               </p>
             </div>
 
             <div className="result-categories">
-              <p><strong>Categorías: </strong>
+              <p>
+                <strong>Categorías: </strong>
                 {result.categoria?.map((cat, i) => (
-                  <span key={i}>{cat.nombre}{i < result.categoria.length - 1 ? ", " : ""}</span>
+                  <span key={i}>
+                    {cat.nombre}
+                    {i < result.categoria.length - 1 ? ", " : ""}
+                  </span>
                 ))}
               </p>
             </div>
@@ -76,21 +122,38 @@ const DocumentItem = ({ results, propietario }) => {
             <div className="result-params">
               <div className="result-img">
                 <div className="result-date">
-                  <FaCalendarAlt /> <p>{new Date(result.fechaSubida).toLocaleDateString()}</p>
+                  <FaCalendarAlt />{" "}
+                  <p>{new Date(result.fechaSubida).toLocaleDateString()}</p>
                 </div>
                 <div className="result-rating">
-                  <FaStar /> <p>{calcularPromedioValoracion(result.valoraciones)}</p>
+                  <FaStar />{" "}
+                  <p>{calcularPromedioValoracion(result.valoraciones)}</p>
                 </div>
               </div>
               <div className="btns-container">
-                <Link className="view-btn" href={`/document/${result._id}`}><FaEye /><p>Ver</p></Link>
+                <Link className="view-btn" href={`/document/${result._id}`}>
+                  <FaEye />
+                  <p>Ver</p>
+                </Link>
 
-                {propietario &&
+                {propietario && (
                   <div className="propietario">
-                    <Link className="edit-btn" href={`/document/edit/${result._id}`}><FaEdit /><p>Editar</p></Link>
-                    <button className="delete-btn" onClick={() => handleShow(result._id)}><FaTrash /><p>Eliminar</p></button>
+                    <Link
+                      className="edit-btn"
+                      href={`/document/edit/${result._id}`}
+                    >
+                      <FaEdit />
+                      <p>Editar</p>
+                    </Link>
+                    <button
+                      className="delete-btn"
+                      onClick={() => handleShow(result._id)}
+                    >
+                      <FaTrash />
+                      <p>Eliminar</p>
+                    </button>
                   </div>
-                }
+                )}
               </div>
             </div>
 
@@ -128,12 +191,11 @@ const DocumentItem = ({ results, propietario }) => {
               <Modal.Header closeButton>
                 <Modal.Title>Documento Eliminado</Modal.Title>
               </Modal.Header>
-              <Modal.Body>El documento ha sido eliminado exitosamente.</Modal.Body>
+              <Modal.Body>
+                El documento ha sido eliminado exitosamente.
+              </Modal.Body>
               <Modal.Footer>
-                <Button
-                  variant="primary"
-                  onClick={() => setShowSuccess(false)}
-                >
+                <Button variant="primary" onClick={() => setShowSuccess(false)}>
                   Aceptar
                 </Button>
               </Modal.Footer>

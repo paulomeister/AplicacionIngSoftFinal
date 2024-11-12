@@ -4,10 +4,7 @@ import com.dirac.aplicacioningsoftfinal.DTO.BusquedaFiltroDTO;
 import com.dirac.aplicacioningsoftfinal.DTO.OrdenDTO;
 import com.dirac.aplicacioningsoftfinal.DTO.Res;
 import com.dirac.aplicacioningsoftfinal.DTO.BusquedaOrdenarFiltrarDTO;
-import com.dirac.aplicacioningsoftfinal.DTO.DocDescargadosDTO;
-import com.dirac.aplicacioningsoftfinal.DTO.DocSubidosDTO;
 import com.dirac.aplicacioningsoftfinal.DTO.ArchivoDTO;
-import com.dirac.aplicacioningsoftfinal.DTO.HistorialDocumentosDTO;
 import com.dirac.aplicacioningsoftfinal.DTO.UrlDTO;
 import com.dirac.aplicacioningsoftfinal.Exception.CreationException;
 import com.dirac.aplicacioningsoftfinal.Exception.DeleteException;
@@ -487,22 +484,6 @@ public class DocumentoService implements IDocumentoService {
 
             // // obtenemos el documento el cuál se está descargando
             DocumentoModel documentoDownloading = getDocumentById(documentId);
-
-            // // // se crea un nuevo DTO de DatosComputados
-            DatosComputados nuevosDatos = new DatosComputados();
-
-            // // // Se le añade uno a la descarga y lo demás queda igual
-            long descargasTotales = documentoDownloading.getDatosComputados().getDescargasTotales() + 1;
-            double valoracionPromedio = documentoDownloading.getDatosComputados().getValoracionPromedio();
-            long comentariosTotales = documentoDownloading.getDatosComputados().getComentariosTotales();
-
-            // // // Se actualizan los datos
-            nuevosDatos.setDescargasTotales(descargasTotales);
-            nuevosDatos.setValoracionPromedio(valoracionPromedio);
-            nuevosDatos.setComentariosTotales(comentariosTotales);
-
-            // // // Se actualizan los datos computados en el documento
-            documentoDownloading.setDatosComputados(nuevosDatos);
 
             // // // Obtenemos el usuario que está descargando:
             UsuarioModel usuarioDownloading = usuarioService.getUserById(userId).orElseThrow(

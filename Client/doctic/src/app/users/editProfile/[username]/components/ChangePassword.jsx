@@ -1,8 +1,11 @@
-'use client';
-import { useEffect, useState } from "react";
+"use client";
+import { useContext, useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { AuthContext } from "app/app/context/AuthContext";
 
-export function ChangePassword({username}) {
+export function ChangePassword({ username }) {
+  const { notificacionDeExito } = useContext(AuthContext);
+
   /////////////
   //! OBTENER LOS DATOS DEL USUARIO CAMBIARÁ CUANDO SE HAGA LO DE AUTENTICACIÓN!
   const [user, setUser] = useState({});
@@ -18,7 +21,7 @@ export function ChangePassword({username}) {
 
     fetchUserData();
   }, []);
-//////////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////
   const [formData, setFormData] = useState({
     newPassword: "",
     confirmPassword: "",
@@ -55,65 +58,65 @@ export function ChangePassword({username}) {
 
       await fetch("http://localhost:8080/api/password/change", {
         method: "POST",
-        body:{
+        body: {
           passwordActual,
           passwordNuevo,
         },
         headers: {
           Authorization: "Bearer TIENES_QUE_PONER_UN_TOKEN_AQUI",
-          "Content-Type":"application/json"
+          "Content-Type": "application/json",
         },
       });
 
       // aqui se hace la petición para cambiar la contraseña
     } catch (exc) {
-      alert("Contraseña cambiada exitosamente.");
+      notificacionDeExito("Contraseña cambiada exitosamente.");
     }
   }
 
   return (
-      <div className="card shadow p-4" style={{ width: "400px" }}>
-        <h2 className="text-center mb-4">Cambiar Contraseña</h2>
-        <form onSubmit={handleSubmit}>
-          <div className="form-group mb-3">
-            <label htmlFor="newPassword" className="form-label">
-              Nueva Contraseña
-            </label>
-            <input
-              type="password"
-              id="newPassword"
-              name="newPassword"
-              className="form-control"
-              placeholder="Ingrese su nueva contraseña"
-              onChange={handleChange}
-              value={formData.newPassword}
-              required
-            />
-          </div>
-          <div className="form-group mb-4">
-            <label htmlFor="confirmPassword" className="form-label">
-              Confirmar Nueva Contraseña
-            </label>
-            <input
-              type="password"
-              id="confirmPassword"
-              name="confirmPassword"
-              className={`form-control ${error ? "is-invalid" : ""}`}
-              placeholder="Repita su nueva contraseña"
-              onChange={handleChange}
-              value={formData.confirmPassword}
-              required
-            />
-            {error && (
-              <div className="invalid-feedback">
-                Las contraseñas no coinciden.
-              </div>
-            )}
-          </div>
-          <button type="submit" className="btn btn-primary w-100">
-            Cambiar Contraseña
-          </button>
-        </form>
+    <div className="card shadow p-4" style={{ width: "400px" }}>
+      <h2 className="text-center mb-4">Cambiar Contraseña</h2>
+      <form onSubmit={handleSubmit}>
+        <div className="form-group mb-3">
+          <label htmlFor="newPassword" className="form-label">
+            Nueva Contraseña
+          </label>
+          <input
+            type="password"
+            id="newPassword"
+            name="newPassword"
+            className="form-control"
+            placeholder="Ingrese su nueva contraseña"
+            onChange={handleChange}
+            value={formData.newPassword}
+            required
+          />
+        </div>
+        <div className="form-group mb-4">
+          <label htmlFor="confirmPassword" className="form-label">
+            Confirmar Nueva Contraseña
+          </label>
+          <input
+            type="password"
+            id="confirmPassword"
+            name="confirmPassword"
+            className={`form-control ${error ? "is-invalid" : ""}`}
+            placeholder="Repita su nueva contraseña"
+            onChange={handleChange}
+            value={formData.confirmPassword}
+            required
+          />
+          {error && (
+            <div className="invalid-feedback">
+              Las contraseñas no coinciden.
+            </div>
+          )}
+        </div>
+        <button type="submit" className="btn btn-primary w-100">
+          Cambiar Contraseña
+        </button>
+      </form>
     </div>
   );
 }
