@@ -7,7 +7,7 @@ export const extractDocumentData = (documentData) => {
 
   // Definimos el autor por defecto (estático)
   const defaultAuthor = {
-    usuarioId: "671aa9d3977f359d06bd523a",
+    usuarioId: "673282d58c618d6ac2a380bb",
     estaRegistrado: true,
     rol: "principal",
     nombre: "Pepito",

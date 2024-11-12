@@ -6,6 +6,7 @@ import com.dirac.aplicacioningsoftfinal.DTO.ArchivoDTO;
 import com.dirac.aplicacioningsoftfinal.DTO.Res;
 import com.dirac.aplicacioningsoftfinal.DTO.UrlDTO;
 import com.dirac.aplicacioningsoftfinal.Model.DocumentoModel;
+import com.dirac.aplicacioningsoftfinal.Model.DocumentoModel.Valoracion;
 import com.google.common.base.Optional;
 
 import org.bson.Document;
@@ -48,5 +49,9 @@ public interface IDocumentoService {
     List<DocumentoModel> busquedaFiltroDocumentos(BusquedaFiltroDTO entrada);
     List<DocumentoModel> busquedaOrdenada(BusquedaOrdenarFiltrarDTO entrada);      
     UrlDTO recuperarUrlById(ObjectId id);
+    
+    String agregarValoracion(ObjectId documentoId, Valoracion valoracion);
+    String editarValoracion(ObjectId documentoId, ObjectId usuarioId, Valoracion valoracionActualizada);
+    String eliminarValoracion(ObjectId documentoId, ObjectId usuarioId);
 
 }
