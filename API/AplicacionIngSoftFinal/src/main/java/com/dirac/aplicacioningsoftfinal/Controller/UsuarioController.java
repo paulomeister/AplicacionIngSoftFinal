@@ -10,7 +10,9 @@ import com.dirac.aplicacioningsoftfinal.Model.UsuarioModel;
 import com.dirac.aplicacioningsoftfinal.Service.IUsuarioService;
 import com.dirac.aplicacioningsoftfinal.Service.ImgurService;
 
+import org.json.HTTP;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -47,7 +49,7 @@ public class UsuarioController {
         UsuarioModel usuario = usuarioService.getUserByUsername(username)
                 .orElseThrow(() -> new UsuarioNotFoundException("Este Usuario no existe"));
 
-        return ResponseEntity.ok(usuario);
+        return ResponseEntity.status(HttpStatus.OK).body(usuario);
     }
 
     @GetMapping("/getAllUsers")
