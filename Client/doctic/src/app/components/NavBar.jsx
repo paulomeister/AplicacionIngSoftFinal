@@ -1,9 +1,9 @@
 "use client";
 
-// import Link from 'next/link';
-import Image from "next/image";
 import { useContext, useState } from "react";
-
+import Image from "next/image";
+import { useRouter } from 'next/navigation';
+import { LuSearch } from "react-icons/lu";
 import {
   Navbar,
   NavbarBrand,
@@ -11,13 +11,29 @@ import {
   NavbarItem,
   Link,
   Button,
+  Input
 } from "@nextui-org/react";
-import { AuthContext, AuthProvider } from "../context/AuthContext";
+import { AuthContext } from "../context/AuthContext";
 import { ToastContainer } from "react-toastify";
 
 export const NavbarComp = () => {
   const { user, isLoggedIn, isLoading } = useContext(AuthContext);
+  const router = useRouter();
+  const [searchText, setSearchText] = useState('');
   const [menuOpen, setMenuOpen] = useState(false);
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchText.trim()) {
+      router.push(`/search?titulo=${encodeURIComponent(searchText)}`);
+    }
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      handleSearch(e);
+    }
+  };
 
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
@@ -26,13 +42,14 @@ export const NavbarComp = () => {
   return (
     <Navbar position="sticky" isBordered maxWidth="2xl">
       <NavbarBrand>
-        <Link href="/home">
+        <Link href="/home" className="flex items-center">
           <Image src="/logo.png" alt="Logo" width={50} height={50} />
         </Link>
-        <Link className="font-bold  text-inherit" href="/home">
+        <Link className="font-bold text-inherit ml-2" href="/home">
           DocTIC
         </Link>
       </NavbarBrand>
+      
       <NavbarContent className="sm:flex gap-4" justify="center">
         <NavbarItem>
           <Link color="foreground" href="/home">
@@ -40,27 +57,41 @@ export const NavbarComp = () => {
           </Link>
         </NavbarItem>
         <NavbarItem>
-          <Link color="foreground" href="/search">
-            Buscar
-          </Link>
+          <Input
+            isClearable
+            type="text"
+            label="Buscar"
+            placeholder="Busca tu documento..."
+            className="w-80"
+            size="sm"
+            variant="bordered"
+            radius="full"
+            value={searchText}
+            onChange={(e) => setSearchText(e.target.value)}
+            onKeyPress={handleKeyPress}
+            startContent={
+              <LuSearch className="cursor-pointer" onClick={handleSearch} />
+            }
+          />
         </NavbarItem>
         <NavbarItem>
-          <Link className=" font-bold " color="primary" href="/document/new">
+          <Link className="font-bold" color="primary" href="/document/new">
             Subir
           </Link>
         </NavbarItem>
       </NavbarContent>
+
       <NavbarContent justify="end">
         {isLoading ? (
           <></>
         ) : isLoggedIn ? (
-          <NavbarItem className="lg:flex space-x-5 mt-2">
+          <NavbarItem className="lg:flex space-x-5">
             <img
               src={user.perfil.fotoPerfil}
-              className="shadow-lg rounded-full h-[40px] w-[40px]"
+              className="shadow-lg rounded-full h-[40px] w-[40px] object-cover"
+              alt="Profile"
             />
             <Link
-
               color="foreground"
               href={`/users/${user.username}`}
             >
@@ -80,7 +111,12 @@ export const NavbarComp = () => {
               </Button>
             </NavbarItem>
             <NavbarItem>
-              <Button as={Link} color="primary" href="/register" variant="flat">
+              <Button 
+                as={Link} 
+                color="primary" 
+                href="/register" 
+                variant="flat"
+              >
                 Registrarse
               </Button>
             </NavbarItem>
@@ -90,103 +126,8 @@ export const NavbarComp = () => {
     </Navbar>
   );
 
-  return (
-    <nav
-      style={{
-        backgroundColor: "#001E58",
-        padding: "10px 20px",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-      }}
-    >
-      <div style={{ display: "flex", alignItems: "center" }}>
-        <Link href="/" style={{ display: "flex", alignItems: "center" }}>
-          <Image src="/logo.png" alt="Logo" width={50} height={50} />
-          <h1 style={{ color: "white", marginLeft: "10px" }}>DocTIC</h1>
-        </Link>
-      </div>
+  
 
-      <div style={{ display: "flex", gap: "20px" }}>
-        <Link href="/" style={{ color: "white", textDecoration: "none" }}>
-          Inicio
-        </Link>
-        <Link href="/search" style={{ color: "white", textDecoration: "none" }}>
-          Buscar
-        </Link>
-      </div>
-
-      <div
-        style={{
-          position: "relative",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "right",
-        }}
-      >
-        <Image
-          src={isLoggedIn ? "/user.png" : "/guest.svg"}
-          alt={isLoggedIn ? "User" : "Guest"}
-          width={40}
-          height={40}
-          onClick={toggleMenu}
-          style={{ cursor: "pointer" }}
-        />
-
-        {menuOpen && (
-          <div
-            style={{
-              position: "absolute",
-              top: "50px",
-              right: "0",
-              backgroundColor: "#fff",
-              boxShadow: "0 8px 16px rgba(0, 0, 0, 0.2)",
-              padding: "10px",
-              borderRadius: "4px",
-            }}
-          >
-            {!isLoggedIn && (
-              <>
-                <Link
-                  href="/crear-cuenta"
-                  style={{
-                    display: "block",
-                    marginBottom: "10px",
-                    color: "#001E58",
-                    textDecoration: "none",
-                  }}
-                >
-                  Crear Cuenta
-                </Link>
-                <Link
-                  href="/iniciar-sesion"
-                  style={{
-                    display: "block",
-                    color: "#001E58",
-                    textDecoration: "none",
-                  }}
-                >
-                  Iniciar Sesión
-                </Link>
-              </>
-            )}
-            {isLoggedIn && (
-              <Link
-                href="/perfil"
-                style={{
-                  display: "block",
-                  color: "#001E58",
-                  textDecoration: "none",
-                }}
-              >
-                Ver Perfil
-              </Link>
-            )}
-          </div>
-        )}
-      </div>
-    </nav>
-  );
 };
 
 export default NavbarComp;

@@ -4,11 +4,13 @@ import com.dirac.aplicacioningsoftfinal.DTO.BusquedaFiltroDTO;
 import com.dirac.aplicacioningsoftfinal.DTO.BusquedaOrdenarFiltrarDTO;
 import com.dirac.aplicacioningsoftfinal.DTO.ArchivoDTO;
 import com.dirac.aplicacioningsoftfinal.DTO.Res;
+import com.dirac.aplicacioningsoftfinal.DTO.ValoracionDTO;
 import com.dirac.aplicacioningsoftfinal.Exception.CreationException;
 import com.dirac.aplicacioningsoftfinal.Exception.DeleteException;
 import com.dirac.aplicacioningsoftfinal.Exception.NoSuchDocumentFoundException;
 import com.dirac.aplicacioningsoftfinal.Exception.UpdateException;
 import com.dirac.aplicacioningsoftfinal.Model.DocumentoModel;
+import com.dirac.aplicacioningsoftfinal.Model.DocumentoModel.Valoracion;
 import com.dirac.aplicacioningsoftfinal.Repository.IDocumentoRepository;
 import com.dirac.aplicacioningsoftfinal.Service.IDocumentoService;
 import com.dirac.aplicacioningsoftfinal.Service.IUsuarioService;
@@ -395,6 +397,58 @@ public class DocumentoController {
 
         return ResponseEntity.status(status).body(respuesta);
 
+    }
+
+    // Agregar una valoración a un documento
+    @PostMapping("/{documentoId}/valoraciones")
+    public ResponseEntity<?> agregarValoracion(@PathVariable("documentoId") ObjectId documentoId,
+            @RequestBody ValoracionDTO valoracionDTO) {
+        try {
+            // Convertir el DTO a la entidad Valoracion y luego agregarlo
+            Valoracion nuevaValoracion = new Valoracion();
+            nuevaValoracion.setUsuarioId(valoracionDTO.getUsuarioId());
+            nuevaValoracion.setPuntuacion(valoracionDTO.getPuntuacion());
+            nuevaValoracion.setComentario(valoracionDTO.getComentario());
+
+            String resultado = documentoService.agregarValoracion(documentoId, nuevaValoracion);
+            return ResponseEntity.ok(resultado);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al agregar la valoración: " + e.getMessage());
+        }
+    }
+
+    // Actualizar una valoración existente en un documento
+    @PutMapping("/{documentoId}/valoraciones/{usuarioId}")
+    public ResponseEntity<?> editarValoracion(@PathVariable("documentoId") ObjectId documentoId,
+            @PathVariable("usuarioId") ObjectId usuarioId,
+            @RequestBody ValoracionDTO valoracionDTO) {
+        try {
+            // Convertir el DTO a la entidad Valoracion antes de actualizar
+            Valoracion valoracionActualizada = new Valoracion();
+            valoracionActualizada.setUsuarioId(valoracionDTO.getUsuarioId());
+            valoracionActualizada.setPuntuacion(valoracionDTO.getPuntuacion());
+            valoracionActualizada.setComentario(valoracionDTO.getComentario());
+
+            String resultado = documentoService.editarValoracion(documentoId, usuarioId, valoracionActualizada);
+            return ResponseEntity.ok(resultado);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al actualizar la valoración: " + e.getMessage());
+        }
+    }
+
+    // Eliminar una valoración de un documento
+    @DeleteMapping("/{documentoId}/valoraciones/{usuarioId}")
+    public ResponseEntity<String> eliminarValoracion(@PathVariable("documentoId") ObjectId documentoId,
+            @PathVariable("usuarioId") ObjectId usuarioId) {
+        try {
+            String mensaje = documentoService.eliminarValoracion(documentoId, usuarioId);
+            return ResponseEntity.ok(mensaje);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al eliminar la valoración: " + e.getMessage());
+        }
     }
 
 }

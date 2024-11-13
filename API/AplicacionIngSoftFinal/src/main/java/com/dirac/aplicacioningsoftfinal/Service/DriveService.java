@@ -27,7 +27,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 public class DriveService {
 
- //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     private static final String APPLICATION_NAME = "AplicacionIngSoftFinal";
     private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
@@ -110,5 +110,5 @@ public class DriveService {
         drive.files().get(fileId).executeMediaAndDownloadTo(outputStream);
         return outputStream.toByteArray(); // Devuelve el contenido del archivo como byte[]
     }
-  
+
 }

@@ -16,6 +16,7 @@ import com.dirac.aplicacioningsoftfinal.Exception.UsuarioNotFoundException;
 import com.dirac.aplicacioningsoftfinal.Model.DocumentoModel;
 import com.dirac.aplicacioningsoftfinal.Model.DocumentoModel.Autores;
 import com.dirac.aplicacioningsoftfinal.Model.DocumentoModel.DatosComputados;
+import com.dirac.aplicacioningsoftfinal.Model.DocumentoModel.Valoracion;
 import com.dirac.aplicacioningsoftfinal.Model.UsuarioModel.DocsSubidos;
 import com.dirac.aplicacioningsoftfinal.Model.UsuarioModel;
 import com.dirac.aplicacioningsoftfinal.Repository.IDocumentoRepository;
@@ -737,6 +738,66 @@ public class DocumentoService implements IDocumentoService {
 
         }
         return result;
+    }
+
+    // Método para agregar una valoración
+    @Override
+    public String agregarValoracion(ObjectId documentoId, Valoracion nuevaValoracion) {
+        DocumentoModel documento = documentoRepository.findById(documentoId)
+                .orElseThrow(() -> new IllegalArgumentException("Documento no encontrado"));
+
+        nuevaValoracion.setFechaCreacion(new Date());
+        documento.getValoraciones().add(nuevaValoracion);
+        actualizarDatosComputados(documento);
+        documentoRepository.save(documento);
+
+        return "Valoración agregada exitosamente";
+    }
+
+    @Override
+    public String editarValoracion(ObjectId documentoId, ObjectId usuarioId, Valoracion valoracionActualizada) {
+        DocumentoModel documento = documentoRepository.findById(documentoId)
+                .orElseThrow(() -> new IllegalArgumentException("Documento no encontrado"));
+
+        List<Valoracion> valoraciones = documento.getValoraciones();
+
+        Valoracion valoracionExistente = valoraciones.stream()
+                .filter(v -> v.getUsuarioId().equals(usuarioId))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Valoración no encontrada para el usuario"));
+
+        valoracionExistente.setPuntuacion(valoracionActualizada.getPuntuacion());
+        valoracionExistente.setComentario(valoracionActualizada.getComentario());
+        actualizarDatosComputados(documento);
+
+        documentoRepository.save(documento);
+        return "Valoración actualizada exitosamente";
+    }
+
+    @Override
+    public String eliminarValoracion(ObjectId documentoId, ObjectId usuarioId) {
+        DocumentoModel documento = documentoRepository.findById(documentoId)
+                .orElseThrow(() -> new IllegalArgumentException("Documento no encontrado"));
+
+        boolean removed = documento.getValoraciones().removeIf(v -> v.getUsuarioId().equals(usuarioId));
+        if (!removed) {
+            throw new IllegalArgumentException("Valoración no encontrada para el usuario");
+        }
+
+        actualizarDatosComputados(documento);
+        documentoRepository.save(documento);
+
+        return "Valoración eliminada exitosamente";
+    }
+
+    // Método para actualizar datos computados
+    private void actualizarDatosComputados(DocumentoModel documento) {
+        List<Valoracion> valoraciones = documento.getValoraciones();
+        double sumaPuntuaciones = valoraciones.stream().mapToDouble(Valoracion::getPuntuacion).sum();
+        int totalComentarios = valoraciones.size();
+
+        documento.getDatosComputados().setValoracionPromedio(sumaPuntuaciones / Math.max(totalComentarios, 1));
+        documento.getDatosComputados().setComentariosTotales(totalComentarios);
     }
 
 }
