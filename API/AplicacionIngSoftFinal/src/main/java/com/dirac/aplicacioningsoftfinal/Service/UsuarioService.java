@@ -25,6 +25,8 @@ public class UsuarioService implements IUsuarioService {
     @Autowired
     private ICredencialesService credencialesService;
     @Autowired
+    private IEmailService emailService;
+    @Autowired
     private ImgurService imgurService;
 
     @Override
@@ -70,6 +72,9 @@ public class UsuarioService implements IUsuarioService {
         // eliminar usuario
         usuarioRepository.delete(usuarioToDelete);
 
+        // envía el correo de que se eliminó la cuenta
+        emailService.sendAccountDeletionNotification(usuarioToDelete.getEmail());
+
         return "el usuario " + username + " fue eliminado correctamente!";
     }
 
@@ -96,6 +101,9 @@ public class UsuarioService implements IUsuarioService {
             // Actualizar el email
             usuario.setEmail(newEmail);
             usuarioRepository.save(usuario); // Guarda el cambio
+
+            emailService.sendUpdateNotification(newEmail, " <strong>correo</strong> ");
+            emailService.sendUpdateNotification(usuario.getEmail(), " <strong>correo</strong> ");
         }
 
         return "El email ha sido actualizado correctamente.";
@@ -125,8 +133,10 @@ public class UsuarioService implements IUsuarioService {
 
             credencialesService.saveCredenciales(credencialDelusuario);
 
-            usuarioRepository.save(usuario); // actualiza el email
+            usuarioRepository.save(usuario); // actualiza el username
 
+            // envía el correo
+            emailService.sendUpdateNotification(usuario.getEmail(), " <strong>Nombre de usuario</strong> ");
         }
 
         return "El nombre de usuario ha sido actualizado correctamente.";
@@ -143,8 +153,11 @@ public class UsuarioService implements IUsuarioService {
 
         usuarioRepository.save(updatingUsuario); // actualizamos
 
+        // envía el correo
+        emailService.sendUpdateNotification(updatingUsuario.getEmail(), " <strong>Perfil (Nombre o Apellido)</strong> ");
+        
         return "El perfil del usuario : " + username + " ha sido actualizado con éxito.";
-
+        
     }
 
     @Override
@@ -161,6 +174,9 @@ public class UsuarioService implements IUsuarioService {
         usuario.setPerfil(perfil); // actualizamos el usuario
 
         usuarioRepository.save(usuario); // actualizamos en la base de datos.
+
+        // envía el correo
+        emailService.sendUpdateNotification(usuario.getEmail(), " <strong>Foto de Perfil</strong> ");
 
         return "La foto de perfil de " + username + " fue actualizada correctamente";
 
