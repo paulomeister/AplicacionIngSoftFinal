@@ -4,7 +4,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { AuthContext } from "app/app/context/AuthContext";
 
 export function ChangePassword({ username }) {
-  const { notificacionDeExito } = useContext(AuthContext);
+  const { notificacionDeExito, clientKey } = useContext(AuthContext);
 
   /////////////
   //! OBTENER LOS DATOS DEL USUARIO CAMBIARÁ CUANDO SE HAGA LO DE AUTENTICACIÓN!
@@ -13,7 +13,7 @@ export function ChangePassword({ username }) {
   useEffect(() => {
     async function fetchUserData() {
       const response = await fetch(
-        `http://localhost:8080/Usuario/getByUsername/${username}`
+        `http://localhost:8080/api/Usuarios/getByUsername/${username}`
       );
       const data = await response.json();
       setUser(data); // Setea el user
@@ -28,10 +28,14 @@ export function ChangePassword({ username }) {
   });
 
   const [error, setError] = useState(false);
+  const [actualPassword, setActualPassword] = useState("");
 
   function handleChange(e) {
-    const { name, value } = e.target;
+    const { name, value} = e.target;
     setFormData({ ...formData, [name]: value });
+    if (name === "actualPassword") {
+      setActualPassword(value);
+    }
 
     if (name === "confirmPassword") {
       setError(value !== formData.newPassword);
@@ -51,19 +55,21 @@ export function ChangePassword({ username }) {
     }
 
     try {
-      const passwordActual = user?.password || "";
+      console.log(user);
+      const passwordActual = actualPassword;
       const passwordNuevo = formData.newPassword;
+      console.log(`${passwordActual}\n ${passwordNuevo}`)
 
       // ! Se debe de enviar un objeto de asi: {}
 
-      await fetch("http://localhost:8080/api/password/change", {
+      await fetch("http://localhost:8080/password/change", {
         method: "POST",
-        body: {
+        body: JSON.stringify({
           passwordActual,
           passwordNuevo,
-        },
+        }),
         headers: {
-          Authorization: "Bearer TIENES_QUE_PONER_UN_TOKEN_AQUI",
+          Authorization: clientKey,
           "Content-Type": "application/json",
         },
       });
@@ -71,6 +77,7 @@ export function ChangePassword({ username }) {
       // aqui se hace la petición para cambiar la contraseña
     } catch (exc) {
       notificacionDeExito("Contraseña cambiada exitosamente.");
+      
     }
   }
 
@@ -78,6 +85,21 @@ export function ChangePassword({ username }) {
     <div className="card shadow p-4" style={{ width: "400px" }}>
       <h2 className="text-center mb-4">Cambiar Contraseña</h2>
       <form onSubmit={handleSubmit}>
+      <div className="form-group mb-3">
+          <label htmlFor="actualPassword" className="form-label">
+            Contraseña actual
+          </label>
+          <input
+            type="password"
+            id="actualPassword"
+            name="actualPassword"
+            className="form-control"
+            placeholder="Ingrese su contraseña actual"
+            onChange={handleChange}
+            value={actualPassword}
+            required
+          />
+        </div>
         <div className="form-group mb-3">
           <label htmlFor="newPassword" className="form-label">
             Nueva Contraseña
