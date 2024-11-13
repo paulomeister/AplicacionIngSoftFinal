@@ -1,7 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { FaCalendarAlt, FaStar, FaArrowDown, FaEye, FaClock } from "react-icons/fa";
+import {
+  FaCalendarAlt,
+  FaStar,
+  FaArrowDown,
+  FaEye,
+  FaClock,
+} from "react-icons/fa";
 import Link from "next/link";
 import axios from "axios";
 import { SpinerComp } from "../../document/[id]/components/SpinnerComp";
@@ -62,13 +68,15 @@ export default function Documentos() {
   const sectionTitles = [
     { title: "Agregados Recientemente!", icon: <FaClock /> },
     { title: "Más valorados!", icon: <FaStar /> },
-    { title: "Más descargados!", icon: <FaArrowDown /> }
+    { title: "Más descargados!", icon: <FaArrowDown /> },
   ];
 
   const getHighlightClass = (type) => {
-    if ((type === 'date' && activeTab === 0) ||
-        (type === 'rating' && activeTab === 1) ||
-        (type === 'downloads' && activeTab === 2)) {
+    if (
+      (type === "date" && activeTab === 0) ||
+      (type === "rating" && activeTab === 1) ||
+      (type === "downloads" && activeTab === 2)
+    ) {
       return "text-blue-600 font-bold";
     }
     return "text-gray-600";
@@ -82,7 +90,10 @@ export default function Documentos() {
       : mostDownloadedDocuments;
 
   if (loading) return <SpinerComp />;
-  if (error) return <p className="text-center text-red-500 mt-8 text-lg">Error: {error}</p>;
+  if (error)
+    return (
+      <p className="text-center text-red-500 mt-8 text-lg">Error: {error}</p>
+    );
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -94,10 +105,21 @@ export default function Documentos() {
         <ul className="space-y-8">
           {documents.map((doc) => (
             <li key={doc._id} className="p-6 bg-white rounded shadow-md border">
-              <Link href={`/document/${doc._id}`} className="hover:text-blue-600 hover:underline"><h2 className="text-2xl font-semibold mb-2">{doc.titulo}</h2></Link>
+              <Link
+                href={`/document/${doc._id}`}
+                className="hover:text-blue-600 hover:underline"
+              >
+                <h2 className="text-2xl font-semibold mb-2">{doc.titulo}</h2>
+              </Link>
               <p className="text-lg text-gray-700 mb-1">
-                <span className="font-semibold">Subido por:</span> 
-                <Link href={`/users/${doc.autores?.[0]?.username}`} className="text-blue-600 hover:underline"> {doc.autores?.[0]?.nombre}</Link>
+                <span className="font-semibold">Subido por:</span>
+                <Link
+                  href={`/users/${doc.autores?.[0]?.username}`}
+                  className="text-blue-600 hover:underline"
+                >
+                  {" "}
+                  {doc.autores?.[0]?.nombre}
+                </Link>
               </p>
               <p className="text-base text-gray-600 mb-2 font-semibold">
                 {doc.categoria?.map((cat) => cat.nombre).join(", ")}
@@ -105,7 +127,11 @@ export default function Documentos() {
 
               <div className="flex justify-between items-center mt-4">
                 <div className="flex gap-8">
-                  <div className={`flex items-center gap-2 ${getHighlightClass('date')}`}>
+                  <div
+                    className={`flex items-center gap-2 ${getHighlightClass(
+                      "date"
+                    )}`}
+                  >
                     <FaCalendarAlt />
                     <span>
                       {new Date(doc.fechaSubida).toLocaleDateString("es-ES", {
@@ -116,18 +142,37 @@ export default function Documentos() {
                     </span>
                   </div>
 
-                  <div className={`flex items-center gap-2 ${getHighlightClass('rating')}`}>
+                  <div
+                    className={`flex items-center gap-2 ${getHighlightClass(
+                      "rating"
+                    )}`}
+                  >
                     <FaStar />
-                    <span>{doc.datosComputados?.valoracionPromedio == null ? 'Sin calificación' : `${doc.datosComputados?.valoracionPromedio} /5`}</span>
+                    <span>
+                      {doc.datosComputados?.valoracionPromedio == null
+                        ? "Sin calificación"
+                        : `${Math.round(
+                            doc.datosComputados?.valoracionPromedio
+                          ,1)} /5`}
+                    </span>
                   </div>
 
-                  <div className={`flex items-center gap-2 ${getHighlightClass('downloads')}`}>
+                  <div
+                    className={`flex items-center gap-2 ${getHighlightClass(
+                      "downloads"
+                    )}`}
+                  >
                     <FaArrowDown />
-                    <span>{doc.datosComputados?.descargasTotales || '0'} descargas</span>
+                    <span>
+                      {doc.datosComputados?.descargasTotales || "0"} descargas
+                    </span>
                   </div>
                 </div>
 
-                <Link href={`/document/${doc._id}`} className="flex items-center gap-2 text-blue-600 hover:underline">
+                <Link
+                  href={`/document/${doc._id}`}
+                  className="flex items-center gap-2 text-blue-600 hover:underline"
+                >
                   <FaEye /> Ver
                 </Link>
               </div>

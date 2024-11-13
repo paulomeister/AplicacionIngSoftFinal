@@ -34,7 +34,7 @@ export const AuthProvider = ({ children }) => {
   function notificacionDeExito(message) {
     return toast.success(message, {
       position: "top-center",
-      autoClose: 3000,
+      autoClose: 4000,
       hideProgressBar: false,
       closeOnClick: true,
       pauseOnHover: true,
@@ -46,7 +46,7 @@ export const AuthProvider = ({ children }) => {
   function notificacionDeError(message) {
     return toast.error(message, {
       position: "top-center",
-      autoClose: 3000,
+      autoClose: 4000,
       hideProgressBar: false,
       closeOnClick: true,
       pauseOnHover: true,
