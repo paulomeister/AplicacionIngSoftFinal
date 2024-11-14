@@ -6,7 +6,7 @@ import axios from "axios";
 
 export function ChangeEmail({ username }) {
 
-  const { user, notificacionDeError, notificacionDeExito, clientKey } = useContext(AuthContext);
+  const { user, notificacionDeError, notificacionDeExito, clientKey, cerrarSesion } = useContext(AuthContext);
 
   const [DATA, setFormData] = useState({});
 
@@ -37,10 +37,12 @@ export function ChangeEmail({ username }) {
 
       if (message.status === 200) {
         notificacionDeError("Se ha actualizado su correo.");
-        // Aquí se puede agregar el cierre de sesión y redirección
+        setTimeout(() => {
+          cerrarSesion();
+        }, 5000);
       }
     } catch (exc) {
-      notificacionDeError("Ha habido un error con algo: " + exc.message);
+      notificacionDeError("Ha habido un error vuelva a intentarlo más tarde");
     }
   }
 
