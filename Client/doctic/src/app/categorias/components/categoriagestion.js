@@ -1,16 +1,19 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import axios from "axios";
-import { 
-  Input, 
-  Textarea, 
-  Button 
-} from "@nextui-org/react";
+import { Input, Textarea, Button } from "@nextui-org/react";
+import { AuthContext } from "app/app/context/AuthContext";
 
 const CategoriesManager = () => {
+  const { notificacionDeExito, notificacionDeError } = useContext(AuthContext);
   const [categories, setCategories] = useState([]);
-  const [form, setForm] = useState({ nombre: "", descripcion: "", imagen: "", subcategorias: [] });
+  const [form, setForm] = useState({
+    nombre: "",
+    descripcion: "",
+    imagen: "",
+    subcategorias: [],
+  });
   const [isEditing, setIsEditing] = useState(false);
   const [editId, setEditId] = useState(null);
 
@@ -20,18 +23,24 @@ const CategoriesManager = () => {
 
   const fetchCategoriesWithSubcategories = async () => {
     try {
-      const response = await axios.get("http://localhost:8080/api/Categorias/allDistinct");
+      const response = await axios.get(
+        "http://localhost:8080/api/Categorias/allDistinct"
+      );
       const distinctCategories = response.data;
 
       const categoriesWithSubcategories = await Promise.all(
         distinctCategories.map(async (categoryName) => {
-          const categoryResponse = await axios.get(`http://localhost:8080/api/Categorias/getByName/${categoryName}`);
+          const categoryResponse = await axios.get(
+            `http://localhost:8080/api/Categorias/getByName/${categoryName}`
+          );
           const categoryData = categoryResponse.data[0];
 
-          const subcategoriesWithNames = categoryData.subcategorias.map((subcat) => ({
-            categoriaId: subcat.categoriaId,
-            nombre: subcat.nombre
-          }));
+          const subcategoriesWithNames = categoryData.subcategorias.map(
+            (subcat) => ({
+              categoriaId: subcat.categoriaId,
+              nombre: subcat.nombre,
+            })
+          );
 
           return {
             _id: categoryData._id,
@@ -60,7 +69,13 @@ const CategoriesManager = () => {
     if (selectedCategory) {
       setForm((prevForm) => ({
         ...prevForm,
-        subcategorias: [...prevForm.subcategorias, { categoriaId: selectedCategory._id, nombre: selectedCategory.nombre }],
+        subcategorias: [
+          ...prevForm.subcategorias,
+          {
+            categoriaId: selectedCategory._id,
+            nombre: selectedCategory.nombre,
+          },
+        ],
       }));
     }
   };
@@ -68,16 +83,23 @@ const CategoriesManager = () => {
   const createCategory = async () => {
     const newCategoryData = {
       ...form,
-      subcategorias: form.subcategorias.map((sub) => ({ categoriaId: sub.categoriaId }))
+      subcategorias: form.subcategorias.map((sub) => ({
+        categoriaId: sub.categoriaId,
+      })),
     };
-    
+
     console.log("Datos enviados para creación de categoría:", newCategoryData);
 
     try {
-      const response = await axios.post("http://localhost:8080/api/Categorias/create", newCategoryData);
+      const response = await axios.post(
+        "http://localhost:8080/api/Categorias/create",
+        newCategoryData
+      );
       setCategories([...categories, response.data]);
       setForm({ nombre: "", descripcion: "", imagen: "", subcategorias: [] });
+      notificacionDeExito("Categoría creada");
     } catch (error) {
+      notificacionDeError("Categoría no fue creada");
       console.error("Error creating category:", error);
     }
   };
@@ -88,7 +110,10 @@ const CategoriesManager = () => {
       nombre: category.nombre,
       descripcion: category.descripcion,
       imagen: category.imagen,
-      subcategorias: category.subcategorias.map((sub) => ({ categoriaId: sub.categoriaId, nombre: sub.nombre })),
+      subcategorias: category.subcategorias.map((sub) => ({
+        categoriaId: sub.categoriaId,
+        nombre: sub.nombre,
+      })),
     });
     setEditId(category._id);
     setIsEditing(true);
@@ -97,32 +122,51 @@ const CategoriesManager = () => {
   const updateCategory = async () => {
     const updatedCategoryData = {
       ...form,
-      subcategorias: form.subcategorias.map((sub) => ({ categoriaId: sub.categoriaId }))
+      subcategorias: form.subcategorias.map((sub) => ({
+        categoriaId: sub.categoriaId,
+      })),
     };
-    
-    console.log("Datos enviados para actualización de categoría:", updatedCategoryData);
+
+    console.log(
+      "Datos enviados para actualización de categoría:",
+      updatedCategoryData
+    );
 
     try {
-      const response = await axios.put(`http://localhost:8080/api/Categorias/update/${editId}`, updatedCategoryData);
+      const response = await axios.put(
+        `http://localhost:8080/api/Categorias/update/${editId}`,
+        updatedCategoryData
+      );
       setCategories(
         categories.map((cat) => (cat._id === editId ? response.data : cat))
       );
       setForm({ nombre: "", descripcion: "", imagen: "", subcategorias: [] });
       setIsEditing(false);
       setEditId(null);
+      notificacionDeExito(
+        "Categoría actualizada: ",
+        updatedCategoryData.nombre
+      );
+      setTimeout(() => (window.location.href = "/categorias"), 5000);
     } catch (error) {
       console.error("Error updating category:", error);
+      notificacionDeError(
+        "No se pudo actualizar la categoría " + updatedCategoryData.nombre
+      );
     }
   };
 
   const deleteCategory = async (id) => {
-    if (!window.confirm("¿Estás seguro de que deseas eliminar esta categoría?")) return;
-
+    if (!window.confirm("¿Estás seguro de que deseas eliminar esta categoría?"))
+      return;
     try {
       await axios.delete(`http://localhost:8080/api/Categorias/delete/${id}`);
       setCategories(categories.filter((cat) => cat._id !== id));
+      notificacionDeExito("Categoría eliminada correctamente");
+      setTimeout(() => (window.location.href = "/categorias"), 5000);
     } catch (error) {
       console.error("Error deleting category:", error);
+      notificacionDeError("No se pudo eliminar la categoría :( ");
     }
   };
 
@@ -131,8 +175,14 @@ const CategoriesManager = () => {
       <h1 className="text-4xl font-bold mb-6">Gestión de Categorías</h1>
 
       <div style={{ display: "flex", flexDirection: "row", gap: "20px" }}>
-        
-        <div style={{ flex: 1, border: "1px solid #ddd", borderRadius: "8px", padding: "16px" }}>
+        <div
+          style={{
+            flex: 1,
+            border: "1px solid #ddd",
+            borderRadius: "8px",
+            padding: "16px",
+          }}
+        >
           <h3>{isEditing ? "Actualizar Categoría" : "Crear Categoría"}</h3>
           <Input
             name="nombre"
@@ -159,7 +209,11 @@ const CategoriesManager = () => {
             className="mb-4"
           />
           <label>Subcategorías</label>
-          <select onChange={handleSubcategorySelection} className="mb-4" style={{ width: "100%", padding: "8px" }}>
+          <select
+            onChange={handleSubcategorySelection}
+            className="mb-4"
+            style={{ width: "100%", padding: "8px" }}
+          >
             <option value="">Selecciona una subcategoría</option>
             {categories.map((cat) => (
               <option key={cat._id} value={cat._id}>
@@ -167,21 +221,42 @@ const CategoriesManager = () => {
               </option>
             ))}
           </select>
-          {isEditing ? (
-            <Button onClick={updateCategory} color="primary" size="lg">
-              Actualizar
-            </Button>
-          ) : (
-            <Button onClick={createCategory} color="primary" size="lg">
-              Crear
-            </Button>
-          )}
+          <div className="flex items-center justify-center">
+            {isEditing ? (
+              <Button
+                onClick={updateCategory}
+                className="bg-green-700 text-white"
+                size="lg"
+              >
+                Actualizar
+              </Button>
+            ) : (
+              <Button onClick={createCategory} color="primary" size="lg">
+                Crear
+              </Button>
+            )}
+          </div>
         </div>
 
-        <div style={{ flex: 1, border: "1px solid #ddd", borderRadius: "8px", padding: "16px" }}>
+        <div
+          style={{
+            flex: 1,
+            border: "1px solid #ddd",
+            borderRadius: "8px",
+            padding: "16px",
+          }}
+        >
           <h3>Categorías y Subcategorías</h3>
           {categories.map((category) => (
-            <div key={category._id} className="mb-4" style={{ marginBottom: "16px", padding: "8px", borderBottom: "1px solid #ccc" }}>
+            <div
+              key={category._id}
+              className="mb-4"
+              style={{
+                marginBottom: "16px",
+                padding: "8px",
+                borderBottom: "1px solid #ccc",
+              }}
+            >
               <h4>{category.nombre}</h4>
               <p>{category.descripcion}</p>
               <ul>
@@ -193,7 +268,14 @@ const CategoriesManager = () => {
                   ))
                 )}
               </ul>
-              <div style={{ display: "flex", justifyContent: "flex-end", gap: "10px", marginTop: "10px" }}>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "flex-end",
+                  gap: "10px",
+                  marginTop: "10px",
+                }}
+              >
                 <Button
                   onClick={() => startEditing(category)}
                   color="primary"
