@@ -148,6 +148,7 @@ public class CategoriaService implements ICategoriaService {
 
         @Override
         public CategoriaModel createCategory(CategoriaModel categoria) {
+
                 return categoriaRepository.save(categoria);
         }
 

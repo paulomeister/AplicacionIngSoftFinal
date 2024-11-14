@@ -34,7 +34,7 @@ public class CategoriaModel {
     @NoArgsConstructor
     @AllArgsConstructor
     @Data
-    public static class subCategorias {
+    public static class SubCategorias {
 
         @Id
         private ObjectId categoriaId;
@@ -44,10 +44,12 @@ public class CategoriaModel {
             return categoriaId != null ? categoriaId.toHexString() : null;
         }
 
+        private String nombre;
+
     }
 
 
 
-    private List<Map<String, String>> subcategorias;
+    private List<SubCategorias> subcategorias;
     private String imagen;
 }
