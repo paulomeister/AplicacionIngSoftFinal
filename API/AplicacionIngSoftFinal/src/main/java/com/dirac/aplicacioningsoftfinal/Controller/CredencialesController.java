@@ -78,7 +78,7 @@ public class CredencialesController {
     // recibe un body con la nuevaPregunta y se le pone en la ruta, el username correspondiente;
     @PutMapping("preguntaSeguridad/change/{username}")
     public ResponseEntity<?> cambiarPreguntaDeSeguridad(@RequestBody PreguntaSeguridad nuevaPreguntaSeguridad,
-            @PathVariable("userId") String username) {
+            @PathVariable("username") String username) {
 
         Res res = new Res();
 
