@@ -75,8 +75,8 @@ public class SecurityConfiguration {
                         // .hasAnyRole(USUARIO.name(), ADMIN.name())
 
  
-                        // .requestMatchers(HttpMethod.PUT, "/api/Usuarios/updateEmail/*/*")
-                        // .hasAnyRole(USUARIO.name(), ADMIN.name())
+                        .requestMatchers(HttpMethod.PUT, "/api/Usuarios/updateEmail/*/*")
+                        .hasAnyRole(USUARIO.name(), ADMIN.name())
 
                         .requestMatchers(HttpMethod.PUT, "/api/Usuarios/updateUsername/")
                         .hasAnyRole(USUARIO.name(), ADMIN.name())

@@ -116,7 +116,7 @@ const AuthorInfo = ({ autor, propietario }) => {
         </div>
 
         {showDeleteConfirm && (
-          <div className="delete-confirmation">
+          <div className="delete-confirmation flex flex-col items-center justify-center gap-3">
             <h3>Confirma la eliminación de tu cuenta</h3>
             <p>Por favor, escribe tu nombre de usuario para confirmar:</p>
             <input
@@ -124,17 +124,19 @@ const AuthorInfo = ({ autor, propietario }) => {
               value={confirmUsername}
               onChange={(e) => setConfirmUsername(e.target.value)}
               placeholder="Nombre de usuario"
-              className="username-input"
+              className="border-2 border-[#57bbb4]  rounded-lg  p-2  focus:border-[#239089] focus:outline-none  focus:ring-2 focus:ring-[#239089]  placeholder-[#96d6d0] transition-all duration-300 ease-in-out"
             />
-            <button onClick={handleDeleteAccount} className="btn btn-danger">
-              Confirmar eliminación
-            </button>
-            <button
-              onClick={() => setShowDeleteConfirm(false)}
-              className="btn btn-secondary"
-            >
-              Cancelar
-            </button>
+            <div className="flex justify-between gap-4">
+              <button onClick={handleDeleteAccount} className="btn btn-danger">
+                Confirmar eliminación
+              </button>
+              <button
+                onClick={() => setShowDeleteConfirm(false)}
+                className="btn btn-secondary"
+              >
+                Cancelar
+              </button>
+            </div>
           </div>
         )}
       </div>

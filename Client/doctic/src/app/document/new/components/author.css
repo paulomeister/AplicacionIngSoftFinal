@@ -146,15 +146,14 @@
   }
 
   input {
-    border: 2px solid #cccccc; /* Borde del input */
-    padding: 10px;
+    
     border-radius: 8px; /* Bordes redondeados */
     outline: none; /* Elimina el borde azul por defecto */
     transition: box-shadow 0.3s ease; /* Suaviza la transición de la sombra */
   }
   
   input:focus {
-    border-color: #7a86ff; /* Cambia el color del borde al hacer focus */
+    
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1), /* Sombra suave debajo */
                 0 4px 6px rgba(0, 0, 0, 0.08); /* Sombra adicional para dar profundidad */
   }

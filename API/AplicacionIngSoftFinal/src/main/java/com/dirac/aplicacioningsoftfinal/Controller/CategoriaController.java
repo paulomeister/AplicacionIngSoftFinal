@@ -8,6 +8,7 @@ import org.apache.catalina.connector.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -51,7 +52,7 @@ public class CategoriaController {
     @GetMapping("/getSubcategoriesWithName/{name}")
     public ResponseEntity<?> getSubcategoriesFromAName(@PathVariable("name") String name) {
         try {
-                      
+
             return ResponseEntity.status(200).body(categoriaService.getAllSubCategoriesFromACategoryName(name));
 
         } catch (Exception e) {
@@ -64,4 +65,21 @@ public class CategoriaController {
         }
     }
 
+    @DeleteMapping("/delete/{categoryId}")
+    public ResponseEntity<Res> deleteCategory(@PathVariable("categoryId") String categoryId) {
+
+        Res res = new Res();
+
+        try {
+            res.setMessage(categoriaService.deleteCategory(categoryId));
+            res.setStatus(200);
+
+        } catch (Exception e) {
+            res.setMessage(e.getMessage());
+            res.setStatus(500);
+        }
+
+        return ResponseEntity.status(res.getStatus()).body(res);
+
+    }
 }

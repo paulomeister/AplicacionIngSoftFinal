@@ -1,10 +1,37 @@
 package com.dirac.aplicacioningsoftfinal.Service;
 
+import static com.dirac.aplicacioningsoftfinal.Security.PermisosDeUsuarioPorRol.ADMIN;
+import static com.dirac.aplicacioningsoftfinal.Security.PermisosDeUsuarioPorRol.USUARIO;
+import static java.lang.String.format;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
 import com.dirac.aplicacioningsoftfinal.DTO.CambiarPasswordDTO;
 import com.dirac.aplicacioningsoftfinal.DTO.NuevosCredencialesDTO;
-import com.dirac.aplicacioningsoftfinal.DTO.OlvidoPasswordDTO;
 import com.dirac.aplicacioningsoftfinal.DTO.NuevosCredencialesDTO.Perfil;
-import com.dirac.aplicacioningsoftfinal.Exception.*;
+import com.dirac.aplicacioningsoftfinal.DTO.OlvidoPasswordDTO;
+import com.dirac.aplicacioningsoftfinal.Exception.ActivePasswordNotFoundException;
+import com.dirac.aplicacioningsoftfinal.Exception.GetSomethingException;
+import com.dirac.aplicacioningsoftfinal.Exception.InvalidPasswordSettingsException;
+import com.dirac.aplicacioningsoftfinal.Exception.InvalidSecretException;
+import com.dirac.aplicacioningsoftfinal.Exception.NoRoleSpecifiedException;
+import com.dirac.aplicacioningsoftfinal.Exception.PasswordAlreadyUsedException;
+import com.dirac.aplicacioningsoftfinal.Exception.UpdateException;
+import com.dirac.aplicacioningsoftfinal.Exception.UserAlreadyExistsException;
+import com.dirac.aplicacioningsoftfinal.Exception.UsuarioNotFoundException;
 import com.dirac.aplicacioningsoftfinal.Model.CredencialesModel;
 import com.dirac.aplicacioningsoftfinal.Model.CredencialesModel.Credenciales;
 import com.dirac.aplicacioningsoftfinal.Model.CredencialesModel.PreguntaSeguridad;
@@ -19,26 +46,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-
-import static com.dirac.aplicacioningsoftfinal.Model.CredencialesModel.*;
-import static com.dirac.aplicacioningsoftfinal.Model.UsuarioModel.*;
-import static com.dirac.aplicacioningsoftfinal.Security.PermisosDeUsuarioPorRol.*;
-import static java.lang.String.*;
-
 @Service
 public class CredencialesService implements ICredencialesService {
 
@@ -46,6 +53,7 @@ public class CredencialesService implements ICredencialesService {
     private final IUsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
     private final ImgurService imgurService;
+    private final EmailService emailService;
 
     @Autowired
     public CredencialesService(ICredencialesRepository credencialesRepository, IUsuarioRepository usuarioRepository,
@@ -54,6 +62,7 @@ public class CredencialesService implements ICredencialesService {
         this.usuarioRepository = usuarioRepository;
         this.passwordEncoder = passwordEncoder;
         this.imgurService = imgurService;
+        this.emailService = new EmailService();
     }
 
     @Override
@@ -212,6 +221,7 @@ public class CredencialesService implements ICredencialesService {
             );
 
             usuarioRepository.save(nuevoUsuario);
+            emailService.sendWelcomeEmail(nuevoUsuario.getEmail());
             return usuarioEntrante;
         } else {
 
@@ -268,6 +278,7 @@ public class CredencialesService implements ICredencialesService {
             );
 
             usuarioRepository.save(nuevoUsuario);
+            emailService.sendWelcomeEmail(nuevoUsuario.getEmail()); // envía el correo
             return usuarioEntrante;
         } else {
 
@@ -320,6 +331,9 @@ public class CredencialesService implements ICredencialesService {
 
         String username = auth.getName();
 
+        UsuarioModel usuarioCambiante = usuarioRepository.findUserByUserName(username)
+                .orElseThrow(() -> new UsernameNotFoundException("No se pudo encontrar al usuario: " + username));
+
         CredencialesModel usuario = credencialesRepository.findCredencialesByUsername(username)
                 .orElseThrow(() -> new UsuarioNotFoundException(
                         format("El usuario \"%s\" no se encuentra en la base de datos! Error fatal", username)));
@@ -366,10 +380,10 @@ public class CredencialesService implements ICredencialesService {
 
         );
 
+         emailService.sendUpdateNotification(usuarioCambiante.getEmail()," <strong>Contraseña</strong> ");
         credenciales.add(newCredentials);
 
         credencialesRepository.save(usuario);
-
         return "La contraseña fue cambiada satisfactoriamente!";
 
     }

@@ -16,6 +16,7 @@ import com.dirac.aplicacioningsoftfinal.Exception.UsuarioNotFoundException;
 import com.dirac.aplicacioningsoftfinal.Model.DocumentoModel;
 import com.dirac.aplicacioningsoftfinal.Model.DocumentoModel.Autores;
 import com.dirac.aplicacioningsoftfinal.Model.DocumentoModel.DatosComputados;
+import com.dirac.aplicacioningsoftfinal.Model.DocumentoModel.Valoracion;
 import com.dirac.aplicacioningsoftfinal.Model.UsuarioModel.DocsSubidos;
 import com.dirac.aplicacioningsoftfinal.Model.UsuarioModel;
 import com.dirac.aplicacioningsoftfinal.Repository.IDocumentoRepository;
@@ -33,6 +34,7 @@ import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.drive.DriveScopes;
 import com.google.api.services.drive.model.File;
+import com.mongodb.client.result.UpdateResult;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.services.drive.Drive;
 import java.io.ByteArrayOutputStream;
@@ -47,6 +49,7 @@ import java.security.GeneralSecurityException;
 import java.time.LocalDate;
 import java.util.Collections;
 
+import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -57,6 +60,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import java.util.ArrayList;
@@ -737,6 +741,80 @@ public class DocumentoService implements IDocumentoService {
 
         }
         return result;
+    }
+
+    // Método para agregar una valoración
+    @Override
+    public String agregarValoracion(ObjectId documentoId, Valoracion nuevaValoracion) {
+        DocumentoModel documento = documentoRepository.findById(documentoId)
+                .orElseThrow(() -> new IllegalArgumentException("Documento no encontrado"));
+
+        nuevaValoracion.setFechaCreacion(new Date());
+        documento.getValoraciones().add(nuevaValoracion);
+        actualizarDatosComputados(documento);
+        documentoRepository.save(documento);
+
+        return "Valoración agregada exitosamente";
+    }
+
+    @Override
+    public String editarValoracion(ObjectId documentoId, ObjectId usuarioId, Valoracion valoracionActualizada) {
+        DocumentoModel documento = documentoRepository.findById(documentoId)
+                .orElseThrow(() -> new IllegalArgumentException("Documento no encontrado"));
+
+        List<Valoracion> valoraciones = documento.getValoraciones();
+
+        Valoracion valoracionExistente = valoraciones.stream()
+                .filter(v -> v.getUsuarioId().equals(usuarioId))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Valoración no encontrada para el usuario"));
+
+        valoracionExistente.setPuntuacion(valoracionActualizada.getPuntuacion());
+        valoracionExistente.setComentario(valoracionActualizada.getComentario());
+        actualizarDatosComputados(documento);
+
+        documentoRepository.save(documento);
+        return "Valoración actualizada exitosamente";
+    }
+
+    @Override
+    public String eliminarValoracion(ObjectId documentoId, ObjectId usuarioId) {
+        DocumentoModel documento = documentoRepository.findById(documentoId)
+                .orElseThrow(() -> new IllegalArgumentException("Documento no encontrado"));
+
+        boolean removed = documento.getValoraciones().removeIf(v -> v.getUsuarioId().equals(usuarioId));
+        if (!removed) {
+            throw new IllegalArgumentException("Valoración no encontrada para el usuario");
+        }
+
+        actualizarDatosComputados(documento);
+        documentoRepository.save(documento);
+
+        return "Valoración eliminada exitosamente";
+    }
+
+    
+
+    // Método para actualizar datos computados
+    private void actualizarDatosComputados(DocumentoModel documento) {
+        List<Valoracion> valoraciones = documento.getValoraciones();
+        double sumaPuntuaciones = valoraciones.stream().mapToDouble(Valoracion::getPuntuacion).sum();
+        int totalComentarios = valoraciones.size();
+
+        documento.getDatosComputados().setValoracionPromedio(sumaPuntuaciones / Math.max(totalComentarios, 1));
+        documento.getDatosComputados().setComentariosTotales(totalComentarios);
+    }
+
+    @Override
+    public String eliminarValoracionesPorUsuarioIdEnTodosLosDocumentos(ObjectId usuarioId) {
+           // Crear un filtro que aplique a todos los documentos y elimine todas las valoraciones con el usuarioId especificado
+           Query query = new Query();
+           Update update = new Update().pull("valoraciones", new Document("usuarioId", usuarioId));
+           
+           // Actualizar múltiples documentos
+           mongoTemplate.updateMulti(query, update, DocumentoModel.class);
+
+           return "Eliminado correctamente";
     }
 
 }

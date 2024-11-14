@@ -132,5 +132,6 @@ public class UsuarioController {
         return ResponseEntity.status(res.getStatus()).body(res);
 
     }
+    
 
 }

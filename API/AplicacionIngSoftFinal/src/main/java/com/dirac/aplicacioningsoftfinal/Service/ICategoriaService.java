@@ -1,6 +1,9 @@
 package com.dirac.aplicacioningsoftfinal.Service;
 
 import java.util.Optional;
+
+import org.bson.types.ObjectId;
+
 import java.util.List;
 
 import com.dirac.aplicacioningsoftfinal.DTO.CategoriaConSubCategoriasDTO;
@@ -14,6 +17,11 @@ public interface ICategoriaService {
     List<CategoriaModel> getByName(String name);
 
     List<CategoriaModel> getSubcategories(String name);
+
+    List<CategoriaModel> getAll();
+
+    String deleteCategory(String categoryId);
+
 
     List<CategoriaDTO> getCatalog();
 
