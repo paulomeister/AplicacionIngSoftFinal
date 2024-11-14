@@ -19,6 +19,7 @@ public class CredencialesModel {
     @Id
     private ObjectId _id;
     private String username;
+    private String email;
     private String password;
     private String rol;
     private boolean isAccountNonExpired;
