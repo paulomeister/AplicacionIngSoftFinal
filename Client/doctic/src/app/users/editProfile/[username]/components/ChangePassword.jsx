@@ -4,7 +4,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { AuthContext } from "app/app/context/AuthContext";
 
 export function ChangePassword({ username }) {
-  const { notificacionDeExito, clientKey } = useContext(AuthContext);
+  const { notificacionDeExito, clientKey,notificacionDeError, cerrarSesion} = useContext(AuthContext);
 
   /////////////
   //! OBTENER LOS DATOS DEL USUARIO CAMBIARÁ CUANDO SE HAGA LO DE AUTENTICACIÓN!
@@ -62,7 +62,7 @@ export function ChangePassword({ username }) {
 
       // ! Se debe de enviar un objeto de asi: {}
 
-      await fetch("http://localhost:8080/password/change", {
+      const response = await fetch("http://localhost:8080/password/change", {
         method: "POST",
         body: JSON.stringify({
           passwordActual,
@@ -73,11 +73,20 @@ export function ChangePassword({ username }) {
           "Content-Type": "application/json",
         },
       });
-
+      const data = response.text();
+      console.log(data);
+      console.log(response.status);
+      if(response.status == 400) {
+        throw Error("La contraseña nueva ingresada ya ha sido usada anteriormente")
+      } else {
+        notificacionDeExito("Contraseña cambiada exitosamente.");
+        setTimeout(() => {
+          cerrarSesion();
+        }, 5000);
+      }
       // aqui se hace la petición para cambiar la contraseña
-    } catch (exc) {
-      notificacionDeExito("Contraseña cambiada exitosamente.");
-      
+    } catch (error) {
+      notificacionDeError(`${error}`);
     }
   }
 
