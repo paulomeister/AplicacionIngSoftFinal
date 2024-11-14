@@ -162,7 +162,8 @@ export default function Page({ params }) {
       visualiza = true;
     }
   });
-  if(!visualiza) {
+  console.log(data);
+  if(data.visibilidad == 'privado' && !visualiza) {
     window.location.href = "/error404"
   }
   console.log("ID ACTUAL: ", user._id, " ", id);
