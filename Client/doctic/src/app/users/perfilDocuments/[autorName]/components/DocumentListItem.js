@@ -16,12 +16,12 @@ export function DocumentListItem({ doc, handleEdit, handleDelete, propietario })
 
   return (
     <li key={doc._id} className="p-6 bg-white rounded shadow-md border">
-      <Link href={`/document/${doc._id}`} className="hover:underline hover:text-blue-600"><h2 className="text-2xl font-semibold mb-2">{doc.titulo}</h2></Link>
+      <Link href={`/document/${doc._id}`} className=" no-underline hover:underline text-black hover:text-blue-600"><h2 className="text-2xl font-semibold mb-2">{doc.titulo}</h2></Link>
       <p className="text-lg text-gray-700 mb-1">
         <span className="font-semibold">Autores:</span>{" "}
         {doc.autores.map((autor, index) => (
           <span key={autor.username}>
-            <Link href={`/users/${autor.username}`} className="hover:underline hover:text-blue-600">
+            <Link href={`/users/${autor.username}`} className=" text-black hover:underline hover:text-blue-600">
               {autor.nombre}
             </Link>
             

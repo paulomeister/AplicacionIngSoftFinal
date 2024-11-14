@@ -18,3 +18,7 @@ body {
     text-wrap: balance;
   }
 }
+
+.link, .author{
+  color:#000000
+}

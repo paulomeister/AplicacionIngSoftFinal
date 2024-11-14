@@ -1,4 +1,6 @@
-
+.search-container {
+  width: 95vw;
+}
 
 .filter-container {
     position: sticky;
@@ -13,22 +15,24 @@
     background-color: #f3f0ff;
     border-radius: 8px;
     padding-bottom: 12px;
+    width: 95vw;
   }
   
   div{
     color : rgb(0, 0, 0);
   }
-  
+
   .search-icon{
-    width: 95vw;
+    width: calc(100% - 40px);
     margin: 20px;
   }
 
   .search-bar {
-    position: relative;
+    position: sticky;
     display: flex;
     flex-direction: row;
     margin-bottom: 0;
+    width: 100%;
   }
 
   .search-input {

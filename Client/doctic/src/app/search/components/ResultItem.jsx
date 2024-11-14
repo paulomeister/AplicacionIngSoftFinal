@@ -19,13 +19,13 @@ const ResultItem = ({ results }) => {
     <div>
       {results.map((result, index) => (
         <div key={index} className="result-item">
-          <Link className="result-title hover:underline hover:text-blue-600" href={`/document/${result._id}`}><h3><strong>{result.titulo}</strong></h3></Link>
+          <Link className="result-title" href={`/document/${result._id}`}><h3 className="result-title"><strong>{result.titulo}</strong></h3></Link>
 
           {/* Renderizar autores */}
           <div className="result-authors">
             <p><strong className="result-author">Autores: </strong> 
               {result.autores?.map((autor, i) => (
-                <Link href={`/users/${autor.username}`} className="author hover:underline hover:text-blue-600" key={i}> 
+                <Link href={`/users/${autor.username}`} className="author no-underline" key={i}> 
                 <span>{autor.nombre}{i < result.autores.length - 1 ? ", " : ""} </span> 
                 </Link>
               ))}

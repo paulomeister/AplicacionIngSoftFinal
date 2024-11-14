@@ -72,12 +72,16 @@ const DocumentItem = ({ results, propietario }) => {
         .filter((result) => result.visibilidad !== "privado" || propietario)
         .map((result, index) => (
           <div key={index} className="result-item">
-            <Link
-              className="title hover:underline hover:text-blue-500"
-              href={`/document/${result._id}`}
-            >
-              <h3>
-                <strong>{result.titulo}</strong>{" "}
+            <div className="title-container">
+              <Link
+                className="title-result-item no-underline"
+                href={`/document/${result._id}`}
+              >
+                <h3 className="title-result-item no-underline">
+                  <strong>{result.titulo}</strong>
+                </h3>
+              </Link>
+
                 <span
                   style={{
                     color: result.visibilidad === "privado" ? "red" : "green",
@@ -86,8 +90,9 @@ const DocumentItem = ({ results, propietario }) => {
                 >
                   {result.visibilidad}
                 </span>
-              </h3>
-            </Link>
+            </div>
+
+            
 
             <div className="result-authors">
               <p>

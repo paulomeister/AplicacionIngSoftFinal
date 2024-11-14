@@ -10,10 +10,6 @@
     width: auto;
   }
 
-.documentTitle{
-  cursor:pointer
-}
-
 .documentTitle:hover{
   color:gray
 }
@@ -28,6 +24,15 @@
     margin-bottom: 5px;
   }
 
+  .result-title{
+    color: black;
+    text-decoration: none;
+  }
+  
+  .result-title:hover{
+    color: #0056ff;  
+    text-decoration: underline;
+  }
   .result-authors, .result-categories {
     display: flex;
     flex-direction: row;
@@ -54,6 +59,7 @@
     align-items: center;
     margin-top: 10px;
     width: 98%;
+    margin-bottom: -2%;
   }
 
   .result-img{
@@ -68,7 +74,6 @@
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    align-items: center;
   }
 
   .result-date{

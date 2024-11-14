@@ -63,79 +63,86 @@ const AuthorInfo = ({ autor, propietario }) => {
   return (
     !isLoading && (
       <div className="author-info">
-        <div className="author-avatar-container">
-          <img
-            src={avatar}
-            alt="Avatar del Autor"
-            className=" object-contain h-[150px] w-[150px] rounded-full "
-          />
-          <div className="author-info-container">
-            {propietario && (
-              <div className="flex justify-center items-center gap-4 w-[600px] p-4">
-                <button
-                  className="btn btn-danger flex items-center space-x-2 w-[150px]"
-                  onClick={cerrarSesion}
-                >
-                  <span className="text-sm">
-                    <FaSignOutAlt />
-                    Cerrar Sesión
-                  </span>
-                </button>
+        <div className="author-avatar-container-container">
+          <div className="author-avatar-container">
+            <img
+              src={avatar}
+              alt="Avatar del Autor"
+              className="img-avatar"
+            />
+            <div className="author-info-container ">
+              {propietario && (
+                <div className="flex justify-end items-center gap-4 p-4">
+                  <Link
+                    className=" flex items-center space-x-2 text-blue-700 hover:text-blue-900"
+                    href={`/users/editProfile/${autor.username}`}
+                  >
+                    <FaEdit />
+                    <span>Editar Perfil</span>
+                  </Link>
 
-                <Link
-                  className=" flex items-center space-x-2 text-blue-700 hover:text-blue-900"
-                  href={`/users/editProfile/${autor.username}`}
-                >
-                  <FaEdit />
-                  <span>Editar Perfil</span>
-                </Link>
-
-                <button
-                  className="flex items-center space-x-2 text-red-700 hover:text-red-900"
-                  onClick={() => setShowDeleteConfirm(true)}
-                >
-                  <FaTrash />
-                  <span>Eliminar Cuenta</span>
-                </button>
+                  <button
+                    className="flex items-center space-x-2 text-red-700 hover:text-red-900"
+                    onClick={() => setShowDeleteConfirm(true)}
+                  >
+                    <FaTrash />
+                    <span>Eliminar Cuenta</span>
+                  </button>
+                </div>
+              )}
+              <div className="author-name-container hover:cursor-default">
+                <h2 className="names">
+                  {`${autor.perfil?.nombre} ${autor.perfil?.apellido}`}
+                </h2>
+                <h2 className="username">@{autor.username}</h2>
+                <h4 className="date hover:cursor-default">
+                  Ingresó a{" "}
+                  <span id="span-doctic" className="hover:cursor-default">
+                    DocTIC
+                  </span>{" "}
+                  en el {autor.fechaRegistro}
+                </h4>
               </div>
-            )}
-            <div className="author-name-container hover:cursor-default">
-              <h2 className="names">
-                {`${autor.perfil?.nombre} ${autor.perfil?.apellido}`}
-              </h2>
-              <h2 className="username">@{autor.username}</h2>
-              <h4 className="date hover:cursor-default">
-                Ingresó a{" "}
-                <span id="span-doctic" className="hover:cursor-default">
-                  DocTIC
-                </span>{" "}
-                en el {autor.fechaRegistro}
-              </h4>
             </div>
+          </div>
+          <div className="btn-cerrar-sesion-container">
+            {propietario &&
+            <button
+              className="btn-cerrar-sesion btn-danger flex items-center space-x-2 w-[150px]"
+              onClick={cerrarSesion}
+            >
+              Cerrar Sesión
+              <FaSignOutAlt className="btn-cerrar-sesion-icon"/>
+            </button>}
           </div>
         </div>
 
         {showDeleteConfirm && (
-          <div className="delete-confirmation flex flex-col items-center justify-center gap-3">
-            <h3>Confirma la eliminación de tu cuenta</h3>
-            <p>Por favor, escribe tu nombre de usuario para confirmar:</p>
-            <input
-              type="text"
-              value={confirmUsername}
-              onChange={(e) => setConfirmUsername(e.target.value)}
-              placeholder="Nombre de usuario"
-              className="border-2 border-[#57bbb4]  rounded-lg  p-2  focus:border-[#239089] focus:outline-none  focus:ring-2 focus:ring-[#239089]  placeholder-[#96d6d0] transition-all duration-300 ease-in-out"
-            />
-            <div className="flex justify-between gap-4">
-              <button onClick={handleDeleteAccount} className="btn btn-danger">
-                Confirmar eliminación
-              </button>
-              <button
-                onClick={() => setShowDeleteConfirm(false)}
-                className="btn btn-secondary"
-              >
-                Cancelar
-              </button>
+          <div className="delete-confirmation-container">
+            <div className="delete-confirmation">
+              <h3>Confirma la eliminación de tu cuenta</h3>
+              <hr/>
+              <div className="delete-confirmation-text">
+                <p>Para confirmar la eliminación de tu cuenta, ingresa tu nombre de usuario: <span>{user.username}</span></p>
+              </div>
+              <input
+                type="text"
+                value={confirmUsername}
+                onChange={(e) => setConfirmUsername(e.target.value)}
+                placeholder="Nombre de usuario"
+                className=" transition-all duration-300 ease-in-out"
+              />
+              <div className="flex justify-around w-full">
+                <button
+                  onClick={() => setShowDeleteConfirm(false)}
+                  className="btn btn-secondary"
+                >
+                  Cancelar
+                </button>
+                <button onClick={handleDeleteAccount} className="btn btn-danger">
+                  Confirmar eliminación
+                </button>
+              </div>
             </div>
           </div>
         )}

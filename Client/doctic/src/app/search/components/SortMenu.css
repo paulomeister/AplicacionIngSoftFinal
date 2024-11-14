@@ -1,15 +1,13 @@
 .sort-menu {
-  position: sticky;
   top: 0;
   min-width: 220px;
-  max-width: 220px;
+  max-width: 300px;
   min-height: 300px;
-  max-height: 300px;
   background-color: #d1d1d1;
+  margin-top: 20px;
   padding: 10px;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  /* margin-top: 10px; */
   margin-left: 20px;
 }
 
@@ -23,11 +21,13 @@ strong{
 }
 
 .sort-options li {
-  padding: 8px 0;
+  padding: 8px 5px;
   text-align: left;
   color: #333;
   cursor: pointer;
   border-top: 1px solid rgb(107, 107, 107);
+  width: 115%;
+  margin-left: -14%;
 }
 
 .sort-options li:hover {

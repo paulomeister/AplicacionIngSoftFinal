@@ -8,6 +8,7 @@
     display: flex;
     flex-direction: column;
     width: 95vw;
+    margin-bottom: 20px;
   }
   
   .results-list{
@@ -24,8 +25,6 @@
   }
 
   .sort-container {
-    display: flex;
-    justify-content: right;
     position: fixed;
     right: 0;
     margin-right: 3vw;

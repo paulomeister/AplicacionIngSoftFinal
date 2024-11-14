@@ -9,14 +9,34 @@
   width: auto;
 }
 
+.title-container{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 100%;
+}
+
 p{
   font-size: 80%;
   color: rgb(83, 83, 83);
 }
 
 .result-item h3 {
+  color: black;
   font-size: 120%;
   margin-bottom: 5px;
+  width: 85%;
+}
+
+.result-item h3:hover{
+  color: #0056ff;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.title-result-item:hover{
+  color: #0056ff;
+  cursor: pointer;
 }
 
 .result-authors, .result-categories {
@@ -59,7 +79,6 @@ p{
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  align-items: center;
 }
 
 .result-date{

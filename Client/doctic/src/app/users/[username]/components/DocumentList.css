@@ -50,6 +50,7 @@ hr{
   border-radius: 5px;
   font-size: 85%;
   margin-left: 10px;
+  text-decoration: none;
 }
 
 .ver-todos-btn:hover{

@@ -40,7 +40,7 @@ export const NavbarComp = () => {
   };
 
   return (
-    <Navbar position="sticky" isBordered maxWidth="2xl">
+    <Navbar position="sticky" isBordered maxWidth="2xl" >
       <NavbarBrand>
         <Link href="/home" className="flex items-center">
           <Image src="/logo.png" alt="Logo" width={50} height={50} />
@@ -57,12 +57,12 @@ export const NavbarComp = () => {
           </Link>
         </NavbarItem>
         <NavbarItem>
-          <Input
+          <Input 
+            classNames='h-full'
             isClearable
             type="text"
-            label="Buscar"
             placeholder="Busca tu documento..."
-            className="w-80 mt-3"
+            className="w-80 mt-3 h-full"
             size="sm"
             variant="bordered"
             radius="full"
@@ -71,7 +71,7 @@ export const NavbarComp = () => {
             onKeyPress={handleKeyPress}
             startContent={
               <LuSearch className="cursor-pointer" onClick={handleSearch} />
-            }
+            } 
           />
         </NavbarItem>
         <NavbarItem>

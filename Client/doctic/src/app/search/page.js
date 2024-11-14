@@ -2,7 +2,7 @@ import Search from "./components/Search";
 
 function searchPage() {
   return (
-    <div>
+    <div className="page-container-search">
       <Search />
     </div>
   );

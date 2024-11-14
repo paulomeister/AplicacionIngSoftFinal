@@ -107,7 +107,7 @@ export default function Documentos() {
             <li key={doc._id} className="p-6 bg-white rounded shadow-md border">
               <Link
                 href={`/document/${doc._id}`}
-                className="hover:text-blue-600 hover:underline"
+                className="link no-underline hover:text-blue-600 hover:underline"
               >
                 <h2 className="text-2xl font-semibold mb-2">{doc.titulo}</h2>
               </Link>
@@ -115,7 +115,7 @@ export default function Documentos() {
                 <span className="font-semibold">Subido por:</span>
                 <Link
                   href={`/users/${doc.autores?.[0]?.username}`}
-                  className="text-blue-600 hover:underline"
+                  className="link hover:text-blue-600"
                 >
                   {" "}
                   {doc.autores?.[0]?.nombre}
