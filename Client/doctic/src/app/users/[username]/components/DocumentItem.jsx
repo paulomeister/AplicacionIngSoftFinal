@@ -107,7 +107,7 @@ const DocumentItem = ({ results, propietario }) => {
               </p>
             </div>
 
-            <div className="result-categories">
+            <div className="result-categories d-flex">
               <p>
                 <strong>Categorías: </strong>
                 {result.categoria?.map((cat, i) => (
@@ -121,7 +121,7 @@ const DocumentItem = ({ results, propietario }) => {
 
             <div className="result-params">
               <div className="result-img">
-                <div className="result-date">
+                <div className="result-date icons">
                   <FaCalendarAlt />{" "}
                   <p>{new Date(result.fechaSubida).toLocaleDateString()}</p>
                 </div>

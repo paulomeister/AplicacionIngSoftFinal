@@ -9,8 +9,15 @@
   width: auto;
 }
 
+.icons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 p{
   font-size: 80%;
+  margin-bottom: 0;
   color: rgb(83, 83, 83);
 }
 

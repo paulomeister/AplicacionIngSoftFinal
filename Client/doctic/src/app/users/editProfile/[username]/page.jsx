@@ -8,6 +8,7 @@ import { ChangeProfilePicture } from "./components/ChangeProfilePicture";
 import "./page.css";
 import { AuthContext } from "app/app/context/AuthContext";
 import { SpinerComp } from "app/app/document/[id]/components/SpinnerComp";
+import { ChangeSecurityQuestion } from "./components/ChangeSecurityQuestion";
 
 function App({ params }) {
   const {
@@ -48,6 +49,9 @@ function App({ params }) {
         return <ChangeUsername username={username} />;
       case "changeProfilePicture":
         return <ChangeProfilePicture username={username} />;
+        // a
+      case "changeSecurityQuestion":
+        return <ChangeSecurityQuestion username={username} />;
       default:
         return null;
     }
@@ -79,6 +83,7 @@ function App({ params }) {
           <option value="changePassword">Cambiar Contraseña</option>
           <option value="changeUsername">Cambiar Nombre de Usuario</option>
           <option value="changeProfilePicture">Cambiar Foto de Perfil</option>
+          <option value="changeSecurityQuestion">Cambiar Pregunta de seguridad</option>
         </select>
       </div>
       <div className="edit-container">{renderSelectedComponent()}</div>
