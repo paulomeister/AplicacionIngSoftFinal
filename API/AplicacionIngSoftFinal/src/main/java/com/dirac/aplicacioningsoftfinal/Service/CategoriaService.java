@@ -9,6 +9,7 @@ import com.dirac.aplicacioningsoftfinal.DTO.CategoriaConSubCategoriasDTO;
 import com.dirac.aplicacioningsoftfinal.DTO.CategoriaDTO;
 import com.dirac.aplicacioningsoftfinal.Exception.IdNotFoundException;
 import com.dirac.aplicacioningsoftfinal.Model.CategoriaModel;
+import com.dirac.aplicacioningsoftfinal.Model.CategoriaModel.SubCategorias;
 import com.dirac.aplicacioningsoftfinal.Repository.ICategoriaRepository;
 import com.mongodb.BasicDBObject;
 
@@ -51,13 +52,13 @@ public class CategoriaService implements ICategoriaService {
                 CategoriaModel categoria = categoriaRepository.findById(id)
                                 .orElseThrow(() -> new IdNotFoundException(id + " Not found"));
 
-                List<Map<String, String>> subCategorias = categoria.getSubcategorias();
+                List<SubCategorias> subCategorias = categoria.getSubcategorias();
 
                 List<CategoriaModel> res = new ArrayList<>();
 
-                for (Map<String, String> subCat : subCategorias) {
+                for (SubCategorias subCat : subCategorias) {
 
-                        String categoriaId = subCat.get("categoriaId");
+                        String categoriaId = subCat.getCategoriaId().toHexString();
                         Optional<CategoriaModel> subCategoria = categoriaRepository.findById(categoriaId);
                         res.add(subCategoria
                                         .orElseThrow(() -> new IdNotFoundException(
