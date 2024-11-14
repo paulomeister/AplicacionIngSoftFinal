@@ -211,10 +211,10 @@ export const PublicationForm = () => {
       fechaSubida: new Date(),
       year: new Date().getFullYear(),
       datosComputados: {
-        descargasTotales: 0,
-        valoracionPromedio: 0,
-        comentariosTotales: 0,
-      },
+    descargasTotales: 0,
+    valoracionPromedio: 0,
+    comentariosTotales: 0,
+  }
     };
   
     const data = new FormData();
