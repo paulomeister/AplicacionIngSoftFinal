@@ -34,6 +34,7 @@ import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.drive.DriveScopes;
 import com.google.api.services.drive.model.File;
+import com.mongodb.client.result.UpdateResult;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.services.drive.Drive;
 import java.io.ByteArrayOutputStream;
@@ -48,6 +49,7 @@ import java.security.GeneralSecurityException;
 import java.time.LocalDate;
 import java.util.Collections;
 
+import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -58,6 +60,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import java.util.ArrayList;
@@ -790,6 +793,8 @@ public class DocumentoService implements IDocumentoService {
         return "Valoración eliminada exitosamente";
     }
 
+    
+
     // Método para actualizar datos computados
     private void actualizarDatosComputados(DocumentoModel documento) {
         List<Valoracion> valoraciones = documento.getValoraciones();
@@ -798,6 +803,18 @@ public class DocumentoService implements IDocumentoService {
 
         documento.getDatosComputados().setValoracionPromedio(sumaPuntuaciones / Math.max(totalComentarios, 1));
         documento.getDatosComputados().setComentariosTotales(totalComentarios);
+    }
+
+    @Override
+    public String eliminarValoracionesPorUsuarioIdEnTodosLosDocumentos(ObjectId usuarioId) {
+           // Crear un filtro que aplique a todos los documentos y elimine todas las valoraciones con el usuarioId especificado
+           Query query = new Query();
+           Update update = new Update().pull("valoraciones", new Document("usuarioId", usuarioId));
+           
+           // Actualizar múltiples documentos
+           mongoTemplate.updateMulti(query, update, DocumentoModel.class);
+
+           return "Eliminado correctamente";
     }
 
 }

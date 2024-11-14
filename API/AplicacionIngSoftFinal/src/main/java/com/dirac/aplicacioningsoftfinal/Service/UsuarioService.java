@@ -69,6 +69,8 @@ public class UsuarioService implements IUsuarioService {
 
         credencialesService.eliminarCredenciales(credencialToDelete.returnIdAsString()); // elimina credencial
 
+        documentoService.eliminarValoracionesPorUsuarioIdEnTodosLosDocumentos(usuarioToDelete.get_id());
+
         // eliminar usuario
         usuarioRepository.delete(usuarioToDelete);
 
@@ -154,10 +156,11 @@ public class UsuarioService implements IUsuarioService {
         usuarioRepository.save(updatingUsuario); // actualizamos
 
         // envía el correo
-        emailService.sendUpdateNotification(updatingUsuario.getEmail(), " <strong>Perfil (Nombre o Apellido)</strong> ");
-        
+        emailService.sendUpdateNotification(updatingUsuario.getEmail(),
+                " <strong>Perfil (Nombre o Apellido)</strong> ");
+
         return "El perfil del usuario : " + username + " ha sido actualizado con éxito.";
-        
+
     }
 
     @Override
