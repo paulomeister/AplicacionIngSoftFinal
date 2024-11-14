@@ -20,8 +20,11 @@ public interface ICategoriaService {
 
     List<CategoriaModel> getAll();
 
-    String deleteCategory(String categoryId);
+    CategoriaModel createCategory(CategoriaModel categoria);
 
+    CategoriaModel updateCategory(String id, CategoriaModel categoria);
+
+    String deleteCategory(String categoryId);
 
     List<CategoriaDTO> getCatalog();
 

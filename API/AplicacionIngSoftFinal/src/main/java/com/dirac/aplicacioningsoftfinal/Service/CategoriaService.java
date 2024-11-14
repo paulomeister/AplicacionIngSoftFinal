@@ -146,6 +146,21 @@ public class CategoriaService implements ICategoriaService {
                 return "La categoría con el id: " + categoryId + " ha sido eliminada correctamente";
         }
 
+        @Override
+        public CategoriaModel createCategory(CategoriaModel categoria) {
+                return categoriaRepository.save(categoria);
+        }
+
+        @Override
+        public CategoriaModel updateCategory(String id, CategoriaModel categoria) {
+                CategoriaModel existingCategory = categoriaRepository.findById(id)
+                                .orElseThrow(() -> new IdNotFoundException("Categoría no encontrada"));
+
+                existingCategory.setNombre(categoria.getNombre());
+                existingCategory.setDescripcion(categoria.getDescripcion());
+                existingCategory.setSubcategorias(categoria.getSubcategorias());
+                existingCategory.setImagen(categoria.getImagen());
+
+                return categoriaRepository.save(existingCategory);
+        }
 }
-
-
