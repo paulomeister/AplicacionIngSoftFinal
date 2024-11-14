@@ -1,25 +1,38 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import Search from "./components/Search";
 import List from "./components/List";
 import axios from "axios";
+import { AuthContext } from "app/app/context/AuthContext";
 
 export default function PerfilDocuments({ params }) {
-  const autorName = decodeURIComponent(params.autorName);  // Decodifica el nombre del autor desde la URL
-  const [searchTitle, setSearchTitle] = useState("");  // Estado para el título de búsqueda
-  const [filterCategory, setFilterCategory] = useState([]); // Filtra Categorías como un array
-  const [filterIdioma, setFilterIdioma] = useState(""); // Filtra Idiomas como string
-  const [filterDates, setFilterDates] = useState({ from: "", to: "" }); // Filtra las fechas (desde, hasta)
-  const [authorNameFromList, setAuthorNameFromList] = useState("");  // Estado para el nombre completo del autor
+  const autorName = decodeURIComponent(params.autorName);
+  const { user } = useContext(AuthContext); // Obtiene el usuario autenticado
+  const [searchTitle, setSearchTitle] = useState("");
+  const [filterCategory, setFilterCategory] = useState([]);
+  const [filterIdioma, setFilterIdioma] = useState("");
+  const [filterDates, setFilterDates] = useState({ from: "", to: "" });
+  const [authorNameFromList, setAuthorNameFromList] = useState("");
+
+  // Verifica si el usuario autenticado es el autor para establecer `propietario`
+  const [propietario, setPropietario] = useState(false);
 
   useEffect(() => {
-    // Función para obtener el nombre completo del autor
+    if (user && user.username === autorName) {
+      setPropietario(true);
+    } else {
+      setPropietario(false);
+    }
+  }, [user, autorName]);
+
+  useEffect(() => {
+    // Obtiene el nombre completo del autor
     const fetchAuthorName = async () => {
       try {
         const response = await axios.get(`http://localhost:8080/api/Usuarios/getByUsername/${autorName}`);
-        const { nombre, apellido } = response.data.perfil;  // Extraemos el nombre y apellido del perfil
-        setAuthorNameFromList(`${nombre} ${apellido}`);  // Combinamos nombre y apellido
+        const { nombre, apellido } = response.data.perfil;
+        setAuthorNameFromList(`${nombre} ${apellido}`);
       } catch (error) {
         console.error("Error al obtener el nombre del autor:", error);
       }
@@ -28,11 +41,9 @@ export default function PerfilDocuments({ params }) {
     fetchAuthorName();
   }, [autorName]);
 
-  const [propietario, setPropietario] = useState(true);  // Nuevo estado para el propietario
-
   return (
     <div className="container text-black flex flex-col w-screen">
-      {/* Contenedor para el título */}
+      {/* Título */}
       <header className=" text-black py-3 mb-8">
         <div className="container mx-auto px-6">
           <h3 className="text-3xl font-bold text-left">
@@ -41,7 +52,7 @@ export default function PerfilDocuments({ params }) {
         </div>
       </header>
   
-      {/* Contenedor para la barra de búsqueda */}
+      {/* Barra de búsqueda */}
       <section className="container mx-auto px-6">
         <Search 
           setSearchTitle={setSearchTitle} 
@@ -51,7 +62,7 @@ export default function PerfilDocuments({ params }) {
         />
       </section>
   
-      {/* Contenedor para la lista de documentos */}
+      {/* Lista de documentos */}
       <section className="px-6 py-8 flex-grow max-w-screen ">
         <List 
           autorName={autorName} 

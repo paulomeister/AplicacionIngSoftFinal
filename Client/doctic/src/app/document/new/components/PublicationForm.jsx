@@ -178,13 +178,18 @@ export const PublicationForm = () => {
 
   const formHandler = (event) => {
     event.preventDefault();
-
+  
     const { title, description, visibility } = event.target;
     const inputTitle = title.value;
     const inputDescription = description.value;
     const inputPDF = fileInputRef.current.files[0];
     const inputVisibility = visibility.value;
-
+  
+    if (!inputPDF) {
+      setFileError("Por favor selecciona un archivo antes de enviar el formulario.");
+      return;
+    }
+  
     const categoriasFinal = [
       {
         categoriaId: selectedCategoryWithId.categoriaId,
@@ -195,23 +200,29 @@ export const PublicationForm = () => {
         nombre: subcat.nombre,
       })),
     ];
-
+  
     const document = {
       titulo: inputTitle,
       descripcion: inputDescription,
       visibilidad: inputVisibility,
       categoria: categoriasFinal,
       autores: selectedAuthors,
+      valoraciones: [],
       fechaSubida: new Date(),
       year: new Date().getFullYear(),
+      datosComputados: {
+        descargasTotales: 0,
+        valoracionPromedio: 0,
+        comentariosTotales: 0,
+      },
     };
-
+  
     const data = new FormData();
     data.append("file", inputPDF);
     data.append("document", JSON.stringify(document));
     setLoading(true);
     setError(null);
-
+  
     instance
       .post("/Documentos/insert", data, {
         headers: { Authorization: clientKey },
@@ -352,7 +363,7 @@ export const PublicationForm = () => {
             value={title} // Usamos el estado title
             onChange={(e) => setTitle(e.target.value)} // Permite cambiar el título si el usuario lo desea
             placeholder="Ingresa el título de la publicación"
-            required
+            //required
             aria-required="true"
             maxLength="150"
           />
