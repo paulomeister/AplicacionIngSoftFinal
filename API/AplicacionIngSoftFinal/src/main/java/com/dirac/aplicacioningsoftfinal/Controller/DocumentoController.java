@@ -451,4 +451,15 @@ public class DocumentoController {
         }
     }
 
+    @DeleteMapping("/valoraciones/{usuarioId}")
+    public ResponseEntity<?> obtenerValoracionesDelUsuario(@PathVariable("usuarioId") ObjectId usuarioId) {
+        try {
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(documentoService.eliminarValoracionesPorUsuarioIdEnTodosLosDocumentos(usuarioId));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al obtener la valoración: " + e.getMessage());
+        }
+    }
+
 }

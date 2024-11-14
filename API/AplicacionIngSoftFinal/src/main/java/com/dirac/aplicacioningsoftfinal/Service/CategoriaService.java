@@ -11,6 +11,8 @@ import com.dirac.aplicacioningsoftfinal.Exception.IdNotFoundException;
 import com.dirac.aplicacioningsoftfinal.Model.CategoriaModel;
 import com.dirac.aplicacioningsoftfinal.Repository.ICategoriaRepository;
 import com.mongodb.BasicDBObject;
+
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -133,4 +135,32 @@ public class CategoriaService implements ICategoriaService {
                                 .all();
         }
 
+        @Override
+        public List<CategoriaModel> getAll() {
+                return categoriaRepository.findAll();
+        }
+
+        @Override
+        public String deleteCategory(String categoryId) {
+                categoriaRepository.deleteById(categoryId);
+                return "La categoría con el id: " + categoryId + " ha sido eliminada correctamente";
+        }
+
+        @Override
+        public CategoriaModel createCategory(CategoriaModel categoria) {
+                return categoriaRepository.save(categoria);
+        }
+
+        @Override
+        public CategoriaModel updateCategory(String id, CategoriaModel categoria) {
+                CategoriaModel existingCategory = categoriaRepository.findById(id)
+                                .orElseThrow(() -> new IdNotFoundException("Categoría no encontrada"));
+
+                existingCategory.setNombre(categoria.getNombre());
+                existingCategory.setDescripcion(categoria.getDescripcion());
+                existingCategory.setSubcategorias(categoria.getSubcategorias());
+                existingCategory.setImagen(categoria.getImagen());
+
+                return categoriaRepository.save(existingCategory);
+        }
 }

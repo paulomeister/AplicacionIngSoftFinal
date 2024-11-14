@@ -2,7 +2,7 @@
 
 import { useContext, useState } from "react";
 import Image from "next/image";
-import { useRouter } from 'next/navigation';
+import { useRouter } from "next/navigation";
 import { LuSearch } from "react-icons/lu";
 import {
   Navbar,
@@ -11,7 +11,7 @@ import {
   NavbarItem,
   Link,
   Button,
-  Input
+  Input,
 } from "@nextui-org/react";
 import { AuthContext } from "../context/AuthContext";
 import { ToastContainer } from "react-toastify";
@@ -19,7 +19,7 @@ import { ToastContainer } from "react-toastify";
 export const NavbarComp = () => {
   const { user, isLoggedIn, isLoading } = useContext(AuthContext);
   const router = useRouter();
-  const [searchText, setSearchText] = useState('');
+  const [searchText, setSearchText] = useState("");
   const [menuOpen, setMenuOpen] = useState(false);
 
   const handleSearch = (e) => {
@@ -30,7 +30,7 @@ export const NavbarComp = () => {
   };
 
   const handleKeyPress = (e) => {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       handleSearch(e);
     }
   };
@@ -49,9 +49,9 @@ export const NavbarComp = () => {
           DocTIC
         </Link>
       </NavbarBrand>
-      
+
       <NavbarContent className="sm:flex gap-4" justify="center">
-        <NavbarItem>
+        <NavbarItem className="mt-3">
           <Link color="foreground" href="/home">
             Inicio
           </Link>
@@ -62,7 +62,7 @@ export const NavbarComp = () => {
             type="text"
             label="Buscar"
             placeholder="Busca tu documento..."
-            className="w-80"
+            className="w-80 mt-3"
             size="sm"
             variant="bordered"
             radius="full"
@@ -75,7 +75,7 @@ export const NavbarComp = () => {
           />
         </NavbarItem>
         <NavbarItem>
-          <Link className="font-bold" color="primary" href="/document/new">
+          <Link className="font-bold mt-3" color="primary" href="/document/new">
             Subir
           </Link>
         </NavbarItem>
@@ -85,16 +85,14 @@ export const NavbarComp = () => {
         {isLoading ? (
           <></>
         ) : isLoggedIn ? (
-          <NavbarItem className="lg:flex space-x-5">
+          <NavbarItem className="lg:flex space-x-5 hover:cursor-pointer">
             <img
               src={user.perfil.fotoPerfil}
               className="shadow-lg rounded-full h-[40px] w-[40px] object-cover"
               alt="Profile"
+              onClick={() => (window.location.href = `/users/${user.username}`)}
             />
-            <Link
-              color="foreground"
-              href={`/users/${user.username}`}
-            >
+            <Link color="foreground" href={`/users/${user.username}`}>
               {user.perfil.nombre} {user.perfil.apellido}
             </Link>
           </NavbarItem>
@@ -102,6 +100,7 @@ export const NavbarComp = () => {
           <>
             <NavbarItem className="lg:flex">
               <Button
+                className="mt-3"
                 as={Link}
                 color="primary"
                 href="/login"
@@ -111,12 +110,7 @@ export const NavbarComp = () => {
               </Button>
             </NavbarItem>
             <NavbarItem>
-              <Button 
-                as={Link} 
-                color="primary" 
-                href="/register" 
-                variant="flat"
-              >
+              <Button as={Link} color="primary" href="/register" variant="flat" className="mt-3">
                 Registrarse
               </Button>
             </NavbarItem>
@@ -125,9 +119,6 @@ export const NavbarComp = () => {
       </NavbarContent>
     </Navbar>
   );
-
-  
-
 };
 
 export default NavbarComp;

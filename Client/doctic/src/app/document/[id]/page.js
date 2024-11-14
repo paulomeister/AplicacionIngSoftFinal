@@ -73,7 +73,7 @@ export default function Page({ params }) {
       }
     } catch (error) {
       console.error('Error al obtener los comentarios:', error);
-      toast.error("No se pudieron cargar los comentarios.");
+      //toast.error("No se pudieron cargar los comentarios.");
     }
   }, [currentPage]);
 
