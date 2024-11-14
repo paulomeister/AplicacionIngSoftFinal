@@ -242,7 +242,7 @@ export const PublicationForm = () => {
       });
   };
 
-  return isLoggedIn ? (
+  return (
     <section
       aria-labelledby="publication-form-heading"
       className="max-w-screen-md w-[768px]"
@@ -503,7 +503,5 @@ export const PublicationForm = () => {
         </div>
       </form>
     </section>
-  ) : (
-    () => (window.location.href = "/error404")
-  );
+  )
 };
