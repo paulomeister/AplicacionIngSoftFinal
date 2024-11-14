@@ -66,13 +66,13 @@ public class CredencialesService implements ICredencialesService {
     }
 
     @Override
-    public UsuarioAplicacion mapCredentialsFromDatabase(String username) throws NoRoleSpecifiedException {
+    public UsuarioAplicacion mapCredentialsFromDatabase(String identificador) throws NoRoleSpecifiedException {
 
-        CredencialesModel credenciales = credencialesRepository.findCredencialesByUsername(username)
+        CredencialesModel credenciales = credencialesRepository.findCredencialesByIdentificador(identificador)
                 .orElseThrow(() -> new UsernameNotFoundException(
-                        format("El usuario \"%s\" no se encontró en la base de datos", username)));
+                        format("El usuario \"%s\" no se encontró en la base de datos", identificador)));
 
-        Set<SimpleGrantedAuthority> grantedAuthorities = getGrantedAuthorities(username, credenciales);
+        Set<SimpleGrantedAuthority> grantedAuthorities = getGrantedAuthorities(identificador, credenciales);
 
         return new UsuarioAplicacion(
 
@@ -87,7 +87,7 @@ public class CredencialesService implements ICredencialesService {
         );
     }
 
-    private static Set<SimpleGrantedAuthority> getGrantedAuthorities(String username, CredencialesModel credenciales) {
+    private static Set<SimpleGrantedAuthority> getGrantedAuthorities(String identificador, CredencialesModel credenciales) {
 
         String rolUsuario = credenciales.getRol();
 
@@ -106,7 +106,7 @@ public class CredencialesService implements ICredencialesService {
         else {
 
             throw new NoRoleSpecifiedException(
-                    format("El usuario \"%s\" no tiene un rol específico en la base de datos", username));
+                    format("El usuario \"%s\" no tiene un rol específico en la base de datos", identificador));
 
         }
 
@@ -115,7 +115,7 @@ public class CredencialesService implements ICredencialesService {
     }
 
     public Optional<CredencialesModel> getByUsername(String username) {
-        return credencialesRepository.findCredencialesByUsername(username);
+        return credencialesRepository.findCredencialesByIdentificador(username);
     }
 
     public NuevosCredencialesDTO mapCredencialesToObject(String credencialesEnString) throws JsonProcessingException {
@@ -147,10 +147,12 @@ public class CredencialesService implements ICredencialesService {
         NuevosCredencialesDTO usuarioEntrante = mapCredencialesToObject(usuarioEntranteString);
 
         String username = usuarioEntrante.getUsername();
+        String email = usuarioEntrante.getEmail();
 
-        Optional<CredencialesModel> posibleUsuario = credencialesRepository.findCredencialesByUsername(username);
+        Optional<CredencialesModel> posibleUsuarioXUsername = credencialesRepository.findCredencialesByIdentificador(username);
+        Optional<CredencialesModel> posibleUsuarioXEmail = credencialesRepository.findCredencialesByIdentificador(email);
 
-        if (posibleUsuario.isEmpty()) {
+        if (posibleUsuarioXUsername.isEmpty() && posibleUsuarioXEmail.isEmpty()) {
 
             String hashedPassword = passwordEncoder.encode(usuarioEntrante.getPassword());
 
@@ -164,6 +166,7 @@ public class CredencialesService implements ICredencialesService {
 
                     null,
                     username,
+                    email,
                     hashedPassword,
                     "USUARIO",
                     true,
@@ -334,7 +337,7 @@ public class CredencialesService implements ICredencialesService {
         UsuarioModel usuarioCambiante = usuarioRepository.findUserByUserName(username)
                 .orElseThrow(() -> new UsernameNotFoundException("No se pudo encontrar al usuario: " + username));
 
-        CredencialesModel usuario = credencialesRepository.findCredencialesByUsername(username)
+        CredencialesModel usuario = credencialesRepository.findCredencialesByIdentificador(username)
                 .orElseThrow(() -> new UsuarioNotFoundException(
                         format("El usuario \"%s\" no se encuentra en la base de datos! Error fatal", username)));
 
@@ -390,7 +393,7 @@ public class CredencialesService implements ICredencialesService {
 
     public String obtenerPreguntaSeguridad(String username) {
 
-        CredencialesModel objetoPregunta = credencialesRepository.findCredencialesByUsername(username)
+        CredencialesModel objetoPregunta = credencialesRepository.findCredencialesByIdentificador(username)
                 .orElseThrow(() -> new UsuarioNotFoundException(
                         format("El usuario \"%s\" no se encuentra en la base de datos", username)));
 
@@ -419,7 +422,7 @@ public class CredencialesService implements ICredencialesService {
 
         }
 
-        CredencialesModel credenciales = credencialesRepository.findCredencialesByUsername(username)
+        CredencialesModel credenciales = credencialesRepository.findCredencialesByIdentificador(username)
                 .orElseThrow(() -> new UsuarioNotFoundException(
                         format("El usuario \"%s\" no se encuentra en la base de datos!", username)));
 
