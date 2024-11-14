@@ -4,7 +4,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { AuthContext } from "app/app/context/AuthContext";
 
 export function ChangePassword({ username }) {
-  const { notificacionDeExito, clientKey,notificacionDeError } = useContext(AuthContext);
+  const { notificacionDeExito, clientKey,notificacionDeError, cerrarSesion} = useContext(AuthContext);
 
   /////////////
   //! OBTENER LOS DATOS DEL USUARIO CAMBIARÁ CUANDO SE HAGA LO DE AUTENTICACIÓN!
@@ -80,6 +80,9 @@ export function ChangePassword({ username }) {
         throw Error("La contraseña nueva ingresada ya ha sido usada anteriormente")
       } else {
         notificacionDeExito("Contraseña cambiada exitosamente.");
+        setTimeout(() => {
+          cerrarSesion();
+        }, 5000);
       }
       // aqui se hace la petición para cambiar la contraseña
     } catch (error) {
