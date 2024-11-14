@@ -296,7 +296,7 @@ public class CredencialesService implements ICredencialesService {
     public String cambiarPreguntaDeSeguridad(String username, PreguntaSeguridad nuevaPreguntaSeguridad) {
 
         // Expresión regular que permite solo letras y espacios
-        String regex = "^[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]+$";
+        String regex = "^[a-zA-ZáéíóúÁÉÍÓÚñÑ¿?\\s]+$";
         String pregunta = nuevaPreguntaSeguridad.getPregunta();
 
         // Validación de la pregunta de seguridad
