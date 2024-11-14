@@ -216,7 +216,7 @@ export const UpdatePublicationForm = ({ documentData }) => {
       .put("/Documentos/updateDoc", data)
       .then((response) => {
         console.log(response.data);
-        // Aquí podrías redirigir al usuario o mostrar un mensaje de éxito
+        
       })
       .catch((e) => {
         console.log("Error al actualizar el documento:", e.response ? e.response.data : e.message);
