@@ -154,18 +154,19 @@ export default function Page({ params }) {
   if (error) return <AlertPop error={error} />;
   if (!data || isLoading) return <SpinerComp />;
 
-  // let visualiza = false;
-  // data.autores.map((autor) => {
-  //   console.log(autor);
-  //   // console.log(`${ visualiza} VISUALIZA \n ${autor.usuarioId} : ${id}`);
-  //   if(autor.usuarioId == user._id) {
-  //     visualiza = true;
-  //   }
-  // });
-  // if(!visualiza) {
-  //   window.location.href = "/error404"
-  // }
-  // console.log("ID ACTUAL: ", user._id, " ", id);
+  let visualiza = false;
+  data.autores.map((autor) => {
+    console.log(autor);
+    // console.log(`${ visualiza} VISUALIZA \n ${autor.usuarioId} : ${id}`);
+    if(autor.usuarioId == user._id) {
+      visualiza = true;
+    }
+  });
+  console.log(data);
+  if(data.visibilidad == 'privado' && !visualiza) {
+    window.location.href = "/error404"
+  }
+  console.log("ID ACTUAL: ", user._id, " ", id);
   return (
     <div className="flex flex-col gap-6">
       <DocBasicInfo
