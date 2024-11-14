@@ -7,12 +7,10 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
-import static com.dirac.aplicacioningsoftfinal.Model.CredencialesModel.*;
-
 @Repository
 public interface ICredencialesRepository extends MongoRepository<CredencialesModel, String> {
 
-    @Query("{'username': {$regex: ?0, $options:  'i'}}")
-    Optional<CredencialesModel> findCredencialesByUsername(String username);
+    @Query("{ $or: [ {'username': {$regex: ?0, $options: 'i'}}, {'email': {$regex: ?0, $options: 'i'}} ] }")
+    Optional<CredencialesModel> findCredencialesByIdentificador(String identificador);
 
 }
