@@ -69,9 +69,9 @@ const AuthorInfo = ({ autor, propietario }) => {
             alt="Avatar del Autor"
             className=" object-contain h-[150px] w-[150px] rounded-full "
           />
-          <div className="author-info-container">
+          <div className="author-info-container d-flex">
             {propietario && (
-              <div className="flex justify-center items-center gap-4 w-[600px] p-4">
+              <div className="flex justify-center gap-4 p-4 d-flex flex-wrap">
                 <button
                   className="btn btn-danger flex items-center space-x-2 w-[150px]"
                   onClick={cerrarSesion}
