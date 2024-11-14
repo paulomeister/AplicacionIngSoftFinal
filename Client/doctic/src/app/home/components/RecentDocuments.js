@@ -102,9 +102,9 @@ export default function Documentos() {
           {sectionTitles[activeTab].icon} {sectionTitles[activeTab].title}
         </h1>
 
-        <ul className="space-y-8">
+        <ul className="space-y-8 d-flex flex-col">
           {documents.map((doc) => (
-            <li key={doc._id} className="p-6 bg-white rounded shadow-md border">
+            <li key={doc._id} className="p-6 bg-white rounded shadow-md border d-flex flex-col">
               <Link href={`/document/${doc._id}`} className="hover:text-blue-600 no-underline hover:underline"><h2 className=" text-2xl font-semibold mb-2">{doc.titulo}</h2></Link>
               <p className="text-lg text-gray-700 mb-1">
                 <span className="font-semibold">Subido por:</span> 
@@ -114,8 +114,8 @@ export default function Documentos() {
                 {doc.categoria?.map((cat) => cat.nombre).join(", ")}
               </p>
 
-              <div className="flex justify-between items-center mt-4">
-                <div className="flex gap-8">
+              <div className="flex justify-between items-center mt-4 flex-wrap">
+                <div className="flex gap-1 flex-wrap">
                   <div
                     className={`flex items-center gap-2 ${getHighlightClass(
                       "date"
